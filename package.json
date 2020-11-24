@@ -1,6 +1,6 @@
 {
   "name": "@voximplant/kit-functions-sdk",
-  "version": "0.0.31",
+  "version": "0.0.33",
   "description": "Voximplant Kit cloud functions client",
   "main": "dist/index.js",
   "typescript": {
@@ -10,7 +10,12 @@
   "scripts": {
     "test": "jest --silent"
   },
-  "private": true,
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/voximplant/kit-functions-sdk.git"
+  },
+  "homepage" : "https://voximplant.com/kit",
   "keywords": [
     "serverless",
     "sdk",
