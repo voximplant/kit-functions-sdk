@@ -7,7 +7,7 @@ This can be extremely useful to access other apps' API in your scenario and hand
 
 To use Voximplant Kit functions you need:
 1. A Voximplant Kit account. You can register one [here](https://kit.voximplant.com/registration).
-1. The access to Voximplant Kit functions. Please [contact us](mailto:support@kit.voximplant.com) to request the access.
+1. Access to Voximplant Kit functions. Please [contact us](mailto:support@kit.voximplant.com) to request access.
 
 ## How to use
 
@@ -16,4 +16,4 @@ To use Voximplant Kit functions you need:
 1. Implement the function and give it a name, then click the "Create" button to save it.
 1. You can use the function in your scenario or Contact Center:
     1. To add the function to your scenario, choose "function request" from the left menu.
-    1. To add the function to your Contact Center, open the channel settings and and choose Functions.
+    1. To add the function to your Contact Center, open the channel settings and choose Functions.
