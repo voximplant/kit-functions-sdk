@@ -1,5 +1,4 @@
 "use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const api_1 = require("./api");
 const EVENT_TYPES = {
@@ -441,7 +440,8 @@ class VoximplantKit {
     }
     // Client version
     version() {
-        return "0.0.30";
+        return "0.0.34";
     }
 }
-exports.default = VoximplantKit;
+VoximplantKit.default = VoximplantKit;
+module.exports = VoximplantKit;

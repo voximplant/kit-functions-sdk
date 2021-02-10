@@ -76,3 +76,4 @@ fabric.properties
 /package-lock.json
 /dist/test.js
 /voximplant-kit-functions-sdk-*.tgz
+/demo.js

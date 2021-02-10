@@ -1,6 +1,6 @@
 {
   "name": "@voximplant/kit-functions-sdk",
-  "version": "0.0.33",
+  "version": "0.0.34",
   "description": "Voximplant Kit cloud functions client",
   "main": "dist/index.js",
   "typescript": {
@@ -8,14 +8,15 @@
   },
   "typings": "dist/index.d.ts",
   "scripts": {
-    "test": "jest --silent"
+    "test": "jest --silent",
+    "build": "node clear.js && tsc && node bundle.js"
   },
   "private": false,
   "repository": {
     "type": "git",
     "url": "https://github.com/voximplant/kit-functions-sdk.git"
   },
-  "homepage" : "https://voximplant.com/kit",
+  "homepage": "https://voximplant.com/kit",
   "keywords": [
     "serverless",
     "sdk",
@@ -24,11 +25,12 @@
   "author": "Zingaya Inc. <info@voximplant.com> (http://voximplant.com)",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "qs": "^6.9.4",
     "querystring": "^0.2.0"
   },
   "devDependencies": {
-    "jest": "^26.6.3"
+    "jest": "^26.6.3",
+    "dts-bundle": "^0.7.3"
   }
 }
