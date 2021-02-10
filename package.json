@@ -15,7 +15,7 @@
     "type": "git",
     "url": "https://github.com/voximplant/kit-functions-sdk.git"
   },
-  "homepage" : "https://voximplant.com/kit",
+  "homepage": "https://voximplant.com/kit",
   "keywords": [
     "serverless",
     "sdk",
@@ -24,7 +24,7 @@
   "author": "Zingaya Inc. <info@voximplant.com> (http://voximplant.com)",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "qs": "^6.9.4",
     "querystring": "^0.2.0"
   },
