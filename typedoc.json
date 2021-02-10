@@ -1,0 +1,17 @@
+{
+  "name": "kit-functions-sdk",
+  "inputFiles": ["src/index.ts"],
+  "json": "doc/kit-functions-sdk.json",
+  "exclude": [
+    "**/*.tsx",
+    "!src/*.ts",
+    "**/*.vue",
+    "__test__/**/*ts",
+    "dist/**/*ts"
+  ],
+  "mode": "file",
+  "out": "doc",
+  "ignoreCompilerErrors": true,
+  "includeDeclarations": true,
+  "excludeExternals": true
+}

@@ -196,7 +196,10 @@ class VoximplantKit {
   }
 
   static default = VoximplantKit;
-  // load Databases
+
+  /**
+   * load Databases
+   */
   async loadDatabases() {
     let _this = this
     let _DBs = [
@@ -233,7 +236,10 @@ class VoximplantKit {
     return this.priority;
   }
 
-  // Get function response
+  /**
+   * Get function response
+   * @param data
+   */
   getResponseBody(data: any) {
     if (this.eventType === EVENT_TYPES.in_call_function)
       return {
@@ -258,42 +264,64 @@ class VoximplantKit {
       return data
   }
 
-  // Get incoming message
+  /**
+   * Get incoming message
+    */
   getIncomingMessage(): MessageObject {
     return this.requestData
   }
 
-  // Set auth token
+  /**
+   * Set auth token
+   * @param token
+   */
   setAccessToken(token) {
     this.accessToken = token
   }
 
-  // Get Variable
+  /**
+   * Get Variable
+   * @param name
+   */
   getVariable(name: string) {
     return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
-  // Set variable
+  /**
+   * Set variable
+   * @param name
+   * @param value
+   */
   setVariable(name, value) {
     this.variables[name] = value
   }
 
-  // Get all call data
+  /**
+   * Get all call data
+    */
   getCallData() {
     return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null
   }
 
-  // Get all variables
+  /**
+   * Get all variables
+    */
   getVariables() {
     return (typeof this.requestData.VARIABLES !== "undefined") ? this.requestData.VARIABLES : {}
   }
 
-  // Get all skills
+  /**
+   * Get all skills
+   */
   getSkills() {
     return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : []
   }
 
-  // Set skill
+  /**
+   * Set skill
+   * @param name
+   * @param level
+   */
   setSkill(name: string, level: number) {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
@@ -305,7 +333,10 @@ class VoximplantKit {
     else this.skills[skillIndex].level = level
   }
 
-  // Remove skill
+  /**
+   * Remove skill
+   * @param name
+   */
   removeSkill(name: string) {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
@@ -315,7 +346,9 @@ class VoximplantKit {
     }
   }
 
-  // Finish current request in conversation
+  /**
+   * Finish current request in conversation
+   */
   finishRequest() {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -330,7 +363,9 @@ class VoximplantKit {
     return true
   }
 
-  // Cancel finish current request in conversation
+  /**
+   * Cancel finish current request in conversation
+   */
   cancelFinishRequest() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
@@ -342,7 +377,10 @@ class VoximplantKit {
     return true
   }
 
-  // Transfer to queue
+  /**
+   * Transfer to queue
+   * @param queue
+   */
   transferToQueue(queue: QueueInfo) {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
 
@@ -368,7 +406,9 @@ class VoximplantKit {
     return true
   }
 
-  // Cancel transfer to queue
+  /**
+   * Cancel transfer to queue
+   */
   cancelTransferToQueue() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "transfer_to_queue"
@@ -402,7 +442,11 @@ class VoximplantKit {
     })
   }
 
-  // Save DB by scope name
+  /**
+   * Save DB by scope name
+   * @param type
+   * @private
+   */
   private saveDb(type: string) {
     let _dbName = null
     let _dbValue = null
@@ -427,22 +471,36 @@ class VoximplantKit {
     return this.saveDB(_dbName, JSON.stringify(_dbValue))
   }
 
-  // Get value from DB by key
+  /**
+   * Get value from DB by key
+   * @param key
+   * @param scope
+   */
   dbGet(key: string, scope: string = "global"): any {
     return this.db[scope]
   }
 
-  // Set value in DB by key
+  /**
+   * Set value in DB by key
+   * @param key
+   * @param value
+   * @param scope
+   */
   dbSet(key: string, value: any, scope: string = "global"): void {
     this.db[scope][key] = value
   }
 
-  // Get all DB scope by name
+  /**
+   * Get all DB scope by name
+   * @param scope
+   */
   dbGetAll(scope: string = "global") {
     return typeof this.db[scope] !== "undefined" ? this.db[scope] : null
   }
 
-  // Commit DB chnges
+  /**
+   * Commit DB changes
+   */
   async dbCommit() {
     let _this = this
     let _DBs = [
@@ -459,7 +517,12 @@ class VoximplantKit {
     }))
   }
 
-  // Send SMS message
+  /**
+   * Send SMS message
+   * @param from
+   * @param to
+   * @param message
+   */
   sendSMS(from: string, to: string, message: string) {
     return this.api.request("/v2/phone/sendSms", {
       source: from,
@@ -470,14 +533,21 @@ class VoximplantKit {
     })
   }
 
-  // Voximplant Kit API proxy
+  /**
+   * Voximplant Kit API proxy
+   * @param url {string} - Url address
+   * @param data
+   */
   apiProxy(url: string, data: any) {
     return this.api.request(url, data).then(r => {
       return r.data
     })
   }
 
-  // Add photo
+  /**
+   * Add photo
+   * @param url {string} - Url address
+   */
   addPhoto(url) {
     this.replyMessage.payload.push({
       type: "photo",
@@ -489,7 +559,9 @@ class VoximplantKit {
     return true
   }
 
-  // Client version
+  /**
+   * Get client version
+   */
   version() {
     return "0.0.34"
   }

@@ -1,0 +1,4240 @@
+{
+	"id": 0,
+	"name": "kit-functions-sdk",
+	"kind": 0,
+	"flags": {},
+	"children": [
+		{
+			"id": 1,
+			"name": "VoximplantKit",
+			"kind": 128,
+			"kindString": "Class",
+			"flags": {
+				"isExported": true,
+				"hasExportAssignment": true
+			},
+			"children": [
+				{
+					"id": 111,
+					"name": "constructor",
+					"kind": 512,
+					"kindString": "Constructor",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 112,
+							"name": "new VoximplantKit",
+							"kind": 16384,
+							"kindString": "Constructor signature",
+							"flags": {
+								"isExported": true
+							},
+							"parameters": [
+								{
+									"id": 113,
+									"name": "context",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "reference",
+										"name": "ContextObject"
+									}
+								},
+								{
+									"id": 114,
+									"name": "isTest",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "boolean"
+									},
+									"defaultValue": "false"
+								}
+							],
+							"type": {
+								"type": "reference",
+								"id": 1,
+								"name": "VoximplantKit"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 143,
+							"character": 21
+						}
+					]
+				},
+				{
+					"id": 8,
+					"name": "accessToken",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 20,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 107,
+					"name": "accountDB",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 139,
+							"character": 19
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 109,
+					"name": "api",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 142,
+							"character": 5
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 10,
+					"name": "apiUrl",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 22,
+							"character": 16
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 14,
+					"name": "call",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 27,
+							"character": 6
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "CallObject"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 105,
+					"name": "conversationDB",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 137,
+							"character": 24
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 108,
+					"name": "db",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 140,
+							"character": 12
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 11,
+					"name": "domain",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 23,
+							"character": 16
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 13,
+					"name": "eventType",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 26,
+							"character": 11
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "EVENT_TYPES.webhook"
+				},
+				{
+					"id": 106,
+					"name": "functionDB",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 138,
+							"character": 20
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 12,
+					"name": "functionId",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 24,
+							"character": 20
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 16,
+					"name": "headers",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 29,
+							"character": 9
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "object"
+					}
+				},
+				{
+					"id": 110,
+					"name": "http",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 143,
+							"character": 6
+						}
+					],
+					"type": {
+						"type": "reference",
+						"name": "AxiosInstance"
+					}
+				},
+				{
+					"id": 2,
+					"name": "isTest",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 12,
+							"character": 16
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "boolean"
+					},
+					"defaultValue": "false"
+				},
+				{
+					"id": 18,
+					"name": "priority",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 31,
+							"character": 18
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "number"
+					},
+					"defaultValue": "0"
+				},
+				{
+					"id": 3,
+					"name": "requestData",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 13,
+							"character": 21
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "any"
+					}
+				},
+				{
+					"id": 9,
+					"name": "sessionAccessUrl",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 21,
+							"character": 26
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "null"
+				},
+				{
+					"id": 17,
+					"name": "skills",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 30,
+							"character": 8
+						}
+					],
+					"type": {
+						"type": "reference",
+						"typeArguments": [
+							{
+								"type": "reference",
+								"name": "SkillObject"
+							}
+						],
+						"name": "Array"
+					},
+					"defaultValue": "[]"
+				},
+				{
+					"id": 15,
+					"name": "variables",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 28,
+							"character": 11
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "object"
+					}
+				},
+				{
+					"id": 115,
+					"name": "default",
+					"kind": 1024,
+					"kindString": "Property",
+					"flags": {
+						"isStatic": true,
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 198,
+							"character": 16
+						}
+					],
+					"type": {
+						"type": "reference",
+						"id": 1,
+						"name": "VoximplantKit"
+					},
+					"defaultValue": "VoximplantKit"
+				},
+				{
+					"id": 193,
+					"name": "addPhoto",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 194,
+							"name": "addPhoto",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Add photo"
+							},
+							"parameters": [
+								{
+									"id": 195,
+									"name": "url",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "Url address\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 551,
+							"character": 10
+						}
+					]
+				},
+				{
+					"id": 189,
+					"name": "apiProxy",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 190,
+							"name": "apiProxy",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Voximplant Kit API proxy"
+							},
+							"parameters": [
+								{
+									"id": 191,
+									"name": "url",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "Url address"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 192,
+									"name": "data",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 541,
+							"character": 10
+						}
+					]
+				},
+				{
+					"id": 153,
+					"name": "cancelFinishRequest",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 154,
+							"name": "cancelFinishRequest",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Cancel finish current request in conversation"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 369,
+							"character": 21
+						}
+					]
+				},
+				{
+					"id": 158,
+					"name": "cancelTransferToQueue",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 159,
+							"name": "cancelTransferToQueue",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Cancel transfer to queue"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 412,
+							"character": 23
+						}
+					]
+				},
+				{
+					"id": 182,
+					"name": "dbCommit",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 183,
+							"name": "dbCommit",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Commit DB changes"
+							},
+							"type": {
+								"type": "reference",
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 504,
+							"character": 16
+						}
+					]
+				},
+				{
+					"id": 170,
+					"name": "dbGet",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 171,
+							"name": "dbGet",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get value from DB by key"
+							},
+							"parameters": [
+								{
+									"id": 172,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 173,
+									"name": "scope",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "\"global\""
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 479,
+							"character": 7
+						}
+					]
+				},
+				{
+					"id": 179,
+					"name": "dbGetAll",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 180,
+							"name": "dbGetAll",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get all DB scope by name"
+							},
+							"parameters": [
+								{
+									"id": 181,
+									"name": "scope",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "\"global\""
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 497,
+							"character": 10
+						}
+					]
+				},
+				{
+					"id": 174,
+					"name": "dbSet",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 175,
+							"name": "dbSet",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Set value in DB by key"
+							},
+							"parameters": [
+								{
+									"id": 176,
+									"name": "key",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 177,
+									"name": "value",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								},
+								{
+									"id": 178,
+									"name": "scope",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									},
+									"defaultValue": "\"global\""
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 489,
+							"character": 7
+						}
+					]
+				},
+				{
+					"id": 151,
+					"name": "finishRequest",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 152,
+							"name": "finishRequest",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Finish current request in conversation"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 352,
+							"character": 15
+						}
+					]
+				},
+				{
+					"id": 138,
+					"name": "getCallData",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 139,
+							"name": "getCallData",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get all call data"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 302,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 126,
+					"name": "getIncomingMessage",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 127,
+							"name": "getIncomingMessage",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get incoming message"
+							},
+							"type": {
+								"type": "reference",
+								"name": "MessageObject"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 270,
+							"character": 20
+						}
+					]
+				},
+				{
+					"id": 121,
+					"name": "getPriority",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 122,
+							"name": "getPriority",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "number"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 235,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 123,
+					"name": "getResponseBody",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 124,
+							"name": "getResponseBody",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get function response"
+							},
+							"parameters": [
+								{
+									"id": 125,
+									"name": "data",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 243,
+							"character": 17
+						}
+					]
+				},
+				{
+					"id": 142,
+					"name": "getSkills",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 143,
+							"name": "getSkills",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get all skills"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 316,
+							"character": 11
+						}
+					]
+				},
+				{
+					"id": 131,
+					"name": "getVariable",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 132,
+							"name": "getVariable",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get Variable"
+							},
+							"parameters": [
+								{
+									"id": 133,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 286,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 140,
+					"name": "getVariables",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 141,
+							"name": "getVariables",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get all variables"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 309,
+							"character": 14
+						}
+					]
+				},
+				{
+					"id": 160,
+					"name": "loadDB",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 161,
+							"name": "loadDB",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"parameters": [
+								{
+									"id": 162,
+									"name": "db_name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 423,
+							"character": 16
+						}
+					]
+				},
+				{
+					"id": 116,
+					"name": "loadDatabases",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 117,
+							"name": "loadDatabases",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "load Databases"
+							},
+							"type": {
+								"type": "reference",
+								"typeArguments": [
+									{
+										"type": "intrinsic",
+										"name": "void"
+									}
+								],
+								"name": "Promise"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 203,
+							"character": 21
+						}
+					]
+				},
+				{
+					"id": 148,
+					"name": "removeSkill",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 149,
+							"name": "removeSkill",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Remove skill"
+							},
+							"parameters": [
+								{
+									"id": 150,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 340,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 163,
+					"name": "saveDB",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 164,
+							"name": "saveDB",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"parameters": [
+								{
+									"id": 165,
+									"name": "db_name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 166,
+									"name": "value",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 433,
+							"character": 16
+						}
+					]
+				},
+				{
+					"id": 167,
+					"name": "saveDb",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 168,
+							"name": "saveDb",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isPrivate": true,
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Save DB by scope name"
+							},
+							"parameters": [
+								{
+									"id": 169,
+									"name": "type",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 450,
+							"character": 16
+						}
+					]
+				},
+				{
+					"id": 184,
+					"name": "sendSMS",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 185,
+							"name": "sendSMS",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Send SMS message"
+							},
+							"parameters": [
+								{
+									"id": 186,
+									"name": "from",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 187,
+									"name": "to",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 188,
+									"name": "message",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "any"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 526,
+							"character": 9
+						}
+					]
+				},
+				{
+					"id": 128,
+					"name": "setAccessToken",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 129,
+							"name": "setAccessToken",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Set auth token"
+							},
+							"parameters": [
+								{
+									"id": 130,
+									"name": "token",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 278,
+							"character": 16
+						}
+					]
+				},
+				{
+					"id": 118,
+					"name": "setPriority",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 119,
+							"name": "setPriority",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"parameters": [
+								{
+									"id": 120,
+									"name": "value",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "number"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "number"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 226,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 144,
+					"name": "setSkill",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 145,
+							"name": "setSkill",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Set skill"
+							},
+							"parameters": [
+								{
+									"id": 146,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "string"
+									}
+								},
+								{
+									"id": 147,
+									"name": "level",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "number"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 325,
+							"character": 10
+						}
+					]
+				},
+				{
+					"id": 134,
+					"name": "setVariable",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 135,
+							"name": "setVariable",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Set variable"
+							},
+							"parameters": [
+								{
+									"id": 136,
+									"name": "name",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								},
+								{
+									"id": 137,
+									"name": "value",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "intrinsic",
+										"name": "any"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "void"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 295,
+							"character": 13
+						}
+					]
+				},
+				{
+					"id": 155,
+					"name": "transferToQueue",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 156,
+							"name": "transferToQueue",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Transfer to queue"
+							},
+							"parameters": [
+								{
+									"id": 157,
+									"name": "queue",
+									"kind": 32768,
+									"kindString": "Parameter",
+									"flags": {
+										"isExported": true
+									},
+									"comment": {
+										"text": "\n"
+									},
+									"type": {
+										"type": "reference",
+										"name": "QueueInfo"
+									}
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "boolean"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 384,
+							"character": 17
+						}
+					]
+				},
+				{
+					"id": 196,
+					"name": "version",
+					"kind": 2048,
+					"kindString": "Method",
+					"flags": {
+						"isExported": true
+					},
+					"signatures": [
+						{
+							"id": 197,
+							"name": "version",
+							"kind": 4096,
+							"kindString": "Call signature",
+							"flags": {
+								"isExported": true
+							},
+							"comment": {
+								"shortText": "Get client version"
+							},
+							"type": {
+								"type": "intrinsic",
+								"name": "string"
+							}
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 565,
+							"character": 9
+						}
+					]
+				},
+				{
+					"id": 19,
+					"name": "incomingMessage",
+					"kind": 2097152,
+					"kindString": "Object literal",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 61,
+							"name": "payload",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 82,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "undefined"
+								}
+							},
+							"defaultValue": "[]"
+						},
+						{
+							"id": 20,
+							"name": "text",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 34,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "null"
+							},
+							"defaultValue": "null"
+						},
+						{
+							"id": 21,
+							"name": "type",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 35,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "null"
+							},
+							"defaultValue": "null"
+						},
+						{
+							"id": 24,
+							"name": "conversation",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 50,
+									"name": "channel",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 69,
+											"character": 13
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 27,
+									"name": "client_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 42,
+											"character": 15
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 40,
+									"name": "current_status",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 58,
+											"character": 20
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 51,
+									"name": "customer_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 70,
+											"character": 17
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 25,
+									"name": "id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 40,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 26,
+									"name": "uuid",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 41,
+											"character": 10
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 41,
+									"name": "current_request",
+									"kind": 2097152,
+									"kindString": "Object literal",
+									"flags": {
+										"isExported": true
+									},
+									"children": [
+										{
+											"id": 48,
+											"name": "completed",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 66,
+													"character": 17
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 49,
+											"name": "conversation_id",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 67,
+													"character": 23
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 44,
+											"name": "end_sequence",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 62,
+													"character": 20
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 47,
+											"name": "end_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 65,
+													"character": 16
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 46,
+											"name": "handling_start_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 64,
+													"character": 27
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 42,
+											"name": "id",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 60,
+													"character": 10
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 43,
+											"name": "start_sequence",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 61,
+													"character": 22
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 45,
+											"name": "start_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 63,
+													"character": 18
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										}
+									],
+									"groups": [
+										{
+											"title": "Variables",
+											"kind": 32,
+											"children": [
+												48,
+												49,
+												44,
+												47,
+												46,
+												42,
+												43,
+												45
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 59,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "object"
+									}
+								},
+								{
+									"id": 28,
+									"name": "custom_data",
+									"kind": 2097152,
+									"kindString": "Object literal",
+									"flags": {
+										"isExported": true
+									},
+									"children": [
+										{
+											"id": 35,
+											"name": "client_data",
+											"kind": 2097152,
+											"kindString": "Object literal",
+											"flags": {
+												"isExported": true
+											},
+											"children": [
+												{
+													"id": 37,
+													"name": "client_avatar",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 53,
+															"character": 23
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 38,
+													"name": "client_display_name",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 54,
+															"character": 29
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 36,
+													"name": "client_id",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 52,
+															"character": 19
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 39,
+													"name": "client_phone",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 55,
+															"character": 22
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												}
+											],
+											"groups": [
+												{
+													"title": "Variables",
+													"kind": 32,
+													"children": [
+														37,
+														38,
+														36,
+														39
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 51,
+													"character": 19
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "object"
+											}
+										},
+										{
+											"id": 29,
+											"name": "conversation_data",
+											"kind": 2097152,
+											"kindString": "Object literal",
+											"flags": {
+												"isExported": true
+											},
+											"children": [
+												{
+													"id": 32,
+													"name": "channel_type",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 47,
+															"character": 22
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 34,
+													"name": "is_read",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 49,
+															"character": 17
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 33,
+													"name": "last_message_sender_type",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 48,
+															"character": 34
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 30,
+													"name": "last_message_text",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 45,
+															"character": 27
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 31,
+													"name": "last_message_time",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 46,
+															"character": 27
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												}
+											],
+											"groups": [
+												{
+													"title": "Variables",
+													"kind": 32,
+													"children": [
+														32,
+														34,
+														33,
+														30,
+														31
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 44,
+													"character": 25
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "object"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Object literals",
+											"kind": 2097152,
+											"children": [
+												35,
+												29
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 43,
+											"character": 17
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "object"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										50,
+										27,
+										40,
+										51,
+										25,
+										26
+									]
+								},
+								{
+									"title": "Object literals",
+									"kind": 2097152,
+									"children": [
+										41,
+										28
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 39,
+									"character": 16
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						},
+						{
+							"id": 52,
+							"name": "customer",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 58,
+									"name": "customer_client_ids",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 78,
+											"character": 25
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 55,
+									"name": "customer_details",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 75,
+											"character": 22
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 54,
+									"name": "customer_display_name",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 74,
+											"character": 27
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 60,
+									"name": "customer_emails",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 80,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 59,
+									"name": "customer_external_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 79,
+											"character": 26
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 57,
+									"name": "customer_phones",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 77,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 56,
+									"name": "customer_photo",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 76,
+											"character": 20
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 53,
+									"name": "id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 73,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										58,
+										55,
+										54,
+										60,
+										59,
+										57,
+										56,
+										53
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 72,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						},
+						{
+							"id": 22,
+							"name": "sender",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 23,
+									"name": "is_bot",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 37,
+											"character": 12
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										23
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 36,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Variables",
+							"kind": 32,
+							"children": [
+								61,
+								20,
+								21
+							]
+						},
+						{
+							"title": "Object literals",
+							"kind": 2097152,
+							"children": [
+								24,
+								52,
+								22
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 33,
+							"character": 17
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "object"
+					}
+				},
+				{
+					"id": 62,
+					"name": "replyMessage",
+					"kind": 2097152,
+					"kindString": "Object literal",
+					"flags": {
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 104,
+							"name": "payload",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 133,
+									"character": 11
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "undefined"
+								}
+							},
+							"defaultValue": "[]"
+						},
+						{
+							"id": 63,
+							"name": "text",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 85,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "null"
+							},
+							"defaultValue": "null"
+						},
+						{
+							"id": 64,
+							"name": "type",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 86,
+									"character": 8
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "null"
+							},
+							"defaultValue": "null"
+						},
+						{
+							"id": 67,
+							"name": "conversation",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 93,
+									"name": "channel",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 120,
+											"character": 13
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 70,
+									"name": "client_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 93,
+											"character": 15
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 83,
+									"name": "current_status",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 109,
+											"character": 20
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 94,
+									"name": "customer_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 121,
+											"character": 17
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 68,
+									"name": "id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 91,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 69,
+									"name": "uuid",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 92,
+											"character": 10
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 84,
+									"name": "current_request",
+									"kind": 2097152,
+									"kindString": "Object literal",
+									"flags": {
+										"isExported": true
+									},
+									"children": [
+										{
+											"id": 91,
+											"name": "completed",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 117,
+													"character": 17
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 92,
+											"name": "conversation_id",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 118,
+													"character": 23
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 87,
+											"name": "end_sequence",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 113,
+													"character": 20
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 90,
+											"name": "end_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 116,
+													"character": 16
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 89,
+											"name": "handling_start_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 115,
+													"character": 27
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 85,
+											"name": "id",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 111,
+													"character": 10
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 86,
+											"name": "start_sequence",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 112,
+													"character": 22
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										},
+										{
+											"id": 88,
+											"name": "start_time",
+											"kind": 32,
+											"kindString": "Variable",
+											"flags": {
+												"isExported": true
+											},
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 114,
+													"character": 18
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "null"
+											},
+											"defaultValue": "null"
+										}
+									],
+									"groups": [
+										{
+											"title": "Variables",
+											"kind": 32,
+											"children": [
+												91,
+												92,
+												87,
+												90,
+												89,
+												85,
+												86,
+												88
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 110,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "object"
+									}
+								},
+								{
+									"id": 71,
+									"name": "custom_data",
+									"kind": 2097152,
+									"kindString": "Object literal",
+									"flags": {
+										"isExported": true
+									},
+									"children": [
+										{
+											"id": 78,
+											"name": "client_data",
+											"kind": 2097152,
+											"kindString": "Object literal",
+											"flags": {
+												"isExported": true
+											},
+											"children": [
+												{
+													"id": 80,
+													"name": "client_avatar",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 104,
+															"character": 23
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 81,
+													"name": "client_display_name",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 105,
+															"character": 29
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 79,
+													"name": "client_id",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 103,
+															"character": 19
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 82,
+													"name": "client_phone",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 106,
+															"character": 22
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												}
+											],
+											"groups": [
+												{
+													"title": "Variables",
+													"kind": 32,
+													"children": [
+														80,
+														81,
+														79,
+														82
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 102,
+													"character": 19
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "object"
+											}
+										},
+										{
+											"id": 72,
+											"name": "conversation_data",
+											"kind": 2097152,
+											"kindString": "Object literal",
+											"flags": {
+												"isExported": true
+											},
+											"children": [
+												{
+													"id": 75,
+													"name": "channel_type",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 98,
+															"character": 22
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 77,
+													"name": "is_read",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 100,
+															"character": 17
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 76,
+													"name": "last_message_sender_type",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 99,
+															"character": 34
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 73,
+													"name": "last_message_text",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 96,
+															"character": 27
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												},
+												{
+													"id": 74,
+													"name": "last_message_time",
+													"kind": 32,
+													"kindString": "Variable",
+													"flags": {
+														"isExported": true
+													},
+													"sources": [
+														{
+															"fileName": "index.ts",
+															"line": 97,
+															"character": 27
+														}
+													],
+													"type": {
+														"type": "intrinsic",
+														"name": "null"
+													},
+													"defaultValue": "null"
+												}
+											],
+											"groups": [
+												{
+													"title": "Variables",
+													"kind": 32,
+													"children": [
+														75,
+														77,
+														76,
+														73,
+														74
+													]
+												}
+											],
+											"sources": [
+												{
+													"fileName": "index.ts",
+													"line": 95,
+													"character": 25
+												}
+											],
+											"type": {
+												"type": "intrinsic",
+												"name": "object"
+											}
+										}
+									],
+									"groups": [
+										{
+											"title": "Object literals",
+											"kind": 2097152,
+											"children": [
+												78,
+												72
+											]
+										}
+									],
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 94,
+											"character": 17
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "object"
+									}
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										93,
+										70,
+										83,
+										94,
+										68,
+										69
+									]
+								},
+								{
+									"title": "Object literals",
+									"kind": 2097152,
+									"children": [
+										84,
+										71
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 90,
+									"character": 16
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						},
+						{
+							"id": 95,
+							"name": "customer",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 101,
+									"name": "customer_client_ids",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 129,
+											"character": 25
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 98,
+									"name": "customer_details",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 126,
+											"character": 22
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 97,
+									"name": "customer_display_name",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 125,
+											"character": 27
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 103,
+									"name": "customer_emails",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 131,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 102,
+									"name": "customer_external_id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 130,
+											"character": 26
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 100,
+									"name": "customer_phones",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 128,
+											"character": 21
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 99,
+									"name": "customer_photo",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 127,
+											"character": 20
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								},
+								{
+									"id": 96,
+									"name": "id",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 124,
+											"character": 8
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "null"
+									},
+									"defaultValue": "null"
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										101,
+										98,
+										97,
+										103,
+										102,
+										100,
+										99,
+										96
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 123,
+									"character": 12
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						},
+						{
+							"id": 65,
+							"name": "sender",
+							"kind": 2097152,
+							"kindString": "Object literal",
+							"flags": {
+								"isExported": true
+							},
+							"children": [
+								{
+									"id": 66,
+									"name": "is_bot",
+									"kind": 32,
+									"kindString": "Variable",
+									"flags": {
+										"isExported": true
+									},
+									"sources": [
+										{
+											"fileName": "index.ts",
+											"line": 88,
+											"character": 12
+										}
+									],
+									"type": {
+										"type": "intrinsic",
+										"name": "true"
+									},
+									"defaultValue": "true"
+								}
+							],
+							"groups": [
+								{
+									"title": "Variables",
+									"kind": 32,
+									"children": [
+										66
+									]
+								}
+							],
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 87,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "intrinsic",
+								"name": "object"
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Variables",
+							"kind": 32,
+							"children": [
+								104,
+								63,
+								64
+							]
+						},
+						{
+							"title": "Object literals",
+							"kind": 2097152,
+							"children": [
+								67,
+								95,
+								65
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 84,
+							"character": 14
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "object"
+					}
+				},
+				{
+					"id": 4,
+					"name": "responseData",
+					"kind": 2097152,
+					"kindString": "Object literal",
+					"flags": {
+						"isPrivate": true,
+						"isExported": true
+					},
+					"children": [
+						{
+							"id": 7,
+							"name": "SKILLS",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 16,
+									"character": 10
+								}
+							],
+							"type": {
+								"type": "array",
+								"elementType": {
+									"type": "intrinsic",
+									"name": "undefined"
+								}
+							},
+							"defaultValue": "[]"
+						},
+						{
+							"id": 5,
+							"name": "VARIABLES",
+							"kind": 32,
+							"kindString": "Variable",
+							"flags": {
+								"isExported": true
+							},
+							"sources": [
+								{
+									"fileName": "index.ts",
+									"line": 15,
+									"character": 13
+								}
+							],
+							"type": {
+								"type": "reflection",
+								"declaration": {
+									"id": 6,
+									"name": "__type",
+									"kind": 65536,
+									"kindString": "Type literal",
+									"flags": {
+										"isExported": true
+									}
+								}
+							}
+						}
+					],
+					"groups": [
+						{
+							"title": "Variables",
+							"kind": 32,
+							"children": [
+								7,
+								5
+							]
+						}
+					],
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 14,
+							"character": 22
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "object"
+					}
+				}
+			],
+			"groups": [
+				{
+					"title": "Constructors",
+					"kind": 512,
+					"children": [
+						111
+					]
+				},
+				{
+					"title": "Properties",
+					"kind": 1024,
+					"children": [
+						8,
+						107,
+						109,
+						10,
+						14,
+						105,
+						108,
+						11,
+						13,
+						106,
+						12,
+						16,
+						110,
+						2,
+						18,
+						3,
+						9,
+						17,
+						15,
+						115
+					]
+				},
+				{
+					"title": "Methods",
+					"kind": 2048,
+					"children": [
+						193,
+						189,
+						153,
+						158,
+						182,
+						170,
+						179,
+						174,
+						151,
+						138,
+						126,
+						121,
+						123,
+						142,
+						131,
+						140,
+						160,
+						116,
+						148,
+						163,
+						167,
+						184,
+						128,
+						118,
+						144,
+						134,
+						155,
+						196
+					]
+				},
+				{
+					"title": "Object literals",
+					"kind": 2097152,
+					"children": [
+						19,
+						62,
+						4
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "index.ts",
+					"line": 11,
+					"character": 19
+				}
+			]
+		},
+		{
+			"id": 198,
+			"name": "EVENT_TYPES",
+			"kind": 2097152,
+			"kindString": "Object literal",
+			"flags": {
+				"isExported": true,
+				"isConst": true
+			},
+			"children": [
+				{
+					"id": 199,
+					"name": "in_call_function",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 6,
+							"character": 18
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "\"in_call_function\""
+				},
+				{
+					"id": 200,
+					"name": "incoming_message",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 7,
+							"character": 18
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "\"incoming_message\""
+				},
+				{
+					"id": 201,
+					"name": "webhook",
+					"kind": 32,
+					"kindString": "Variable",
+					"flags": {
+						"isExported": true
+					},
+					"sources": [
+						{
+							"fileName": "index.ts",
+							"line": 8,
+							"character": 9
+						}
+					],
+					"type": {
+						"type": "intrinsic",
+						"name": "string"
+					},
+					"defaultValue": "\"webhook\""
+				}
+			],
+			"groups": [
+				{
+					"title": "Variables",
+					"kind": 32,
+					"children": [
+						199,
+						200,
+						201
+					]
+				}
+			],
+			"sources": [
+				{
+					"fileName": "index.ts",
+					"line": 5,
+					"character": 17
+				}
+			],
+			"type": {
+				"type": "intrinsic",
+				"name": "object"
+			}
+		}
+	],
+	"groups": [
+		{
+			"title": "Classes",
+			"kind": 128,
+			"children": [
+				1
+			]
+		},
+		{
+			"title": "Object literals",
+			"kind": 2097152,
+			"children": [
+				198
+			]
+		}
+	]
+}
