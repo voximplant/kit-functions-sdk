@@ -1,7 +1,6 @@
 {
   "name": "kit-functions-sdk",
-  "inputFiles": ["src/index.ts"],
-  "json": "doc/kit-functions-sdk.json",
+  "json": "doc_internal/json/doc.json",
   "exclude": [
     "**/*.tsx",
     "!src/*.ts",
@@ -10,8 +9,14 @@
     "dist/**/*ts"
   ],
   "mode": "file",
-  "out": "doc",
+  "out": "doc_internal",
   "ignoreCompilerErrors": true,
   "includeDeclarations": true,
-  "excludeExternals": true
+  "excludeExternals": true,
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "target": "ES2018",
+  "experimentalDecorators": true,
+  "module": "commonjs"
 }

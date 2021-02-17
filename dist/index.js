@@ -1,14 +1,8 @@
 "use strict";
 const axios_1 = require("axios");
 const api_1 = require("./api");
-const EVENT_TYPES = {
-    in_call_function: "in_call_function",
-    incoming_message: "incoming_message",
-    webhook: "webhook"
-};
 class VoximplantKit {
     constructor(context, isTest = false) {
-        this.isTest = false;
         this.requestData = {};
         this.responseData = {
             VARIABLES: {},
@@ -20,12 +14,17 @@ class VoximplantKit {
         this.apiUrl = null;
         this.domain = null;
         this.functionId = null;
-        this.eventType = EVENT_TYPES.webhook;
+        this.eventType = "webhook" /* webhook */;
         this.call = null;
         this.variables = {};
         this.headers = {};
         this.skills = [];
         this.priority = 0;
+        // maxSkillLevel:number = 5
+        this.conversationDB = {};
+        this.functionDB = {};
+        this.accountDB = {};
+        this.db = {};
         this.incomingMessage = {
             text: null,
             type: null,
@@ -128,11 +127,6 @@ class VoximplantKit {
             },
             payload: []
         };
-        // maxSkillLevel:number = 5
-        this.conversationDB = {};
-        this.functionDB = {};
-        this.accountDB = {};
-        this.db = {};
         this.isTest = isTest;
         this.http = axios_1.default;
         if (typeof context === 'undefined' || typeof context.request === "undefined") {
@@ -146,7 +140,7 @@ class VoximplantKit {
         // Store request data
         this.requestData = context.request.body;
         // Get event type
-        this.eventType = (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : EVENT_TYPES.webhook;
+        this.eventType = (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : "webhook" /* webhook */;
         // Get access token
         this.accessToken = (typeof context.request.headers["x-kit-access-token"] !== "undefined") ? context.request.headers["x-kit-access-token"] : "";
         // Get api url
@@ -168,7 +162,7 @@ class VoximplantKit {
             SKILLS: []
         };
         this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
-        if (this.eventType === EVENT_TYPES.incoming_message) {
+        if (this.eventType === "incoming_message" /* incoming_message */) {
             this.incomingMessage = this.getIncomingMessage();
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
@@ -179,14 +173,16 @@ class VoximplantKit {
             });
         }
     }
-    // load Databases
+    /**
+     * load Databases
+     */
     async loadDatabases() {
         let _this = this;
         let _DBs = [
             this.loadDB("function_" + this.functionId),
             this.loadDB("accountdb_" + this.domain)
         ];
-        if (this.eventType === EVENT_TYPES.incoming_message) {
+        if (this.eventType === "incoming_message" /* incoming_message */) {
             _DBs.push(this.loadDB("conversation_" + this.incomingMessage.conversation.uuid));
         }
         await axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
@@ -212,14 +208,17 @@ class VoximplantKit {
     getPriority() {
         return this.priority;
     }
-    // Get function response
+    /**
+     * Get function response
+     * @param data
+     */
     getResponseBody(data) {
-        if (this.eventType === EVENT_TYPES.in_call_function)
+        if (this.eventType === "in_call_function" /* in_call_function */)
             return {
                 "VARIABLES": this.variables,
                 "SKILLS": this.skills
             };
-        if (this.eventType === EVENT_TYPES.incoming_message) {
+        if (this.eventType === "incoming_message" /* incoming_message */) {
             const payloadIndex = this.replyMessage.payload.findIndex(item => {
                 return item.type === "cmd" && item.name === "transfer_to_queue";
             });
@@ -235,35 +234,57 @@ class VoximplantKit {
         else
             return data;
     }
-    // Get incoming message
+    /**
+     * Get incoming message
+      */
     getIncomingMessage() {
         return this.requestData;
     }
-    // Set auth token
+    /**
+     * Set auth token
+     * @param token
+     */
     setAccessToken(token) {
         this.accessToken = token;
     }
-    // Get Variable
+    /**
+     * Get Variable
+     * @param name
+     */
     getVariable(name) {
         return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null;
     }
-    // Set variable
+    /**
+     * Set variable
+     * @param name
+     * @param value
+     */
     setVariable(name, value) {
         this.variables[name] = value;
     }
-    // Get all call data
+    /**
+     * Get all call data
+      */
     getCallData() {
         return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null;
     }
-    // Get all variables
+    /**
+     * Get all variables
+      */
     getVariables() {
         return (typeof this.requestData.VARIABLES !== "undefined") ? this.requestData.VARIABLES : {};
     }
-    // Get all skills
+    /**
+     * Get all skills
+     */
     getSkills() {
         return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : [];
     }
-    // Set skill
+    /**
+     * Set skill
+     * @param name
+     * @param level
+     */
     setSkill(name, level) {
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
@@ -276,7 +297,10 @@ class VoximplantKit {
         else
             this.skills[skillIndex].level = level;
     }
-    // Remove skill
+    /**
+     * Remove skill
+     * @param name
+     */
     removeSkill(name) {
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
@@ -285,9 +309,11 @@ class VoximplantKit {
             this.skills.splice(skillIndex, 1);
         }
     }
-    // Finish current request in conversation
+    /**
+     * Finish current request in conversation
+     */
     finishRequest() {
-        if (this.eventType !== EVENT_TYPES.incoming_message)
+        if (this.eventType !== "incoming_message" /* incoming_message */)
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
             return item.type === "cmd" && item.name === "finish_request";
@@ -300,7 +326,9 @@ class VoximplantKit {
         }
         return true;
     }
-    // Cancel finish current request in conversation
+    /**
+     * Cancel finish current request in conversation
+     */
     cancelFinishRequest() {
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
             return item.type === "cmd" && item.name === "finish_request";
@@ -310,9 +338,12 @@ class VoximplantKit {
         }
         return true;
     }
-    // Transfer to queue
+    /**
+     * Transfer to queue
+     * @param queue
+     */
     transferToQueue(queue) {
-        if (this.eventType !== EVENT_TYPES.incoming_message)
+        if (this.eventType !== "incoming_message" /* incoming_message */)
             return false;
         if (typeof queue.queue_id === "undefined")
             queue.queue_id = null;
@@ -336,7 +367,9 @@ class VoximplantKit {
         }
         return true;
     }
-    // Cancel transfer to queue
+    /**
+     * Cancel transfer to queue
+     */
     cancelTransferToQueue() {
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
             return item.type === "cmd" && item.name === "transfer_to_queue";
@@ -366,7 +399,11 @@ class VoximplantKit {
             return {};
         });
     }
-    // Save DB by scope name
+    /**
+     * Save DB by scope name
+     * @param type
+     * @private
+     */
     saveDb(type) {
         let _dbName = null;
         let _dbValue = null;
@@ -378,7 +415,7 @@ class VoximplantKit {
             _dbName = "accountdb_" + this.domain;
             _dbValue = this.accountDB;
         }
-        if (type === "conversation" && this.eventType == EVENT_TYPES.incoming_message) {
+        if (type === "conversation" && this.eventType == "incoming_message" /* incoming_message */) {
             _dbName = "conversation_" + this.incomingMessage.conversation.uuid;
             _dbValue = this.conversationDB;
         }
@@ -386,33 +423,52 @@ class VoximplantKit {
             return false;
         return this.saveDB(_dbName, JSON.stringify(_dbValue));
     }
-    // Get value from DB by key
+    /**
+     * Get value from DB by key
+     * @param key
+     * @param scope
+     */
     dbGet(key, scope = "global") {
         return this.db[scope];
     }
-    // Set value in DB by key
+    /**
+     * Set value in DB by key
+     * @param key
+     * @param value
+     * @param scope
+     */
     dbSet(key, value, scope = "global") {
         this.db[scope][key] = value;
     }
-    // Get all DB scope by name
+    /**
+     * Get all DB scope by name
+     * @param scope
+     */
     dbGetAll(scope = "global") {
         return typeof this.db[scope] !== "undefined" ? this.db[scope] : null;
     }
-    // Commit DB chnges
+    /**
+     * Commit DB changes
+     */
     async dbCommit() {
         let _this = this;
         let _DBs = [
             this.saveDB("function_" + this.functionId, JSON.stringify(this.db.function)),
             this.saveDB("accountdb_" + this.domain, JSON.stringify(this.db.global))
         ];
-        if (this.eventType === EVENT_TYPES.incoming_message) {
+        if (this.eventType === "incoming_message" /* incoming_message */) {
             _DBs.push(this.saveDB("conversation_" + this.incomingMessage.conversation.uuid, JSON.stringify(this.db.conversation)));
         }
         await axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
             console.log("result", func, acc, conv);
         }));
     }
-    // Send SMS message
+    /**
+     * Send SMS message
+     * @param from
+     * @param to
+     * @param message
+     */
     sendSMS(from, to, message) {
         return this.api.request("/v2/phone/sendSms", {
             source: from,
@@ -422,13 +478,20 @@ class VoximplantKit {
             return r.data;
         });
     }
-    // Voximplant Kit API proxy
+    /**
+     * Voximplant Kit API proxy
+     * @param url {string} - Url address
+     * @param data
+     */
     apiProxy(url, data) {
         return this.api.request(url, data).then(r => {
             return r.data;
         });
     }
-    // Add photo
+    /**
+     * Add photo
+     * @param url {string} - Url address
+     */
     addPhoto(url) {
         this.replyMessage.payload.push({
             type: "photo",
@@ -438,7 +501,9 @@ class VoximplantKit {
         });
         return true;
     }
-    // Client version
+    /**
+     * Get client version
+     */
     version() {
         return "0.0.34";
     }

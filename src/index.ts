@@ -2,14 +2,14 @@ import axios, { AxiosInstance } from 'axios'
 import api from "./api"
 import { CallObject, ContextObject, MessageObject, QueueInfo, ResponseDataObject, SkillObject } from "./types";
 
-const EVENT_TYPES = {
-  in_call_function: "in_call_function",
-  incoming_message: "incoming_message",
-  webhook: "webhook"
+const enum EVENT_TYPES  {
+  in_call_function = "in_call_function",
+  incoming_message = "incoming_message",
+  webhook = "webhook"
 }
 
 class VoximplantKit {
-  private isTest: boolean = false
+  private isTest: boolean;
   private requestData: any = {}
   private responseData: ResponseDataObject = {
     VARIABLES: {},
@@ -23,126 +23,129 @@ class VoximplantKit {
   private domain: string = null
   private functionId: number = null
 
-  eventType: string = EVENT_TYPES.webhook
-  call: CallObject = null
-  variables: object = {}
-  headers: object = {}
-  skills: Array<SkillObject> = []
+  eventType: EVENT_TYPES = EVENT_TYPES.webhook
+  call: CallObject = null;
+  variables: object = {};
+  headers: object = {};
+  skills: Array<SkillObject> = [];
   private priority: number = 0;
 
-  incomingMessage: MessageObject = {
-    text: null,
-    type: null,
-    sender: {
-      is_bot: null
-    },
-    conversation: {
-      id: null,
-      uuid: null,
-      client_id: null,
-      custom_data: {
-        conversation_data: {
-          last_message_text: null,
-          last_message_time: null,
-          channel_type: null,
-          last_message_sender_type: null,
-          is_read: null
-        },
-        client_data: {
-          client_id: null,
-          client_avatar: null,
-          client_display_name: null,
-          client_phone: null
-        }
-      },
-      current_status: null,
-      current_request: {
-        id: null,
-        start_sequence: null,
-        end_sequence: null,
-        start_time: null,
-        handling_start_time: null,
-        end_time: null,
-        completed: null,
-        conversation_id: null
-      },
-      channel: null,
-      customer_id: null
-    },
-    customer: {
-      id: null,
-      customer_display_name: null,
-      customer_details: null,
-      customer_photo: null,
-      customer_phones: null,
-      customer_client_ids: null,
-      customer_external_id: null,
-      customer_emails: null
-    },
-    payload: []
-  }
-  replyMessage: MessageObject = {
-    text: null,
-    type: null,
-    sender: {
-      is_bot: true
-    },
-    conversation: {
-      id: null,
-      uuid: null,
-      client_id: null,
-      custom_data: {
-        conversation_data: {
-          last_message_text: null,
-          last_message_time: null,
-          channel_type: null,
-          last_message_sender_type: null,
-          is_read: null
-        },
-        client_data: {
-          client_id: null,
-          client_avatar: null,
-          client_display_name: null,
-          client_phone: null
-        }
-      },
-      current_status: null,
-      current_request: {
-        id: null,
-        start_sequence: null,
-        end_sequence: null,
-        start_time: null,
-        handling_start_time: null,
-        end_time: null,
-        completed: null,
-        conversation_id: null
-      },
-      channel: null,
-      customer_id: null
-    },
-    customer: {
-      id: null,
-      customer_display_name: null,
-      customer_details: null,
-      customer_photo: null,
-      customer_phones: null,
-      customer_client_ids: null,
-      customer_external_id: null,
-      customer_emails: null
-    },
-    payload: []
-  }
+  incomingMessage: MessageObject;
+  replyMessage: MessageObject;
   // maxSkillLevel:number = 5
 
-  private conversationDB: any = {}
-  private functionDB: any = {}
-  private accountDB: any = {}
-  private db: any = {}
+  private conversationDB: any = {};
+  private functionDB: any = {};
+  private accountDB: any = {};
+  private db: any = {};
 
-  api: any
-  http: AxiosInstance
+  api: any;
+  private http: AxiosInstance;
 
   constructor(context: ContextObject, isTest: boolean = false) {
+    this.incomingMessage = {
+      text: null,
+      type: null,
+      sender: {
+        is_bot: null
+      },
+      conversation: {
+        id: null,
+        uuid: null,
+        client_id: null,
+        custom_data: {
+          conversation_data: {
+            last_message_text: null,
+            last_message_time: null,
+            channel_type: null,
+            last_message_sender_type: null,
+            is_read: null
+          },
+          client_data: {
+            client_id: null,
+            client_avatar: null,
+            client_display_name: null,
+            client_phone: null
+          }
+        },
+        current_status: null,
+        current_request: {
+          id: null,
+          start_sequence: null,
+          end_sequence: null,
+          start_time: null,
+          handling_start_time: null,
+          end_time: null,
+          completed: null,
+          conversation_id: null
+        },
+        channel: null,
+        customer_id: null
+      },
+      customer: {
+        id: null,
+        customer_display_name: null,
+        customer_details: null,
+        customer_photo: null,
+        customer_phones: null,
+        customer_client_ids: null,
+        customer_external_id: null,
+        customer_emails: null
+      },
+      payload: []
+    }
+    this.replyMessage = {
+      text: null,
+      type: null,
+      sender: {
+        is_bot: true
+      },
+      conversation: {
+        id: null,
+        uuid: null,
+        client_id: null,
+        custom_data: {
+          conversation_data: {
+            last_message_text: null,
+            last_message_time: null,
+            channel_type: null,
+            last_message_sender_type: null,
+            is_read: null
+          },
+          client_data: {
+            client_id: null,
+            client_avatar: null,
+            client_display_name: null,
+            client_phone: null
+          }
+        },
+        current_status: null,
+        current_request: {
+          id: null,
+          start_sequence: null,
+          end_sequence: null,
+          start_time: null,
+          handling_start_time: null,
+          end_time: null,
+          completed: null,
+          conversation_id: null
+        },
+        channel: null,
+        customer_id: null
+      },
+      customer: {
+        id: null,
+        customer_display_name: null,
+        customer_details: null,
+        customer_photo: null,
+        customer_phones: null,
+        customer_client_ids: null,
+        customer_external_id: null,
+        customer_emails: null
+      },
+      payload: []
+    }
+
     this.isTest = isTest
     this.http = axios
 

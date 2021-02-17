@@ -23,7 +23,7 @@ class api {
             return param;
         });
     }
-    request(requestUrl, data = {}) {
+    request(requestUrl, data) {
         return this.client.request({
             url: requestUrl,
             data: data

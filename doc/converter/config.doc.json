@@ -1,0 +1,13 @@
+{
+  "srcFilePath": "doc_internal/json/doc.json",
+  "buildFilePath": "doc/vox_kit_doc.json",
+  "baseFqdn": "references.kit_functions",
+  "exclude": [
+    "isPrivate"
+  ],
+  "wrapper": {
+    "title": "Kit Functions",
+    "kind": "ref_folder",
+    "description": ""
+  }
+}
