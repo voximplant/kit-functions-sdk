@@ -1,5 +1,9 @@
-import { AxiosInstance } from 'axios';
 import { CallObject, ContextObject, MessageObject, QueueInfo, SkillObject } from "./types";
+declare const enum EVENT_TYPES {
+    in_call_function = "in_call_function",
+    incoming_message = "incoming_message",
+    webhook = "webhook"
+}
 declare class VoximplantKit {
     private isTest;
     private requestData;
@@ -9,7 +13,7 @@ declare class VoximplantKit {
     private apiUrl;
     private domain;
     private functionId;
-    eventType: string;
+    eventType: EVENT_TYPES;
     call: CallObject;
     variables: object;
     headers: object;
@@ -22,36 +26,130 @@ declare class VoximplantKit {
     private accountDB;
     private db;
     api: any;
-    http: AxiosInstance;
+    private http;
     constructor(context: ContextObject, isTest?: boolean);
     static default: typeof VoximplantKit;
+    /**
+     * load Databases
+     */
     loadDatabases(): Promise<void>;
     setPriority(value: number): number;
     getPriority(): number;
+    /**
+     * Get function response
+     * @param data
+     */
     getResponseBody(data: any): any;
+    /**
+     * Get incoming message
+      */
     getIncomingMessage(): MessageObject;
+    /**
+     * Set auth token
+     * @param token
+     */
     setAccessToken(token: any): void;
+    /**
+     * Get Variable
+     * @param name
+     */
     getVariable(name: string): any;
+    /**
+     * Set variable
+     * @param name
+     * @param value
+     */
     setVariable(name: any, value: any): void;
+    /**
+     * Get all call data
+      */
     getCallData(): any;
+    /**
+     * Get all variables
+      */
     getVariables(): any;
+    /**
+     * Get all skills
+     */
     getSkills(): any;
+    /**
+     * Set skill
+     * @param name
+     * @param level
+     */
     setSkill(name: string, level: number): void;
+    /**
+     * Remove skill
+     * @param name
+     */
     removeSkill(name: string): void;
+    /**
+     * Finish current request in conversation
+     */
     finishRequest(): boolean;
+    /**
+     * Cancel finish current request in conversation
+     */
     cancelFinishRequest(): boolean;
+    /**
+     * Transfer to queue
+     */
     transferToQueue(queue: QueueInfo): boolean;
+    /**
+     * Cancel transfer to queue
+     */
     cancelTransferToQueue(): boolean;
     private loadDB;
     private saveDB;
+    /**
+     * Save DB by scope name
+     * @param type
+     * @private
+     */
     private saveDb;
+    /**
+     * Get value from DB by key
+     * @param key
+     * @param scope
+     */
     dbGet(key: string, scope?: string): any;
+    /**
+     * Set value in DB by key
+     * @param key
+     * @param value
+     * @param scope
+     */
     dbSet(key: string, value: any, scope?: string): void;
+    /**
+     * Get all DB scope by name
+     * @param scope
+     */
     dbGetAll(scope?: string): any;
+    /**
+     * Commit DB changes
+     */
     dbCommit(): Promise<void>;
+    /**
+     * Send SMS message
+     * @param from
+     * @param to
+     * @param message
+     */
     sendSMS(from: string, to: string, message: string): any;
+    /**
+     * Voximplant Kit API proxy
+     * @param url {string} - Url address
+     * @param data
+     */
     apiProxy(url: string, data: any): any;
+    /**
+     * Add photo
+     * @param url {string} - Url address
+     */
     addPhoto(url: any): boolean;
+    /**
+     * Get client version
+     */
     version(): string;
 }
 export = VoximplantKit;

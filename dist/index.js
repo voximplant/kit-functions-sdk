@@ -340,7 +340,6 @@ class VoximplantKit {
     }
     /**
      * Transfer to queue
-     * @param queue
      */
     transferToQueue(queue) {
         if (this.eventType !== "incoming_message" /* incoming_message */)

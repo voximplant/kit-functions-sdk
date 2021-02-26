@@ -155,7 +155,7 @@ try {
  * Write new JSON in a file
  */
 try {
-  fs.writeFileSync(config.buildFilePath, JSON.stringify(reshapedDoc[0]));
+  fs.writeFileSync(config.buildFilePath, JSON.stringify(reshapedDoc));
 } catch (e) {
   freakOutAndExit(`Failed to write the JSON to the file ${config.buildFilePath}`, e);
 }
@@ -528,6 +528,9 @@ function parseAndGetType(type, fqdn) {
  * Get link to entity in .md format
  */
 function getLinkToDocEntity(entityName, fqdn) {
+  if(entityName === 'QueueInfo') {
+    console.log(fqdn);
+  }
   let shortEntityName = entityName.includes('.')
     ? entityName.split('.').slice(-1)[0]
     : entityName;
@@ -545,11 +548,13 @@ function getLinkToDocEntity(entityName, fqdn) {
   const fullyNamedEntities = docEntityNames[shortEntityName];
 
   if (fullyNamedEntities) {
-    const fullyNamedEntity = fullyNamedEntities.length === 1
+    let fullyNamedEntity = fullyNamedEntities.length === 1
       ? fullyNamedEntities[0]
       : getClosestEntity(entityName, fqdn, fullyNamedEntities);
-    let link = `[${entityName}](/docs/${config.baseFqdn.split('.').slice(0, -1).join('/')}/${fullyNamedEntity.toLowerCase().replace(/\./g, '/')})`;
 
+    fullyNamedEntity = fullyNamedEntity.replace(/\s/g, '_')
+    console.log(fullyNamedEntity);
+    let link = `[${entityName}](/kit/docs/${config.baseFqdn.split('.').slice(0, -1).join('/')}/${fullyNamedEntity.toLowerCase().replace(/\./g, '/').replace(/\\s/g, '_')})`;
     /**
      * Links to properties, methods and enum members contain a '.'.
      * As this entities don't have a separate web page, we replace the last '/' with an anchor on the parent entity page.

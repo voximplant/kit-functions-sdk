@@ -382,9 +382,8 @@ class VoximplantKit {
 
   /**
    * Transfer to queue
-   * @param queue
    */
-  transferToQueue(queue: QueueInfo) {
+  public transferToQueue(queue: QueueInfo) {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
 
     if (typeof queue.queue_id === "undefined") queue.queue_id = null;

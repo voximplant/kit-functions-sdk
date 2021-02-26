@@ -82,7 +82,6 @@ declare module '@voximplant/kit-functions-sdk' {
             cancelFinishRequest(): boolean;
             /**
                 * Transfer to queue
-                * @param queue
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
