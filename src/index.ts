@@ -297,7 +297,7 @@ class VoximplantKit {
    * @param value {String} - Variable value
    */
   setVariable(name: string, value: string) {
-    this.variables[`${name}`] = `${value}`;
+    this.variables[name] = `${value}`;
   }
 
   /**
