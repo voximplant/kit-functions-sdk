@@ -61,6 +61,11 @@ declare class VoximplantKit {
      */
     setVariable(name: string, value: string): void;
     /**
+     * Delete variable
+     * @param name {String} - Variable name
+     */
+    deleteVariable(name: string): void;
+    /**
      * Get all call data
      */
     getCallData(): any;
@@ -149,10 +154,10 @@ declare class VoximplantKit {
      *
      * ```js
      * module.exports = async function(context, callback) {
-     *  const kit = new VoximplantKit(context);
-     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
-     *  callback(200, kit.getResponseBody());
-     *}
+     *   const kit = new VoximplantKit(context);
+     *   kit.addPhoto('https://your-srite.com/img/some-photo.png');
+     *   callback(200, kit.getResponseBody());
+     * }
      * ```
      * @param url {String} - Url address
      * @returns {Boolean}
