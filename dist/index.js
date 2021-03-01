@@ -1,7 +1,7 @@
 "use strict";
 const axios_1 = require("axios");
 const api_1 = require("./api");
-const MessageObject_1 = require("./MessageObject");
+const Message_1 = require("./Message");
 class VoximplantKit {
     constructor(context, isTest = false) {
         this.requestData = {};
@@ -20,8 +20,8 @@ class VoximplantKit {
         this.functionDB = {};
         this.accountDB = {};
         this.db = {};
-        this.incomingMessage = new MessageObject_1.default();
-        this.replyMessage = new MessageObject_1.default(true);
+        this.incomingMessage = new Message_1.default();
+        this.replyMessage = new Message_1.default(true);
         this.isTest = isTest;
         this.http = axios_1.default;
         if (typeof context === 'undefined' || typeof context.request === "undefined") {
@@ -35,17 +35,17 @@ class VoximplantKit {
         // Store request data
         this.requestData = context.request.body;
         // Get event type
-        this.eventType = (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : "webhook" /* webhook */;
+        this.eventType = this.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
         // Get access token
-        this.accessToken = (typeof context.request.headers["x-kit-access-token"] !== "undefined") ? context.request.headers["x-kit-access-token"] : "";
+        this.accessToken = this.getHeaderValue(context, 'x-kit-access-token', '');
         // Get api url
-        this.apiUrl = (typeof context.request.headers["x-kit-api-url"] !== "undefined") ? context.request.headers["x-kit-api-url"] : "kitapi-eu.voximplant.com";
+        this.apiUrl = this.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
         // Get domain
-        this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : "annaclover";
+        this.domain = this.getHeaderValue(context, 'x-kit-domain', 'annaclover');
         // Get function ID
-        this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : 88;
+        this.functionId = this.getHeaderValue(context, 'x-kit-function-id', 88);
         // Get session access url
-        this.sessionAccessUrl = (typeof context.request.headers["x-kit-session-access-url"] !== "undefined") ? context.request.headers["x-kit-session-access-url"] : "";
+        this.sessionAccessUrl = this.getHeaderValue(context, 'x-kit-session-access-url', '');
         // Store call data
         this.call = this.getCallData();
         // Store variables data
@@ -64,6 +64,9 @@ class VoximplantKit {
             });
         }
     }
+    getHeaderValue(context, name, defaultValue) {
+        return (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : "webhook" /* webhook */;
+    }
     /**
      * load Databases
      */
@@ -77,7 +80,7 @@ class VoximplantKit {
             _DBs.push(this.loadDB("conversation_" + this.incomingMessage.conversation.uuid));
         }
         await axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
-            _this.functionDB = (typeof func !== "undefined" && typeof (func === null || func === void 0 ? void 0 : func.result) !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {};
+            _this.functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {};
             _this.accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {};
             _this.conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {};
             _this.db = {
@@ -397,13 +400,12 @@ class VoximplantKit {
     }
     /**
      * Add photo
-     *
      * ```js
      * module.exports = async function(context, callback) {
-     *   const kit = new VoximplantKit(context);
-     *   kit.addPhoto('https://your-srite.com/img/some-photo.png');
-     *   callback(200, kit.getResponseBody());
-     * }
+     *  const kit = new VoximplantKit(context);
+     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+     *  callback(200, kit.getResponseBody());
+     *}
      * ```
      * @param url {String} - Url address
      * @returns {Boolean}

@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const qs = require("qs");
+/**
+ * @hidden
+ */
 class api {
     constructor(domain, token, isTest, url) {
         this.client = axios_1.default.create({

@@ -1,5 +1,8 @@
-import { MessageConversation, MessageCustomer, MessagePayloadItem, MessageSender } from "./types";
-export default class MessageObject {
+import { MessageConversation, MessageCustomer, MessagePayloadItem, MessageSender, MessageObject } from "./types";
+/**
+ * @hidden
+ */
+export default class Message implements MessageObject {
     text: string;
     type: string;
     sender: MessageSender;

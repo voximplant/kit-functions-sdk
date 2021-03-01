@@ -1,11 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-class MessageObject {
+/**
+ * @hidden
+ */
+class Message {
     constructor(isBot = false) {
         this.text = null;
         this.type = null;
         this.sender = {
-            is_bot: true
+            is_bot: isBot
         };
         this.conversation = {
             id: null,
@@ -53,4 +56,4 @@ class MessageObject {
         this.payload = [];
     }
 }
-exports.default = MessageObject;
+exports.default = Message;

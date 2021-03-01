@@ -1,5 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject } from "./types";
-import MessageObject from "./MessageObject";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance } from "./types";
 declare const enum EVENT_TYPES {
     in_call_function = "in_call_function",
     incoming_message = "incoming_message",
@@ -25,9 +24,10 @@ declare class VoximplantKit {
     private functionDB;
     private accountDB;
     private db;
-    api: any;
+    api: ApiInstance;
     private http;
     constructor(context: ContextObject, isTest?: boolean);
+    private getHeaderValue;
     static default: typeof VoximplantKit;
     /**
      * load Databases
@@ -59,7 +59,7 @@ declare class VoximplantKit {
      * @param name {String} - Variable name
      * @param value {String} - Variable value
      */
-    setVariable(name: string, value: string): void;
+    setVariable(name: any, value: any): void;
     /**
      * Delete variable
      * @param name {String} - Variable name
@@ -142,22 +142,21 @@ declare class VoximplantKit {
      * @param to
      * @param message
      */
-    sendSMS(from: string, to: string, message: string): any;
+    sendSMS(from: string, to: string, message: string): Promise<unknown>;
     /**
      * Voximplant Kit API proxy
      * @param url {string} - Url address
      * @param data
      */
-    apiProxy(url: string, data: any): any;
+    apiProxy(url: string, data: any): Promise<unknown>;
     /**
      * Add photo
-     *
      * ```js
      * module.exports = async function(context, callback) {
-     *   const kit = new VoximplantKit(context);
-     *   kit.addPhoto('https://your-srite.com/img/some-photo.png');
-     *   callback(200, kit.getResponseBody());
-     * }
+     *  const kit = new VoximplantKit(context);
+     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+     *  callback(200, kit.getResponseBody());
+     *}
      * ```
      * @param url {String} - Url address
      * @returns {Boolean}

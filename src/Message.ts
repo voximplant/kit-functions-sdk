@@ -1,6 +1,9 @@
-import { MessageConversation, MessageCustomer, MessagePayloadItem, MessageSender } from "./types";
+import { MessageConversation, MessageCustomer, MessagePayloadItem, MessageSender, MessageObject } from "./types";
 
-export default class MessageObject {
+/**
+ * @hidden
+ */
+export default class Message implements MessageObject {
   text: string;
   type: string;
   sender: MessageSender;
@@ -12,7 +15,7 @@ export default class MessageObject {
     this.text = null;
     this.type = null;
     this.sender = {
-      is_bot: true
+      is_bot: isBot
     };
     this.conversation = {
       id: null,

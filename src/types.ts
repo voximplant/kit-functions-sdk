@@ -1,3 +1,5 @@
+import { AxiosResponse } from "axios";
+
 export interface CallObject {
   id: number
   result_code: number
@@ -28,6 +30,15 @@ export interface SkillObject {
 export interface ResponseDataObject {
   VARIABLES: object
   SKILLS: Array<SkillObject>
+}
+
+export interface MessageObject {
+  text: string;
+  type: string;
+  sender: MessageSender;
+  conversation: MessageConversation;
+  payload: Array<MessagePayloadItem>;
+  customer: MessageCustomer;
 }
 
 export interface MessageConversation {
@@ -77,15 +88,6 @@ export interface ConversationCustomDataConversationDataObject {
 export interface QueueInfo {
   queue_id: number
   queue_name: string
-}
-
-export interface MessageObject {
-  text: string
-  type: string
-  sender: MessageSender
-  conversation: MessageConversation
-  payload: Array<MessagePayloadItem>,
-  customer: MessageCustomer
 }
 
 export interface MessageCustomer {
@@ -150,4 +152,12 @@ export interface MessagePayloadItem {
   keys?: any
   file_name?: string
   file_size?: number
+}
+
+export interface ApiInstance {
+  request<T, R = AxiosResponse<T>> (requestUrl: string, data: any):Promise<R>
+}
+
+export type ObjectType  = {
+  [key: string]: string
 }
