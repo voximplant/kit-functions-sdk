@@ -56,10 +56,10 @@ declare class VoximplantKit {
     getVariable(name: string): any;
     /**
      * Set variable
-     * @param name
-     * @param value
+     * @param name {String}
+     * @param value {String}
      */
-    setVariable(name: any, value: any): void;
+    setVariable(name: string, value: string): void;
     /**
      * Get all call data
      */
@@ -146,6 +146,14 @@ declare class VoximplantKit {
     apiProxy(url: string, data: any): any;
     /**
      * Add photo
+     *
+     * ```js
+     * module.exports = async function(context, callback) {
+     *  const kit = new VoximplantKit(context);
+     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+     *  callback(200, kit.getResponseBody());
+     *}
+     * ```
      * @param url {String} - Url address
      * @returns {Boolean}
      */
