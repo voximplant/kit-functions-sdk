@@ -56,8 +56,8 @@ declare class VoximplantKit {
     getVariable(name: string): any;
     /**
      * Set variable
-     * @param name {String}
-     * @param value {String}
+     * @param name {String} - Variable name
+     * @param value {String} - Variable value
      */
     setVariable(name: string, value: string): void;
     /**

@@ -257,11 +257,11 @@ class VoximplantKit {
     }
     /**
      * Set variable
-     * @param name {String}
-     * @param value {String}
+     * @param name {String} - Variable name
+     * @param value {String} - Variable value
      */
     setVariable(name, value) {
-        this.variables[name] = `${value}`;
+        this.variables[`${name}`] = `${value}`;
     }
     /**
      * Get all call data
