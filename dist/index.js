@@ -186,7 +186,7 @@ class VoximplantKit {
             _DBs.push(this.loadDB("conversation_" + this.incomingMessage.conversation.uuid));
         }
         await axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
-            _this.functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {};
+            _this.functionDB = (typeof func !== "undefined" && typeof (func === null || func === void 0 ? void 0 : func.result) !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {};
             _this.accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {};
             _this.conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {};
             _this.db = {
@@ -228,7 +228,8 @@ class VoximplantKit {
             }
             return {
                 text: this.replyMessage.text,
-                payload: this.replyMessage.payload
+                payload: this.replyMessage.payload,
+                variables: this.variables
             };
         }
         else
@@ -236,7 +237,7 @@ class VoximplantKit {
     }
     /**
      * Get incoming message
-      */
+     */
     getIncomingMessage() {
         return this.requestData;
     }
@@ -264,15 +265,23 @@ class VoximplantKit {
     }
     /**
      * Get all call data
-      */
+     */
     getCallData() {
         return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null;
     }
     /**
      * Get all variables
-      */
+     */
     getVariables() {
-        return (typeof this.requestData.VARIABLES !== "undefined") ? this.requestData.VARIABLES : {};
+        var _a, _b, _c, _d, _e;
+        let variables = {};
+        if (this.eventType === "incoming_message" /* incoming_message */) {
+            variables = ((_d = (_c = (_b = (_a = this.requestData) === null || _a === void 0 ? void 0 : _a.conversation) === null || _b === void 0 ? void 0 : _b.custom_data) === null || _c === void 0 ? void 0 : _c.request_data) === null || _d === void 0 ? void 0 : _d.variables) || {};
+        }
+        else if (this.eventType === "in_call_function" /* in_call_function */) {
+            variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
+        }
+        return variables;
     }
     /**
      * Get all skills
@@ -489,7 +498,8 @@ class VoximplantKit {
     }
     /**
      * Add photo
-     * @param url {string} - Url address
+     * @param url {String} - Url address
+     * @returns {Boolean}
      */
     addPhoto(url) {
         this.replyMessage.payload.push({
@@ -504,7 +514,7 @@ class VoximplantKit {
      * Get client version
      */
     version() {
-        return "0.0.34";
+        return "0.0.35";
     }
 }
 VoximplantKit.default = VoximplantKit;

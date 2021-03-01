@@ -42,7 +42,7 @@ declare class VoximplantKit {
     getResponseBody(data: any): any;
     /**
      * Get incoming message
-      */
+     */
     getIncomingMessage(): MessageObject;
     /**
      * Set auth token
@@ -62,12 +62,14 @@ declare class VoximplantKit {
     setVariable(name: any, value: any): void;
     /**
      * Get all call data
-      */
+     */
     getCallData(): any;
     /**
      * Get all variables
-      */
-    getVariables(): any;
+     */
+    getVariables(): {
+        [key: string]: string;
+    };
     /**
      * Get all skills
      */
@@ -144,9 +146,10 @@ declare class VoximplantKit {
     apiProxy(url: string, data: any): any;
     /**
      * Add photo
-     * @param url {string} - Url address
+     * @param url {String} - Url address
+     * @returns {Boolean}
      */
-    addPhoto(url: any): boolean;
+    addPhoto(url: string): boolean;
     /**
      * Get client version
      */

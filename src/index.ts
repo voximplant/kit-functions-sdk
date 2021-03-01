@@ -2,7 +2,7 @@ import axios, { AxiosInstance } from 'axios'
 import api from "./api"
 import { CallObject, ContextObject, MessageObject, QueueInfo, ResponseDataObject, SkillObject } from "./types";
 
-const enum EVENT_TYPES  {
+const enum EVENT_TYPES {
   in_call_function = "in_call_function",
   incoming_message = "incoming_message",
   webhook = "webhook"
@@ -215,7 +215,7 @@ class VoximplantKit {
     }
 
     await axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
-      _this.functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
+      _this.functionDB = (typeof func !== "undefined" && typeof func?.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
       _this.accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
       _this.conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {}
       _this.db = {
@@ -230,7 +230,7 @@ class VoximplantKit {
     if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
       this.priority = value;
     } else {
-      console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`)
+      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`)
     }
     return this.priority;
   }
@@ -261,7 +261,8 @@ class VoximplantKit {
 
       return {
         text: this.replyMessage.text,
-        payload: this.replyMessage.payload
+        payload: this.replyMessage.payload,
+        variables: this.variables
       }
     } else
       return data
@@ -269,7 +270,7 @@ class VoximplantKit {
 
   /**
    * Get incoming message
-    */
+   */
   getIncomingMessage(): MessageObject {
     return this.requestData
   }
@@ -301,16 +302,24 @@ class VoximplantKit {
 
   /**
    * Get all call data
-    */
+   */
   getCallData() {
     return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null
   }
 
   /**
    * Get all variables
-    */
-  getVariables() {
-    return (typeof this.requestData.VARIABLES !== "undefined") ? this.requestData.VARIABLES : {}
+   */
+  getVariables(): { [key: string]: string } {
+    let variables = {};
+
+    if (this.eventType === EVENT_TYPES.incoming_message) {
+      variables = this.requestData?.conversation?.custom_data?.request_data?.variables || {}
+    } else if (this.eventType === EVENT_TYPES.in_call_function) {
+      variables = this.requestData?.VARIABLES || {};
+    }
+
+    return variables;
   }
 
   /**
@@ -548,9 +557,10 @@ class VoximplantKit {
 
   /**
    * Add photo
-   * @param url {string} - Url address
+   * @param url {String} - Url address
+   * @returns {Boolean}
    */
-  addPhoto(url) {
+  public addPhoto(url: string) {
     this.replyMessage.payload.push({
       type: "photo",
       url: url,
@@ -565,7 +575,7 @@ class VoximplantKit {
    * Get client version
    */
   version() {
-    return "0.0.34"
+    return "0.0.35"
   }
 }
 
