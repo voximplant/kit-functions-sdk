@@ -182,11 +182,19 @@ class VoximplantKit {
 
   /**
    * Set variable
-   * @param name
-   * @param value
+   * @param name {String} - Variable name
+   * @param value {String} - Variable value
    */
   public setVariable(name, value) {
-    this.variables[name] = value
+    this.variables[name] = `${value}`;
+  }
+
+  /**
+   * Delete variable
+   * @param name {String} - Variable name
+   */
+  deleteVariable(name: string) {
+    delete this.variables[name];
   }
 
   /**
@@ -446,6 +454,14 @@ class VoximplantKit {
 
   /**
    * Add photo
+   *
+   * ```js
+   * module.exports = async function(context, callback) {
+   *   const kit = new VoximplantKit(context);
+   *   kit.addPhoto('https://your-srite.com/img/some-photo.png');
+   *   callback(200, kit.getResponseBody());
+   * }
+   * ```
    * @param url {String} - Url address
    * @returns {Boolean}
    */
@@ -463,8 +479,8 @@ class VoximplantKit {
   /**
    * Get client version
    */
-  public version() {
-    return "0.0.35"
+  version() {
+    return "0.0.36"
   }
 }
 
