@@ -1,4 +1,5 @@
-import { CallObject, ContextObject, MessageObject, QueueInfo, SkillObject } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject } from "./types";
+import MessageObject from "./MessageObject";
 declare const enum EVENT_TYPES {
     in_call_function = "in_call_function",
     incoming_message = "incoming_message",
@@ -7,7 +8,6 @@ declare const enum EVENT_TYPES {
 declare class VoximplantKit {
     private isTest;
     private requestData;
-    private responseData;
     private accessToken;
     private sessionAccessUrl;
     private apiUrl;

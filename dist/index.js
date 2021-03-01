@@ -1,14 +1,10 @@
 "use strict";
 const axios_1 = require("axios");
 const api_1 = require("./api");
+const MessageObject_1 = require("./MessageObject");
 class VoximplantKit {
     constructor(context, isTest = false) {
         this.requestData = {};
-        this.responseData = {
-            VARIABLES: {},
-            SKILLS: []
-        };
-        // private responseMessageData:MessageObject = {}
         this.accessToken = null;
         this.sessionAccessUrl = null;
         this.apiUrl = null;
@@ -20,113 +16,12 @@ class VoximplantKit {
         this.headers = {};
         this.skills = [];
         this.priority = 0;
-        // maxSkillLevel:number = 5
         this.conversationDB = {};
         this.functionDB = {};
         this.accountDB = {};
         this.db = {};
-        this.incomingMessage = {
-            text: null,
-            type: null,
-            sender: {
-                is_bot: null
-            },
-            conversation: {
-                id: null,
-                uuid: null,
-                client_id: null,
-                custom_data: {
-                    conversation_data: {
-                        last_message_text: null,
-                        last_message_time: null,
-                        channel_type: null,
-                        last_message_sender_type: null,
-                        is_read: null
-                    },
-                    client_data: {
-                        client_id: null,
-                        client_avatar: null,
-                        client_display_name: null,
-                        client_phone: null
-                    }
-                },
-                current_status: null,
-                current_request: {
-                    id: null,
-                    start_sequence: null,
-                    end_sequence: null,
-                    start_time: null,
-                    handling_start_time: null,
-                    end_time: null,
-                    completed: null,
-                    conversation_id: null
-                },
-                channel: null,
-                customer_id: null
-            },
-            customer: {
-                id: null,
-                customer_display_name: null,
-                customer_details: null,
-                customer_photo: null,
-                customer_phones: null,
-                customer_client_ids: null,
-                customer_external_id: null,
-                customer_emails: null
-            },
-            payload: []
-        };
-        this.replyMessage = {
-            text: null,
-            type: null,
-            sender: {
-                is_bot: true
-            },
-            conversation: {
-                id: null,
-                uuid: null,
-                client_id: null,
-                custom_data: {
-                    conversation_data: {
-                        last_message_text: null,
-                        last_message_time: null,
-                        channel_type: null,
-                        last_message_sender_type: null,
-                        is_read: null
-                    },
-                    client_data: {
-                        client_id: null,
-                        client_avatar: null,
-                        client_display_name: null,
-                        client_phone: null
-                    }
-                },
-                current_status: null,
-                current_request: {
-                    id: null,
-                    start_sequence: null,
-                    end_sequence: null,
-                    start_time: null,
-                    handling_start_time: null,
-                    end_time: null,
-                    completed: null,
-                    conversation_id: null
-                },
-                channel: null,
-                customer_id: null
-            },
-            customer: {
-                id: null,
-                customer_display_name: null,
-                customer_details: null,
-                customer_photo: null,
-                customer_phones: null,
-                customer_client_ids: null,
-                customer_external_id: null,
-                customer_emails: null
-            },
-            payload: []
-        };
+        this.incomingMessage = new MessageObject_1.default();
+        this.replyMessage = new MessageObject_1.default(true);
         this.isTest = isTest;
         this.http = axios_1.default;
         if (typeof context === 'undefined' || typeof context.request === "undefined") {
@@ -157,10 +52,6 @@ class VoximplantKit {
         this.variables = this.getVariables();
         // Store skills data
         this.skills = this.getSkills();
-        this.responseData = {
-            VARIABLES: {},
-            SKILLS: []
-        };
         this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
         if (this.eventType === "incoming_message" /* incoming_message */) {
             this.incomingMessage = this.getIncomingMessage();
@@ -247,6 +138,7 @@ class VoximplantKit {
      */
     setAccessToken(token) {
         this.accessToken = token;
+        this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
     }
     /**
      * Get Variable

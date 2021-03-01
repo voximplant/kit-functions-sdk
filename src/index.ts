@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import api from "./api"
-import { CallObject, ContextObject, MessageObject, QueueInfo, ResponseDataObject, SkillObject } from "./types";
+import { CallObject, ContextObject, QueueInfo, ResponseDataObject, SkillObject } from "./types";
+import MessageObject from "./MessageObject";
 
 const enum EVENT_TYPES {
   in_call_function = "in_call_function",
@@ -11,12 +12,6 @@ const enum EVENT_TYPES {
 class VoximplantKit {
   private isTest: boolean;
   private requestData: any = {}
-  private responseData: ResponseDataObject = {
-    VARIABLES: {},
-    SKILLS: []
-  }
-  // private responseMessageData:MessageObject = {}
-
   private accessToken: string = null
   private sessionAccessUrl: string = null
   private apiUrl: string = null
@@ -32,7 +27,6 @@ class VoximplantKit {
 
   incomingMessage: MessageObject;
   replyMessage: MessageObject;
-  // maxSkillLevel:number = 5
 
   private conversationDB: any = {};
   private functionDB: any = {};
@@ -43,109 +37,8 @@ class VoximplantKit {
   private http: AxiosInstance;
 
   constructor(context: ContextObject, isTest: boolean = false) {
-    this.incomingMessage = {
-      text: null,
-      type: null,
-      sender: {
-        is_bot: null
-      },
-      conversation: {
-        id: null,
-        uuid: null,
-        client_id: null,
-        custom_data: {
-          conversation_data: {
-            last_message_text: null,
-            last_message_time: null,
-            channel_type: null,
-            last_message_sender_type: null,
-            is_read: null
-          },
-          client_data: {
-            client_id: null,
-            client_avatar: null,
-            client_display_name: null,
-            client_phone: null
-          }
-        },
-        current_status: null,
-        current_request: {
-          id: null,
-          start_sequence: null,
-          end_sequence: null,
-          start_time: null,
-          handling_start_time: null,
-          end_time: null,
-          completed: null,
-          conversation_id: null
-        },
-        channel: null,
-        customer_id: null
-      },
-      customer: {
-        id: null,
-        customer_display_name: null,
-        customer_details: null,
-        customer_photo: null,
-        customer_phones: null,
-        customer_client_ids: null,
-        customer_external_id: null,
-        customer_emails: null
-      },
-      payload: []
-    }
-    this.replyMessage = {
-      text: null,
-      type: null,
-      sender: {
-        is_bot: true
-      },
-      conversation: {
-        id: null,
-        uuid: null,
-        client_id: null,
-        custom_data: {
-          conversation_data: {
-            last_message_text: null,
-            last_message_time: null,
-            channel_type: null,
-            last_message_sender_type: null,
-            is_read: null
-          },
-          client_data: {
-            client_id: null,
-            client_avatar: null,
-            client_display_name: null,
-            client_phone: null
-          }
-        },
-        current_status: null,
-        current_request: {
-          id: null,
-          start_sequence: null,
-          end_sequence: null,
-          start_time: null,
-          handling_start_time: null,
-          end_time: null,
-          completed: null,
-          conversation_id: null
-        },
-        channel: null,
-        customer_id: null
-      },
-      customer: {
-        id: null,
-        customer_display_name: null,
-        customer_details: null,
-        customer_photo: null,
-        customer_phones: null,
-        customer_client_ids: null,
-        customer_external_id: null,
-        customer_emails: null
-      },
-      payload: []
-    }
-
+    this.incomingMessage = new MessageObject();
+    this.replyMessage = new MessageObject(true);
     this.isTest = isTest
     this.http = axios
 
@@ -179,11 +72,6 @@ class VoximplantKit {
     // Store skills data
     this.skills = this.getSkills()
 
-    this.responseData = {
-      VARIABLES: {},
-      SKILLS: []
-    }
-
     this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -203,7 +91,7 @@ class VoximplantKit {
   /**
    * load Databases
    */
-  async loadDatabases() {
+  public async loadDatabases() {
     let _this = this
     let _DBs = [
       this.loadDB("function_" + this.functionId),
@@ -226,7 +114,7 @@ class VoximplantKit {
     }))
   }
 
-  setPriority(value: number) {
+  public setPriority(value: number) {
     if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
       this.priority = value;
     } else {
@@ -235,7 +123,7 @@ class VoximplantKit {
     return this.priority;
   }
 
-  getPriority() {
+  public getPriority() {
     return this.priority;
   }
 
@@ -243,7 +131,7 @@ class VoximplantKit {
    * Get function response
    * @param data
    */
-  getResponseBody(data: any) {
+  public getResponseBody(data: any) {
     if (this.eventType === EVENT_TYPES.in_call_function)
       return {
         "VARIABLES": this.variables,
@@ -271,7 +159,7 @@ class VoximplantKit {
   /**
    * Get incoming message
    */
-  getIncomingMessage(): MessageObject {
+  public getIncomingMessage(): MessageObject {
     return this.requestData
   }
 
@@ -279,15 +167,16 @@ class VoximplantKit {
    * Set auth token
    * @param token
    */
-  setAccessToken(token) {
-    this.accessToken = token
+  public setAccessToken(token) {
+    this.accessToken = token;
+    this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
   }
 
   /**
    * Get Variable
    * @param name
    */
-  getVariable(name: string) {
+  public getVariable(name: string) {
     return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
@@ -296,21 +185,21 @@ class VoximplantKit {
    * @param name
    * @param value
    */
-  setVariable(name, value) {
+  public setVariable(name, value) {
     this.variables[name] = value
   }
 
   /**
    * Get all call data
    */
-  getCallData() {
+  public getCallData() {
     return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null
   }
 
   /**
    * Get all variables
    */
-  getVariables(): { [key: string]: string } {
+  public getVariables(): { [key: string]: string } {
     let variables = {};
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -325,7 +214,7 @@ class VoximplantKit {
   /**
    * Get all skills
    */
-  getSkills() {
+  public getSkills() {
     return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : []
   }
 
@@ -334,7 +223,7 @@ class VoximplantKit {
    * @param name
    * @param level
    */
-  setSkill(name: string, level: number) {
+  public setSkill(name: string, level: number) {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
@@ -349,7 +238,7 @@ class VoximplantKit {
    * Remove skill
    * @param name
    */
-  removeSkill(name: string) {
+  public removeSkill(name: string) {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
@@ -361,7 +250,7 @@ class VoximplantKit {
   /**
    * Finish current request in conversation
    */
-  finishRequest() {
+  public finishRequest() {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
@@ -378,7 +267,7 @@ class VoximplantKit {
   /**
    * Cancel finish current request in conversation
    */
-  cancelFinishRequest() {
+  public cancelFinishRequest() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
     })
@@ -420,7 +309,7 @@ class VoximplantKit {
   /**
    * Cancel transfer to queue
    */
-  cancelTransferToQueue() {
+  public cancelTransferToQueue() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "transfer_to_queue"
     })
@@ -487,7 +376,7 @@ class VoximplantKit {
    * @param key
    * @param scope
    */
-  dbGet(key: string, scope: string = "global"): any {
+  public dbGet(key: string, scope: string = "global"): any {
     return this.db[scope]
   }
 
@@ -497,7 +386,7 @@ class VoximplantKit {
    * @param value
    * @param scope
    */
-  dbSet(key: string, value: any, scope: string = "global"): void {
+  public dbSet(key: string, value: any, scope: string = "global"): void {
     this.db[scope][key] = value
   }
 
@@ -505,14 +394,14 @@ class VoximplantKit {
    * Get all DB scope by name
    * @param scope
    */
-  dbGetAll(scope: string = "global") {
+  public dbGetAll(scope: string = "global") {
     return typeof this.db[scope] !== "undefined" ? this.db[scope] : null
   }
 
   /**
    * Commit DB changes
    */
-  async dbCommit() {
+  public async dbCommit() {
     let _this = this
     let _DBs = [
       this.saveDB("function_" + this.functionId, JSON.stringify(this.db.function)),
@@ -534,7 +423,7 @@ class VoximplantKit {
    * @param to
    * @param message
    */
-  sendSMS(from: string, to: string, message: string) {
+  public sendSMS(from: string, to: string, message: string) {
     return this.api.request("/v2/phone/sendSms", {
       source: from,
       destination: to,
@@ -549,7 +438,7 @@ class VoximplantKit {
    * @param url {string} - Url address
    * @param data
    */
-  apiProxy(url: string, data: any) {
+  public apiProxy(url: string, data: any) {
     return this.api.request(url, data).then(r => {
       return r.data
     })
@@ -574,7 +463,7 @@ class VoximplantKit {
   /**
    * Get client version
    */
-  version() {
+  public version() {
     return "0.0.35"
   }
 }
