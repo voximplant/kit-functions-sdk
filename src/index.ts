@@ -24,11 +24,11 @@ class VoximplantKit {
   private functionId: number = null
 
   eventType: EVENT_TYPES = EVENT_TYPES.webhook
-  call: CallObject = null;
-  variables: object = {};
-  headers: object = {};
-  skills: Array<SkillObject> = [];
+  private call: CallObject = null;
+  private variables: object = {};
+  private skills: Array<SkillObject> = [];
   private priority: number = 0;
+  private HEADERS = {};
 
   incomingMessage: MessageObject;
   replyMessage: MessageObject;
@@ -39,7 +39,7 @@ class VoximplantKit {
   private accountDB: any = {};
   private db: any = {};
 
-  api: any;
+  private api: any;
   private http: AxiosInstance;
 
   constructor(context: ContextObject, isTest: boolean = false) {
@@ -163,13 +163,13 @@ class VoximplantKit {
     // Get event type
     this.eventType = (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : EVENT_TYPES.webhook
     // Get access token
-    this.accessToken = (typeof context.request.headers["x-kit-access-token"] !== "undefined") ? context.request.headers["x-kit-access-token"] : ""
+    this.accessToken = (typeof context.request.headers["x-kit-access-token"] !== "undefined") ? context.request.headers["x-kit-access-token"] :""
     // Get api url
     this.apiUrl = (typeof context.request.headers["x-kit-api-url"] !== "undefined") ? context.request.headers["x-kit-api-url"] : "kitapi-eu.voximplant.com"
     // Get domain
-    this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : "annaclover"
+    this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : ""
     // Get function ID
-    this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : 88
+    this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : ""
     // Get session access url
     this.sessionAccessUrl = (typeof context.request.headers["x-kit-session-access-url"] !== "undefined") ? context.request.headers["x-kit-session-access-url"] : ""
     // Store call data
@@ -183,6 +183,8 @@ class VoximplantKit {
       VARIABLES: {},
       SKILLS: []
     }
+    // Store Call headers
+    this.HEADERS = this.requestData?.HEADERS || {};
 
     this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
 
@@ -224,6 +226,12 @@ class VoximplantKit {
         conversation: _this.conversationDB
       }
     }))
+  }
+
+  getCallHeaders() {
+    if (this.eventType !== EVENT_TYPES.in_call_function) return {};
+
+    return Object.assign({}, this.HEADERS);
   }
 
   setPriority(value: number) {
@@ -591,7 +599,7 @@ class VoximplantKit {
    * Get client version
    */
   version() {
-    return "0.0.36"
+    return "0.0.37"
   }
 }
 

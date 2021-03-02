@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, MessageObject, QueueInfo, SkillObject } from "./types";
+import { ContextObject, MessageObject, QueueInfo } from "./types";
 declare const enum EVENT_TYPES {
     in_call_function = "in_call_function",
     incoming_message = "incoming_message",
@@ -14,18 +14,18 @@ declare class VoximplantKit {
     private domain;
     private functionId;
     eventType: EVENT_TYPES;
-    call: CallObject;
-    variables: object;
-    headers: object;
-    skills: Array<SkillObject>;
+    private call;
+    private variables;
+    private skills;
     private priority;
+    private HEADERS;
     incomingMessage: MessageObject;
     replyMessage: MessageObject;
     private conversationDB;
     private functionDB;
     private accountDB;
     private db;
-    api: any;
+    private api;
     private http;
     constructor(context: ContextObject, isTest?: boolean);
     static default: typeof VoximplantKit;
@@ -33,6 +33,7 @@ declare class VoximplantKit {
      * load Databases
      */
     loadDatabases(): Promise<void>;
+    getCallHeaders(): {};
     setPriority(value: number): number;
     getPriority(): number;
     /**

@@ -3,6 +3,7 @@ const axios_1 = require("axios");
 const api_1 = require("./api");
 class VoximplantKit {
     constructor(context, isTest = false) {
+        var _a;
         this.requestData = {};
         this.responseData = {
             VARIABLES: {},
@@ -17,9 +18,9 @@ class VoximplantKit {
         this.eventType = "webhook" /* webhook */;
         this.call = null;
         this.variables = {};
-        this.headers = {};
         this.skills = [];
         this.priority = 0;
+        this.HEADERS = {};
         // maxSkillLevel:number = 5
         this.conversationDB = {};
         this.functionDB = {};
@@ -146,9 +147,9 @@ class VoximplantKit {
         // Get api url
         this.apiUrl = (typeof context.request.headers["x-kit-api-url"] !== "undefined") ? context.request.headers["x-kit-api-url"] : "kitapi-eu.voximplant.com";
         // Get domain
-        this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : "annaclover";
+        this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : "";
         // Get function ID
-        this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : 88;
+        this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : "";
         // Get session access url
         this.sessionAccessUrl = (typeof context.request.headers["x-kit-session-access-url"] !== "undefined") ? context.request.headers["x-kit-session-access-url"] : "";
         // Store call data
@@ -161,6 +162,8 @@ class VoximplantKit {
             VARIABLES: {},
             SKILLS: []
         };
+        // Store Call headers
+        this.HEADERS = ((_a = this.requestData) === null || _a === void 0 ? void 0 : _a.HEADERS) || {};
         this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
         if (this.eventType === "incoming_message" /* incoming_message */) {
             this.incomingMessage = this.getIncomingMessage();
@@ -195,6 +198,11 @@ class VoximplantKit {
                 conversation: _this.conversationDB
             };
         }));
+    }
+    getCallHeaders() {
+        if (this.eventType !== "in_call_function" /* in_call_function */)
+            return {};
+        return Object.assign({}, this.HEADERS);
     }
     setPriority(value) {
         if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
@@ -529,7 +537,7 @@ class VoximplantKit {
      * Get client version
      */
     version() {
-        return "0.0.36";
+        return "0.0.37";
     }
 }
 VoximplantKit.default = VoximplantKit;
