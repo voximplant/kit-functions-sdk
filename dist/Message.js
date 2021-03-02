@@ -5,6 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 class Message {
     constructor(isBot = false) {
+        this.id = null;
         this.text = null;
         this.type = null;
         this.sender = {
@@ -27,6 +28,17 @@ class Message {
                     client_avatar: null,
                     client_display_name: null,
                     client_phone: null
+                },
+                request_data: {
+                    id: null,
+                    conversation_id: null,
+                    start_sequence: null,
+                    end_sequence: null,
+                    start_time: null,
+                    handling_start_time: null,
+                    end_time: null,
+                    completed: null,
+                    variables: null
                 }
             },
             current_status: null,
@@ -54,6 +66,7 @@ class Message {
             customer_emails: null
         };
         this.payload = [];
+        this.HasMedia = null;
     }
 }
 exports.default = Message;

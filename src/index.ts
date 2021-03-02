@@ -1,6 +1,15 @@
 import axios, { AxiosInstance } from 'axios'
-import api from "./api"
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance, ObjectType } from "./types";
+import Api from "./Api"
+import DB from "./DB"
+import {
+  CallObject,
+  ContextObject,
+  QueueInfo,
+  SkillObject,
+  MessageObject,
+  ApiInstance,
+  DataBaseType
+} from "./types";
 import Message from "./Message";
 
 const enum EVENT_TYPES {
@@ -17,24 +26,18 @@ class VoximplantKit {
   private apiUrl: string = null
   private domain: string = null
   private functionId: number = null
+  private DB: DB;
+  private priority: number = 0;
+  private http: AxiosInstance;
 
   eventType: EVENT_TYPES = EVENT_TYPES.webhook
   call: CallObject = null;
   variables: object = {};
   headers: object = {};
   skills: Array<SkillObject> = [];
-  private priority: number = 0;
-
   incomingMessage: MessageObject;
   replyMessage: MessageObject;
-
-  private conversationDB: any = {};
-  private functionDB: any = {};
-  private accountDB: any = {};
-  private db: any = {};
-
   api: ApiInstance;
-  private http: AxiosInstance;
 
   constructor(context: ContextObject, isTest: boolean = false) {
     this.incomingMessage = new Message();
@@ -72,7 +75,8 @@ class VoximplantKit {
     // Store skills data
     this.skills = this.getSkills()
 
-    this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.DB = new DB(this.api);
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
       this.incomingMessage = this.getIncomingMessage()
@@ -96,39 +100,16 @@ class VoximplantKit {
    * load Databases
    */
   public async loadDatabases() {
-    let _this = this
-    let _DBs = [
-      this.loadDB("function_" + this.functionId),
-      this.loadDB("accountdb_" + this.domain)
+    const _DBs = [
+      this.DB.getDB("function_" + this.functionId),
+      this.DB.getDB("accountdb_" + this.domain)
     ];
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
-      _DBs.push(this.loadDB("conversation_" + this.incomingMessage.conversation.uuid))
+      _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
     }
 
-    await axios.all(_DBs).then(axios.spread((func: ObjectType, acc: ObjectType, conv?: ObjectType) => {
-      _this.functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
-      _this.accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
-      _this.conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {}
-      _this.db = {
-        function: _this.functionDB,
-        global: _this.accountDB,
-        conversation: _this.conversationDB
-      }
-    }))
-  }
-
-  public setPriority(value: number) {
-    if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
-      this.priority = value;
-    } else {
-      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`)
-    }
-    return this.priority;
-  }
-
-  public getPriority() {
-    return this.priority;
+    await this.DB.getAllDB(_DBs);
   }
 
   /**
@@ -141,6 +122,7 @@ class VoximplantKit {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
+
     if (this.eventType === EVENT_TYPES.incoming_message) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
@@ -173,7 +155,7 @@ class VoximplantKit {
    */
   public setAccessToken(token) {
     this.accessToken = token;
-    this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl)
   }
 
   /**
@@ -259,6 +241,19 @@ class VoximplantKit {
     }
   }
 
+  public setPriority(value: number) {
+    if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
+      this.priority = value;
+    } else {
+      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`)
+    }
+    return this.priority;
+  }
+
+  public getPriority() {
+    return this.priority;
+  }
+
   /**
    * Finish current request in conversation
    */
@@ -332,55 +327,30 @@ class VoximplantKit {
     return true
   }
 
-  private loadDB(db_name: string) {
-    return this.api.request("/v2/kv/get", {
-      key: db_name
-    }).then((response) => {
-      return response.data
-    }).catch(e => {
-      return {}
-    })
-  }
-
-  private saveDB(db_name: string, value: string) {
-    return this.api.request("/v2/kv/put", {
-      key: db_name,
-      value: value,
-      ttl: -1
-    }).then((response) => {
-      return response.data
-    }).catch(e => {
-      return {}
-    })
-  }
-
   /**
    * Save DB by scope name
    * @param type
    * @private
    */
-  private saveDb(type: string) {
-    let _dbName = null
-    let _dbValue = null
+  private saveDb(type: DataBaseType) {
+    let _dbName = null;
+
 
     if (type === "function") {
       _dbName = "function_" + this.functionId
-      _dbValue = this.functionDB
     }
 
-    if (type === "account") {
+    if (type === "global") {
       _dbName = "accountdb_" + this.domain
-      _dbValue = this.accountDB
     }
 
     if (type === "conversation" && this.eventType == EVENT_TYPES.incoming_message) {
       _dbName = "conversation_" + this.incomingMessage.conversation.uuid
-      _dbValue = this.conversationDB
     }
 
     if (_dbName === null) return false
 
-    return this.saveDB(_dbName, JSON.stringify(_dbValue))
+    return this.DB.putDB(_dbName, type)
   }
 
   /**
@@ -388,45 +358,42 @@ class VoximplantKit {
    * @param key
    * @param scope
    */
-  public dbGet(key: string, scope: string = "global"): any {
-    return this.db[scope]
+  public dbGet(key: string, scope: DataBaseType = "global"): any {
+    return this.DB.getScopeValue(key, scope);
   }
 
   /**
    * Set value in DB by key
    * @param key
    * @param value
-   * @param scope
+   * @param scope {DataBaseType}
    */
-  public dbSet(key: string, value: any, scope: string = "global"): void {
-    this.db[scope][key] = value
+  public dbSet(key: string, value: any, scope: DataBaseType = "global"): void {
+    this.DB.setScopeValue(key, value, scope);
   }
 
   /**
    * Get all DB scope by name
    * @param scope
    */
-  public dbGetAll(scope: string = "global") {
-    return typeof this.db[scope] !== "undefined" ? this.db[scope] : null
+  public dbGetAll(scope: DataBaseType = "global") {
+    return this.DB.getScopeAllValues(scope);
   }
 
   /**
    * Commit DB changes
    */
   public async dbCommit() {
-    let _this = this
-    let _DBs = [
-      this.saveDB("function_" + this.functionId, JSON.stringify(this.db.function)),
-      this.saveDB("accountdb_" + this.domain, JSON.stringify(this.db.global))
+    const _DBs = [
+      this.DB.putDB("function_" + this.functionId, 'function'),
+      this.DB.putDB("accountdb_" + this.domain, 'global')
     ];
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
-      _DBs.push(this.saveDB("conversation_" + this.incomingMessage.conversation.uuid, JSON.stringify(this.db.conversation)))
+      _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
     }
 
-    await axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
-      console.log("result", func, acc, conv)
-    }))
+    this.DB.putAllDB(_DBs);
   }
 
   /**
@@ -482,7 +449,7 @@ class VoximplantKit {
   /**
    * Get client version
    */
-  version() {
+  public version() {
     return "0.0.36"
   }
 }

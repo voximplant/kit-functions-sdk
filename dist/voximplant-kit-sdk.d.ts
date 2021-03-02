@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance, DataBaseType } from "@voximplant/kit-functions-sdk/types";
     const enum EVENT_TYPES {
             in_call_function = "in_call_function",
             incoming_message = "incoming_message",
@@ -24,8 +24,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * load Databases
                 */
             loadDatabases(): Promise<void>;
-            setPriority(value: number): number;
-            getPriority(): number;
             /**
                 * Get function response
                 * @param data
@@ -81,6 +79,8 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @param name
                 */
             removeSkill(name: string): void;
+            setPriority(value: number): number;
+            getPriority(): number;
             /**
                 * Finish current request in conversation
                 */
@@ -107,14 +107,14 @@ declare module '@voximplant/kit-functions-sdk' {
                 * Set value in DB by key
                 * @param key
                 * @param value
-                * @param scope
+                * @param scope {DataBaseType}
                 */
-            dbSet(key: string, value: any, scope?: string): void;
+            dbSet(key: string, value: any, scope?: DataBaseType): void;
             /**
                 * Get all DB scope by name
                 * @param scope
                 */
-            dbGetAll(scope?: string): any;
+            dbGetAll(scope?: DataBaseType): any;
             /**
                 * Commit DB changes
                 */
@@ -171,24 +171,35 @@ declare module '@voximplant/kit-functions-sdk/types' {
         request: RequestObject;
     }
     export interface RequestObject {
-        body: object;
+        body: RequestObjectCallBody | MessageObject | {};
         headers: object;
+    }
+    export interface RequestObjectCallBody {
+        CALL: {
+            phone_a: string;
+            phone_b: string;
+            record_url: string;
+            attempt_num: number;
+            session_id: number;
+            id: number;
+            result_code: number;
+        };
+        SKILLS: [];
+        VARIABLES: ObjectType;
     }
     export interface SkillObject {
         skill_name: string;
         level: number;
     }
-    export interface ResponseDataObject {
-        VARIABLES: object;
-        SKILLS: Array<SkillObject>;
-    }
     export interface MessageObject {
+        id: number;
         text: string;
         type: string;
         sender: MessageSender;
         conversation: MessageConversation;
         payload: Array<MessagePayloadItem>;
         customer: MessageCustomer;
+        HasMedia: boolean;
     }
     export interface MessageConversation {
         id: number;
@@ -204,7 +215,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
         id: number;
         channel_uuid: string;
         account: object;
-        channel_type: string;
+        channel_type: AgentChannelType;
         channel_settings: object;
         processing_method: string;
         processing_queue: object;
@@ -215,6 +226,21 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export interface ConversationCustomDataObject {
         client_data: ConversationCustomDataClientDataObject;
         conversation_data: ConversationCustomDataConversationDataObject;
+        request_data: ConversationCustomDataRequestData;
+        customer_data?: {
+            id: number;
+        };
+    }
+    export interface ConversationCustomDataRequestData {
+        id: number;
+        conversation_id: number;
+        start_sequence: number;
+        end_sequence: any;
+        start_time: number;
+        handling_start_time: number;
+        end_time: number;
+        completed: boolean;
+        variables: ObjectType;
     }
     export interface ConversationCustomDataClientDataObject {
         client_id: string;
@@ -247,14 +273,6 @@ declare module '@voximplant/kit-functions-sdk/types' {
         client_id: string;
         client_type: string;
     }
-    export interface IncomingMessageObject {
-        text: string;
-        type: string;
-        conversation_uuid: string;
-        client_data: ConversationCustomDataClientDataObject;
-        conversation_data: ConversationCustomDataConversationDataObject;
-        current_request: IncomingRequestObject;
-    }
     export interface IncomingRequestObject {
         id: number;
         conversation_id: number;
@@ -264,12 +282,6 @@ declare module '@voximplant/kit-functions-sdk/types' {
         handling_start_time: number;
         end_time: number;
         completed: boolean;
-    }
-    export interface MessageSenderObject {
-        client_id: string;
-        client_phone: string;
-        client_avatar: string;
-        client_display_name: string;
     }
     export interface MessageSender {
         is_bot: boolean;
@@ -290,10 +302,17 @@ declare module '@voximplant/kit-functions-sdk/types' {
         file_name?: string;
         file_size?: number;
     }
+    export interface DataBase {
+        function: ObjectType;
+        global: ObjectType;
+        conversation: ObjectType;
+    }
+    export type DataBaseType = 'function' | 'global' | 'conversation';
+    export type AgentChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
     export interface ApiInstance {
         request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
     }
-    export type ObjectLiteral = {
+    export type ObjectType = {
         [key: string]: string;
     };
 }

@@ -5,7 +5,7 @@ const qs = require("qs");
 /**
  * @hidden
  */
-class api {
+class Api {
     constructor(domain, token, isTest, url) {
         this.client = axios_1.default.create({
             baseURL: isTest ? "https://voximplant.xyz/api" : `https://${url}/api`,
@@ -33,4 +33,4 @@ class api {
         });
     }
 }
-exports.default = api;
+exports.default = Api;

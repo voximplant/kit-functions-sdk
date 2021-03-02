@@ -1,6 +1,6 @@
 "use strict";
 const axios_1 = require("axios");
-const api_1 = require("./api");
+const Api_1 = require("./Api");
 const Message_1 = require("./Message");
 class VoximplantKit {
     constructor(context, isTest = false) {
@@ -10,16 +10,16 @@ class VoximplantKit {
         this.apiUrl = null;
         this.domain = null;
         this.functionId = null;
+        this.conversationDB = {};
+        this.functionDB = {};
+        this.accountDB = {};
+        this.db = {};
+        this.priority = 0;
         this.eventType = "webhook" /* webhook */;
         this.call = null;
         this.variables = {};
         this.headers = {};
         this.skills = [];
-        this.priority = 0;
-        this.conversationDB = {};
-        this.functionDB = {};
-        this.accountDB = {};
-        this.db = {};
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.isTest = isTest;
@@ -35,24 +35,24 @@ class VoximplantKit {
         // Store request data
         this.requestData = context.request.body;
         // Get event type
-        this.eventType = this.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
+        this.eventType = VoximplantKit.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
         // Get access token
-        this.accessToken = this.getHeaderValue(context, 'x-kit-access-token', '');
+        this.accessToken = VoximplantKit.getHeaderValue(context, 'x-kit-access-token', '');
         // Get api url
-        this.apiUrl = this.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
+        this.apiUrl = VoximplantKit.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
         // Get domain
-        this.domain = this.getHeaderValue(context, 'x-kit-domain', 'annaclover');
+        this.domain = VoximplantKit.getHeaderValue(context, 'x-kit-domain', 'annaclover');
         // Get function ID
-        this.functionId = this.getHeaderValue(context, 'x-kit-function-id', 88);
+        this.functionId = VoximplantKit.getHeaderValue(context, 'x-kit-function-id', 88);
         // Get session access url
-        this.sessionAccessUrl = this.getHeaderValue(context, 'x-kit-session-access-url', '');
+        this.sessionAccessUrl = VoximplantKit.getHeaderValue(context, 'x-kit-session-access-url', '');
         // Store call data
         this.call = this.getCallData();
         // Store variables data
         this.variables = this.getVariables();
         // Store skills data
         this.skills = this.getSkills();
-        this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
         if (this.eventType === "incoming_message" /* incoming_message */) {
             this.incomingMessage = this.getIncomingMessage();
             this.replyMessage.type = this.requestData.type;
@@ -64,8 +64,8 @@ class VoximplantKit {
             });
         }
     }
-    getHeaderValue(context, name, defaultValue) {
-        return (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : "webhook" /* webhook */;
+    static getHeaderValue(context, name, defaultValue) {
+        return (typeof context.request.headers[name] !== "undefined") ? context.request.headers[name] : defaultValue;
     }
     /**
      * load Databases
@@ -89,18 +89,6 @@ class VoximplantKit {
                 conversation: _this.conversationDB
             };
         }));
-    }
-    setPriority(value) {
-        if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
-            this.priority = value;
-        }
-        else {
-            console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
-        }
-        return this.priority;
-    }
-    getPriority() {
-        return this.priority;
     }
     /**
      * Get function response
@@ -141,7 +129,7 @@ class VoximplantKit {
      */
     setAccessToken(token) {
         this.accessToken = token;
-        this.api = new api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
     }
     /**
      * Get Variable
@@ -219,6 +207,18 @@ class VoximplantKit {
         if (skillIndex > -1) {
             this.skills.splice(skillIndex, 1);
         }
+    }
+    setPriority(value) {
+        if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
+            this.priority = value;
+        }
+        else {
+            console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
+        }
+        return this.priority;
+    }
+    getPriority() {
+        return this.priority;
     }
     /**
      * Finish current request in conversation
@@ -345,7 +345,7 @@ class VoximplantKit {
      * Set value in DB by key
      * @param key
      * @param value
-     * @param scope
+     * @param scope {DataBaseType}
      */
     dbSet(key, value, scope = "global") {
         this.db[scope][key] = value;
@@ -361,7 +361,6 @@ class VoximplantKit {
      * Commit DB changes
      */
     async dbCommit() {
-        let _this = this;
         let _DBs = [
             this.saveDB("function_" + this.functionId, JSON.stringify(this.db.function)),
             this.saveDB("accountdb_" + this.domain, JSON.stringify(this.db.global))

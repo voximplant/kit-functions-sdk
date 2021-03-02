@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance, DataBaseType } from "./types";
 declare const enum EVENT_TYPES {
     in_call_function = "in_call_function",
     incoming_message = "incoming_message",
@@ -12,29 +12,27 @@ declare class VoximplantKit {
     private apiUrl;
     private domain;
     private functionId;
+    private conversationDB;
+    private functionDB;
+    private accountDB;
+    private db;
+    private priority;
+    private http;
     eventType: EVENT_TYPES;
     call: CallObject;
     variables: object;
     headers: object;
     skills: Array<SkillObject>;
-    private priority;
     incomingMessage: MessageObject;
     replyMessage: MessageObject;
-    private conversationDB;
-    private functionDB;
-    private accountDB;
-    private db;
     api: ApiInstance;
-    private http;
     constructor(context: ContextObject, isTest?: boolean);
-    private getHeaderValue;
+    private static getHeaderValue;
     static default: typeof VoximplantKit;
     /**
      * load Databases
      */
     loadDatabases(): Promise<void>;
-    setPriority(value: number): number;
-    getPriority(): number;
     /**
      * Get function response
      * @param data
@@ -90,6 +88,8 @@ declare class VoximplantKit {
      * @param name
      */
     removeSkill(name: string): void;
+    setPriority(value: number): number;
+    getPriority(): number;
     /**
      * Finish current request in conversation
      */
@@ -124,14 +124,14 @@ declare class VoximplantKit {
      * Set value in DB by key
      * @param key
      * @param value
-     * @param scope
+     * @param scope {DataBaseType}
      */
-    dbSet(key: string, value: any, scope?: string): void;
+    dbSet(key: string, value: any, scope?: DataBaseType): void;
     /**
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: string): any;
+    dbGetAll(scope?: DataBaseType): any;
     /**
      * Commit DB changes
      */
