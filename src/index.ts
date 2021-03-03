@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import Api from "./Api"
+import Balab from "./Api"
 import DB from "./DB"
 import {
   CallObject,
@@ -76,7 +76,7 @@ class VoximplantKit {
     this.skills = this.getSkills()
     // Store Call headers
     this.callHeaders = this.getCallHeaders();
-    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
     this.DB = new DB(this.api);
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -153,7 +153,7 @@ class VoximplantKit {
   public setAccessToken(token: string) {
     // TODO why use this method?
     this.accessToken = token;
-    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl)
   }
 
   /**

@@ -6,7 +6,7 @@ import { ApiInstance } from "./types";
 /**
  * @hidden
  */
-export default class Api implements ApiInstance{
+export default class Balab implements ApiInstance{
     private client:AxiosInstance;
 
     constructor(domain:string, token:string, isTest:boolean, url: string) {
