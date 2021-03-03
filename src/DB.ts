@@ -67,12 +67,14 @@ export default class DB {
     }))
   }
 
-  public getScopeValue(key: string, scope: DataBaseType = "global"): string {
-    return this.scope[scope][key]
+  public getScopeValue(key: string, scope: DataBaseType = "global"): string | null {
+    return this.scope?.[scope]?.[key] || null;
   }
 
   public setScopeValue(key: string, value: any, scope: DataBaseType = "global"): void {
-    this.scope[scope][key] = value;
+    if (this.scope?.[scope]?.[key]) {
+      this.scope[scope][key] = value;
+    }
   }
 
   public getScopeAllValues(scope: DataBaseType = "global"): ObjectType {

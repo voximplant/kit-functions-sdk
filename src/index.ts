@@ -367,7 +367,7 @@ class VoximplantKit {
    * @param key
    * @param scope
    */
-  public dbGet(key: string, scope: DataBaseType = "global"): any {
+  public dbGet(key: string, scope: DataBaseType = "global"): string | null {
     return this.DB.getScopeValue(key, scope);
   }
 
