@@ -153,7 +153,7 @@ class VoximplantKit {
    * @param token
    */
   public setAccessToken(token: string) {
-    // TODO why use this method?
+    // TODO find out why use this method?
     if (typeof token === 'string') {
       this.accessToken = token;
       this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
@@ -362,7 +362,7 @@ class VoximplantKit {
    * @private
    */
   private async saveDb(type: DataBaseType): Promise<boolean> {
-    // TODO why use this method?
+    // TODO find out why use this method?
     let _dbName = null;
 
     if (type === "function") {
