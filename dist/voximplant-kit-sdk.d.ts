@@ -102,7 +102,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @param key
                 * @param scope
                 */
-            dbGet(key: string, scope?: string): any;
+            dbGet(key: string, scope?: DataBaseType): any;
             /**
                 * Set value in DB by key
                 * @param key
@@ -114,7 +114,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * Get all DB scope by name
                 * @param scope
                 */
-            dbGetAll(scope?: DataBaseType): any;
+            dbGetAll(scope?: DataBaseType): import("./types").ObjectType;
             /**
                 * Commit DB changes
                 */
@@ -145,6 +145,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @returns {Boolean}
                 */
             addPhoto(url: string): boolean;
+            getCallHeaders(): {};
             /**
                 * Get client version
                 */

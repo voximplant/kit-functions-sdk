@@ -12,12 +12,10 @@ declare class VoximplantKit {
     private apiUrl;
     private domain;
     private functionId;
-    private conversationDB;
-    private functionDB;
-    private accountDB;
-    private db;
+    private DB;
     private priority;
     private http;
+    private HEADERS;
     eventType: EVENT_TYPES;
     call: CallObject;
     variables: object;
@@ -106,8 +104,6 @@ declare class VoximplantKit {
      * Cancel transfer to queue
      */
     cancelTransferToQueue(): boolean;
-    private loadDB;
-    private saveDB;
     /**
      * Save DB by scope name
      * @param type
@@ -119,7 +115,7 @@ declare class VoximplantKit {
      * @param key
      * @param scope
      */
-    dbGet(key: string, scope?: string): any;
+    dbGet(key: string, scope?: DataBaseType): any;
     /**
      * Set value in DB by key
      * @param key
@@ -131,7 +127,7 @@ declare class VoximplantKit {
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: DataBaseType): any;
+    dbGetAll(scope?: DataBaseType): import("./types").ObjectType;
     /**
      * Commit DB changes
      */
@@ -162,6 +158,7 @@ declare class VoximplantKit {
      * @returns {Boolean}
      */
     addPhoto(url: string): boolean;
+    getCallHeaders(): {};
     /**
      * Get client version
      */
