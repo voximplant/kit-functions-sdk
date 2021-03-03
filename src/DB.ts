@@ -1,4 +1,4 @@
-import { ApiInstance, ObjectType, DataBase, DataBaseType } from "./types";
+import { ApiInstance, DataBase, DataBaseType } from "./types";
 import axios from "axios";
 import utils from './utils';
 
@@ -48,7 +48,7 @@ export default class DB {
   }
 
   public getAllDB(_DBs: Promise<unknown>[]) {
-    return axios.all(_DBs).then(axios.spread((func: ObjectType, acc: ObjectType, conv?: ObjectType) => {
+    return axios.all(_DBs).then(axios.spread((func: Record<string, string>, acc: Record<string, string>, conv?: Record<string, string>) => {
       const functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
       const accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
       const conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {}
@@ -75,7 +75,7 @@ export default class DB {
     this.scope[scope][key] = value;
   }
 
-  public getScopeAllValues(scope: DataBaseType = "global"): ObjectType {
-    return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as ObjectType : {}
+  public getScopeAllValues(scope: DataBaseType = "global"): Record<string, string> {
+    return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as Record<string, string> : {}
   }
 }

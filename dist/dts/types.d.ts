@@ -16,14 +16,14 @@ export interface ContextObject {
 }
 export interface RequestObject {
     body: RequestData;
-    headers: ObjectType;
+    headers: Record<string, string>;
 }
 export declare type RequestData = RequestObjectCallBody | MessageObject | {};
 export interface RequestObjectCallBody {
     CALL: CallObject;
     SKILLS: [];
-    VARIABLES: ObjectType;
-    HEADERS: ObjectType;
+    VARIABLES: Record<string, string>;
+    HEADERS: Record<string, string>;
 }
 export interface SkillObject {
     skill_name: string;
@@ -78,7 +78,7 @@ export interface ConversationCustomDataRequestData {
     handling_start_time: number;
     end_time: number;
     completed: boolean;
-    variables: ObjectType;
+    variables: Record<string, string>;
 }
 export interface ConversationCustomDataClientDataObject {
     client_id: string;
@@ -141,15 +141,12 @@ export interface MessagePayloadItem {
     file_size?: number;
 }
 export interface DataBase {
-    function: ObjectType;
-    global: ObjectType;
-    conversation: ObjectType;
+    function: Record<string, string>;
+    global: Record<string, string>;
+    conversation: Record<string, string>;
 }
 export declare type DataBaseType = 'function' | 'global' | 'conversation';
 export declare type AgentChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
 export interface ApiInstance {
     request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
 }
-export declare type ObjectType = {
-    [key: string]: string;
-};

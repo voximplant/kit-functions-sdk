@@ -26,6 +26,9 @@ class Api {
             return param;
         });
     }
+    /**
+     * Api request
+     **/
     request(requestUrl, data) {
         return this.client.request({
             url: requestUrl,
