@@ -1,41 +1,29 @@
-import { ContextObject, MessageObject, QueueInfo } from "./types";
-declare const enum EVENT_TYPES {
-    in_call_function = "in_call_function",
-    incoming_message = "incoming_message",
-    webhook = "webhook"
-}
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
 declare class VoximplantKit {
     private isTest;
     private requestData;
-    private responseData;
     private accessToken;
     private sessionAccessUrl;
     private apiUrl;
     private domain;
     private functionId;
-    eventType: EVENT_TYPES;
-    private call;
-    private variables;
-    private skills;
+    private DB;
     private priority;
-    private HEADERS;
-    incomingMessage: MessageObject;
-    replyMessage: MessageObject;
-    private conversationDB;
-    private functionDB;
-    private accountDB;
-    private db;
-    private api;
     private http;
+    private api;
+    private callHeaders;
+    private variables;
+    private call;
+    private skills;
+    private incomingMessage;
+    private replyMessage;
+    private eventType;
     constructor(context: ContextObject, isTest?: boolean);
     static default: typeof VoximplantKit;
     /**
      * load Databases
      */
     loadDatabases(): Promise<void>;
-    getCallHeaders(): {};
-    setPriority(value: number): number;
-    getPriority(): number;
     /**
      * Get function response
      * @param data
@@ -44,17 +32,17 @@ declare class VoximplantKit {
     /**
      * Get incoming message
      */
-    getIncomingMessage(): MessageObject;
+    getIncomingMessage(): MessageObject | null;
     /**
      * Set auth token
      * @param token
      */
-    setAccessToken(token: any): void;
+    setAccessToken(token: string): void;
     /**
      * Get Variable
      * @param name
      */
-    getVariable(name: string): any;
+    getVariable(name: string): string | null;
     /**
      * Set variable
      * @param name {String} - Variable name
@@ -66,20 +54,20 @@ declare class VoximplantKit {
      * @param name {String} - Variable name
      */
     deleteVariable(name: string): void;
+    getCallHeaders(): ObjectType | null;
     /**
      * Get all call data
      */
-    getCallData(): any;
+    getCallData(): CallObject | null;
     /**
      * Get all variables
      */
-    getVariables(): {
-        [key: string]: string;
-    };
+    private getVariablesFromContext;
+    getVariables(): ObjectType;
     /**
      * Get all skills
      */
-    getSkills(): any;
+    getSkills(): SkillObject[];
     /**
      * Set skill
      * @param name
@@ -91,6 +79,8 @@ declare class VoximplantKit {
      * @param name
      */
     removeSkill(name: string): void;
+    setPriority(value: number): number;
+    getPriority(): number;
     /**
      * Finish current request in conversation
      */
@@ -107,8 +97,6 @@ declare class VoximplantKit {
      * Cancel transfer to queue
      */
     cancelTransferToQueue(): boolean;
-    private loadDB;
-    private saveDB;
     /**
      * Save DB by scope name
      * @param type
@@ -120,19 +108,19 @@ declare class VoximplantKit {
      * @param key
      * @param scope
      */
-    dbGet(key: string, scope?: string): any;
+    dbGet(key: string, scope?: DataBaseType): any;
     /**
      * Set value in DB by key
      * @param key
      * @param value
-     * @param scope
+     * @param scope {DataBaseType}
      */
-    dbSet(key: string, value: any, scope?: string): void;
+    dbSet(key: string, value: any, scope?: DataBaseType): void;
     /**
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: string): any;
+    dbGetAll(scope?: DataBaseType): ObjectType;
     /**
      * Commit DB changes
      */
@@ -143,22 +131,21 @@ declare class VoximplantKit {
      * @param to
      * @param message
      */
-    sendSMS(from: string, to: string, message: string): any;
+    sendSMS(from: string, to: string, message: string): Promise<unknown>;
     /**
      * Voximplant Kit API proxy
      * @param url {string} - Url address
      * @param data
      */
-    apiProxy(url: string, data: any): any;
+    apiProxy(url: string, data: any): Promise<unknown>;
     /**
      * Add photo
-     *
      * ```js
      * module.exports = async function(context, callback) {
-     *   const kit = new VoximplantKit(context);
-     *   kit.addPhoto('https://your-srite.com/img/some-photo.png');
-     *   callback(200, kit.getResponseBody());
-     * }
+     *  const kit = new VoximplantKit(context);
+     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+     *  callback(200, kit.getResponseBody());
+     *}
      * ```
      * @param url {String} - Url address
      * @returns {Boolean}

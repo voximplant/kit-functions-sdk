@@ -2,7 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const qs = require("qs");
-class api {
+/**
+ * @hidden
+ */
+class Api {
     constructor(domain, token, isTest, url) {
         this.client = axios_1.default.create({
             baseURL: isTest ? "https://voximplant.xyz/api" : `https://${url}/api`,
@@ -30,4 +33,4 @@ class api {
         });
     }
 }
-exports.default = api;
+exports.default = Api;
