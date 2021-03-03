@@ -19,7 +19,7 @@ export interface ContextObject {
 
 export interface RequestObject {
   body: RequestData,
-  headers: ObjectType
+  headers: Record<string, string>
 }
 
 export type RequestData = RequestObjectCallBody | MessageObject | {};
@@ -27,8 +27,8 @@ export type RequestData = RequestObjectCallBody | MessageObject | {};
 export interface RequestObjectCallBody {
   CALL: CallObject,
   SKILLS: [],
-  VARIABLES: ObjectType,
-  HEADERS: ObjectType
+  VARIABLES: Record<string, string>,
+  HEADERS: Record<string, string>
 }
 
 export interface SkillObject {
@@ -89,7 +89,7 @@ export interface ConversationCustomDataRequestData {
   handling_start_time: number,
   end_time: number,
   completed: boolean,
-  variables: ObjectType
+  variables: Record<string, string>
 }
 
 export interface ConversationCustomDataClientDataObject {
@@ -161,9 +161,9 @@ export interface MessagePayloadItem {
 }
 
 export interface DataBase {
-  function: ObjectType,
-  global: ObjectType,
-  conversation: ObjectType
+  function: Record<string, string>,
+  global: Record<string, string>,
+  conversation: Record<string, string>
 }
 
 export type DataBaseType = 'function' | 'global' | 'conversation';
@@ -181,8 +181,4 @@ export type AgentChannelType =
 
 export interface ApiInstance {
   request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>
-}
-
-export type ObjectType = {
-  [key: string]: string
 }

@@ -3,8 +3,7 @@ import {
   MessageCustomer,
   MessagePayloadItem,
   MessageSender,
-  MessageObject,
-  ObjectType
+  MessageObject
 } from "./types";
 
 /**

@@ -1,4 +1,4 @@
-import { ApiInstance, ObjectType, DataBaseType } from "./types";
+import { ApiInstance, DataBaseType } from "./types";
 /**
  * @hidden
  */
@@ -12,5 +12,5 @@ export default class DB {
     putAllDB(_DBs: Promise<unknown>[]): void;
     getScopeValue(key: string, scope?: DataBaseType): string;
     setScopeValue(key: string, value: any, scope?: DataBaseType): void;
-    getScopeAllValues(scope?: DataBaseType): ObjectType;
+    getScopeAllValues(scope?: DataBaseType): Record<string, string>;
 }

@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, ObjectType, RequestData, RequestObjectCallBody
+  DataBaseType, RequestData, RequestObjectCallBody
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -32,7 +32,7 @@ class VoximplantKit {
   private http: AxiosInstance;
   private api: ApiInstance;
   private callHeaders = {};
-  private variables: ObjectType = {};
+  private variables: Record<string, string> = {};
   private call: CallObject = null;
   private skills: Array<SkillObject> = [];
   private incomingMessage: MessageObject;
@@ -181,7 +181,7 @@ class VoximplantKit {
     delete this.variables[name];
   }
 
-  public getCallHeaders(): ObjectType | null {
+  public getCallHeaders(): Record<string, string> | null {
     const headers = (this.requestData as RequestObjectCallBody).HEADERS;
     return headers ? utils.clone(headers) : null;
   }
@@ -197,7 +197,7 @@ class VoximplantKit {
   /**
    * Get all variables
    */
-  private getVariablesFromContext(): ObjectType {
+  private getVariablesFromContext(): Record<string, string> {
     let variables = {};
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -209,7 +209,7 @@ class VoximplantKit {
     return utils.clone(variables);
   }
 
-  public getVariables(): ObjectType {
+  public getVariables(): Record<string, string> {
     return utils.clone(this.variables);
   }
 
