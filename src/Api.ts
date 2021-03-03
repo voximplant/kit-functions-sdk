@@ -32,6 +32,9 @@ export default class Api implements ApiInstance{
         });
     }
 
+    /**
+     * Api request
+     **/
     request<T, R = AxiosResponse<T>> (requestUrl: string, data: any):Promise<R> {
         return this.client.request({
             url: requestUrl,

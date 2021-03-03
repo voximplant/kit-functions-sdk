@@ -1,4 +1,4 @@
-import { ContextObject, ObjectType } from "./types";
+import { ContextObject } from "./types";
 
 /**
  * @hidden
