@@ -8,9 +8,10 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType
+  DataBaseType, ObjectType, RequestData, RequestObjectCallBody
 } from "./types";
 import Message from "./Message";
+import utils from './utils';
 
 const enum EVENT_TYPES {
   in_call_function = "in_call_function",
@@ -20,25 +21,23 @@ const enum EVENT_TYPES {
 
 class VoximplantKit {
   private isTest: boolean;
-  private requestData: any = {}
-  private accessToken: string = null
-  private sessionAccessUrl: string = null
-  private apiUrl: string = null
-  private domain: string = null
-  private functionId: number = null
+  private requestData: RequestData = {}
+  private accessToken: string = ''
+  private sessionAccessUrl: string = ''
+  private apiUrl: string = ''
+  private domain: string = ''
+  private functionId: number = 0;
   private DB: DB;
   private priority: number = 0;
   private http: AxiosInstance;
-  private HEADERS = {};
-
-  eventType: EVENT_TYPES = EVENT_TYPES.webhook
-  call: CallObject = null;
-  variables: object = {};
-  headers: object = {};
-  skills: Array<SkillObject> = [];
-  incomingMessage: MessageObject;
-  replyMessage: MessageObject;
-  api: ApiInstance;
+  private api: ApiInstance;
+  private callHeaders = {};
+  private variables: ObjectType = {};
+  private call: CallObject = null;
+  private skills: Array<SkillObject> = [];
+  private incomingMessage: MessageObject;
+  private replyMessage: MessageObject;
+  private eventType: EVENT_TYPES = EVENT_TYPES.webhook
 
   constructor(context: ContextObject, isTest: boolean = false) {
     this.incomingMessage = new Message();
@@ -56,44 +55,40 @@ class VoximplantKit {
     }
 
     // Store request data
-    this.requestData = context.request.body
+    this.requestData = context.request.body;
     // Get event type
-    this.eventType = VoximplantKit.getHeaderValue(context, 'x-kit-event-type',  EVENT_TYPES.webhook);
+    this.eventType = utils.getHeaderValue(context, 'x-kit-event-type', EVENT_TYPES.webhook) as EVENT_TYPES;
     // Get access token
-    this.accessToken = VoximplantKit.getHeaderValue(context, 'x-kit-access-token', '');
+    this.accessToken = utils.getHeaderValue(context, 'x-kit-access-token', '') as string;
     // Get api url
-    this.apiUrl = VoximplantKit.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
+    this.apiUrl = utils.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com') as string;
     // Get domain
-    this.domain = VoximplantKit.getHeaderValue(context, 'x-kit-domain', 'annaclover');
+    this.domain = utils.getHeaderValue(context, 'x-kit-domain', '') as string;
     // Get function ID
-    this.functionId = VoximplantKit.getHeaderValue(context, 'x-kit-function-id', 88);
+    this.functionId = utils.getHeaderValue(context, 'x-kit-function-id', 0) as number;
     // Get session access url
-    this.sessionAccessUrl = VoximplantKit.getHeaderValue(context, 'x-kit-session-access-url', '')
+    this.sessionAccessUrl = utils.getHeaderValue(context, 'x-kit-session-access-url', '') as string;
     // Store call data
     this.call = this.getCallData()
     // Store variables data
-    this.variables = this.getVariables()
+    this.variables = this.getVariablesFromContext();
     // Store skills data
     this.skills = this.getSkills()
     // Store Call headers
-    this.HEADERS = this.requestData?.HEADERS || {};
+    this.callHeaders = this.getCallHeaders();
     this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
     this.DB = new DB(this.api);
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
       this.incomingMessage = this.getIncomingMessage()
-      this.replyMessage.type = this.requestData.type
+      this.replyMessage.type = (this.requestData as MessageObject).type
       this.replyMessage.sender.is_bot = true
-      this.replyMessage.conversation = this.requestData.conversation
+      this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation)
       this.replyMessage.payload.push({
         type: "properties",
         message_type: "text"
       });
     }
-  }
-
-  private static getHeaderValue(context, name, defaultValue) {
-    return (typeof context.request.headers[name] !== "undefined") ? context.request.headers[name] : defaultValue;
   }
 
   static default = VoximplantKit;
@@ -147,15 +142,16 @@ class VoximplantKit {
   /**
    * Get incoming message
    */
-  public getIncomingMessage(): MessageObject {
-    return this.requestData
+  public getIncomingMessage(): MessageObject | null {
+    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.requestData as MessageObject)) : null;
   }
 
   /**
    * Set auth token
    * @param token
    */
-  public setAccessToken(token) {
+  public setAccessToken(token: string) {
+    // TODO why use this method?
     this.accessToken = token;
     this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl)
   }
@@ -164,7 +160,7 @@ class VoximplantKit {
    * Get Variable
    * @param name
    */
-  public getVariable(name: string) {
+  public getVariable(name: string): string | null {
     return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
@@ -173,8 +169,8 @@ class VoximplantKit {
    * @param name {String} - Variable name
    * @param value {String} - Variable value
    */
-  public setVariable(name, value) {
-    this.variables[name] = `${value}`;
+  public setVariable(name: string, value: string): void {
+    this.variables[name] = `${ value }`;
   }
 
   /**
@@ -185,33 +181,44 @@ class VoximplantKit {
     delete this.variables[name];
   }
 
+  public getCallHeaders(): ObjectType | null {
+    const headers = (this.requestData as RequestObjectCallBody).HEADERS;
+    return headers ? utils.clone(headers) : null;
+  }
+
   /**
    * Get all call data
    */
-  public getCallData() {
-    return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null
+  public getCallData(): CallObject | null {
+    const call = (this.requestData as RequestObjectCallBody).CALL;
+    return (typeof call !== "undefined") ? utils.clone(call) : null;
   }
 
   /**
    * Get all variables
    */
-  public getVariables(): { [key: string]: string } {
+  private getVariablesFromContext(): ObjectType {
     let variables = {};
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
-      variables = this.requestData?.conversation?.custom_data?.request_data?.variables || {}
+      variables = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.variables || {}
     } else if (this.eventType === EVENT_TYPES.in_call_function) {
-      variables = this.requestData?.VARIABLES || {};
+      variables = (this.requestData as RequestObjectCallBody)?.VARIABLES || {};
     }
 
-    return variables;
+    return utils.clone(variables);
+  }
+
+  public getVariables(): ObjectType {
+    return utils.clone(this.variables);
   }
 
   /**
    * Get all skills
    */
-  public getSkills() {
-    return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : []
+  public getSkills(): SkillObject[] {
+    const skills = (this.requestData as RequestObjectCallBody).SKILLS;
+    return (typeof skills !== "undefined") ? utils.clone(skills) : [];
   }
 
   /**
@@ -335,8 +342,8 @@ class VoximplantKit {
    * @private
    */
   private saveDb(type: DataBaseType) {
+    // TODO why use this method?
     let _dbName = null;
-
 
     if (type === "function") {
       _dbName = "function_" + this.functionId
@@ -379,7 +386,7 @@ class VoximplantKit {
    * @param scope
    */
   public dbGetAll(scope: DataBaseType = "global") {
-    return this.DB.getScopeAllValues(scope);
+    return utils.clone(this.DB.getScopeAllValues(scope));
   }
 
   /**
@@ -448,11 +455,6 @@ class VoximplantKit {
     return true
   }
 
-  getCallHeaders() {
-    if (this.eventType !== EVENT_TYPES.in_call_function) return {};
-
-    return Object.assign({}, this.HEADERS);
-  }
 
   /**
    * Get client version

@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
+const utils_1 = require("./utils");
 /**
  * @hidden
  */
@@ -18,7 +19,7 @@ class DB {
             key: db_name
         }).then((response) => {
             return response.data;
-        }).catch(e => {
+        }).catch(() => {
             return {};
         });
     }
@@ -35,7 +36,7 @@ class DB {
             ttl: -1
         }).then((response) => {
             return response.data;
-        }).catch(e => {
+        }).catch(() => {
             return {};
         });
     }
@@ -57,13 +58,13 @@ class DB {
         }));
     }
     getScopeValue(key, scope = "global") {
-        return this.scope[scope];
+        return this.scope[scope][key];
     }
     setScopeValue(key, value, scope = "global") {
         this.scope[scope][key] = value;
     }
     getScopeAllValues(scope = "global") {
-        return typeof this.scope[scope] !== "undefined" ? this.scope[scope] : {};
+        return typeof this.scope[scope] !== "undefined" ? utils_1.default.clone(this.scope[scope]) : {};
     }
 }
 exports.default = DB;

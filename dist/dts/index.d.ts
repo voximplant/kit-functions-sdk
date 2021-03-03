@@ -1,9 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance, DataBaseType } from "./types";
-declare const enum EVENT_TYPES {
-    in_call_function = "in_call_function",
-    incoming_message = "incoming_message",
-    webhook = "webhook"
-}
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
 declare class VoximplantKit {
     private isTest;
     private requestData;
@@ -15,17 +10,15 @@ declare class VoximplantKit {
     private DB;
     private priority;
     private http;
-    private HEADERS;
-    eventType: EVENT_TYPES;
-    call: CallObject;
-    variables: object;
-    headers: object;
-    skills: Array<SkillObject>;
-    incomingMessage: MessageObject;
-    replyMessage: MessageObject;
-    api: ApiInstance;
+    private api;
+    private callHeaders;
+    private variables;
+    private call;
+    private skills;
+    private incomingMessage;
+    private replyMessage;
+    private eventType;
     constructor(context: ContextObject, isTest?: boolean);
-    private static getHeaderValue;
     static default: typeof VoximplantKit;
     /**
      * load Databases
@@ -39,42 +32,42 @@ declare class VoximplantKit {
     /**
      * Get incoming message
      */
-    getIncomingMessage(): MessageObject;
+    getIncomingMessage(): MessageObject | null;
     /**
      * Set auth token
      * @param token
      */
-    setAccessToken(token: any): void;
+    setAccessToken(token: string): void;
     /**
      * Get Variable
      * @param name
      */
-    getVariable(name: string): any;
+    getVariable(name: string): string | null;
     /**
      * Set variable
      * @param name {String} - Variable name
      * @param value {String} - Variable value
      */
-    setVariable(name: any, value: any): void;
+    setVariable(name: string, value: string): void;
     /**
      * Delete variable
      * @param name {String} - Variable name
      */
     deleteVariable(name: string): void;
+    getCallHeaders(): ObjectType | null;
     /**
      * Get all call data
      */
-    getCallData(): any;
+    getCallData(): CallObject | null;
     /**
      * Get all variables
      */
-    getVariables(): {
-        [key: string]: string;
-    };
+    private getVariablesFromContext;
+    getVariables(): ObjectType;
     /**
      * Get all skills
      */
-    getSkills(): any;
+    getSkills(): SkillObject[];
     /**
      * Set skill
      * @param name
@@ -127,7 +120,7 @@ declare class VoximplantKit {
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: DataBaseType): import("./types").ObjectType;
+    dbGetAll(scope?: DataBaseType): ObjectType;
     /**
      * Commit DB changes
      */
@@ -158,7 +151,6 @@ declare class VoximplantKit {
      * @returns {Boolean}
      */
     addPhoto(url: string): boolean;
-    getCallHeaders(): {};
     /**
      * Get client version
      */

@@ -18,22 +18,17 @@ export interface ContextObject {
 }
 
 export interface RequestObject {
-  body: RequestObjectCallBody | MessageObject | {},
-  headers: object
+  body: RequestData,
+  headers: ObjectType
 }
 
+export type RequestData = RequestObjectCallBody | MessageObject | {};
+
 export interface RequestObjectCallBody {
-  CALL: {
-    phone_a: string,
-    phone_b: string,
-    record_url: string,
-    attempt_num: number,
-    session_id: number,
-    id: number,
-    result_code: number
-  },
+  CALL: CallObject,
   SKILLS: [],
-  VARIABLES: ObjectType
+  VARIABLES: ObjectType,
+  HEADERS: ObjectType
 }
 
 export interface SkillObject {

@@ -3,22 +3,21 @@ const axios_1 = require("axios");
 const Api_1 = require("./Api");
 const DB_1 = require("./DB");
 const Message_1 = require("./Message");
+const utils_1 = require("./utils");
 class VoximplantKit {
     constructor(context, isTest = false) {
-        var _a;
         this.requestData = {};
-        this.accessToken = null;
-        this.sessionAccessUrl = null;
-        this.apiUrl = null;
-        this.domain = null;
-        this.functionId = null;
+        this.accessToken = '';
+        this.sessionAccessUrl = '';
+        this.apiUrl = '';
+        this.domain = '';
+        this.functionId = 0;
         this.priority = 0;
-        this.HEADERS = {};
-        this.eventType = "webhook" /* webhook */;
-        this.call = null;
+        this.callHeaders = {};
         this.variables = {};
-        this.headers = {};
+        this.call = null;
         this.skills = [];
+        this.eventType = "webhook" /* webhook */;
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.isTest = isTest;
@@ -34,40 +33,37 @@ class VoximplantKit {
         // Store request data
         this.requestData = context.request.body;
         // Get event type
-        this.eventType = VoximplantKit.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
+        this.eventType = utils_1.default.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
         // Get access token
-        this.accessToken = VoximplantKit.getHeaderValue(context, 'x-kit-access-token', '');
+        this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', '');
         // Get api url
-        this.apiUrl = VoximplantKit.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
+        this.apiUrl = utils_1.default.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
         // Get domain
-        this.domain = VoximplantKit.getHeaderValue(context, 'x-kit-domain', 'annaclover');
+        this.domain = utils_1.default.getHeaderValue(context, 'x-kit-domain', '');
         // Get function ID
-        this.functionId = VoximplantKit.getHeaderValue(context, 'x-kit-function-id', 88);
+        this.functionId = utils_1.default.getHeaderValue(context, 'x-kit-function-id', 0);
         // Get session access url
-        this.sessionAccessUrl = VoximplantKit.getHeaderValue(context, 'x-kit-session-access-url', '');
+        this.sessionAccessUrl = utils_1.default.getHeaderValue(context, 'x-kit-session-access-url', '');
         // Store call data
         this.call = this.getCallData();
         // Store variables data
-        this.variables = this.getVariables();
+        this.variables = this.getVariablesFromContext();
         // Store skills data
         this.skills = this.getSkills();
         // Store Call headers
-        this.HEADERS = ((_a = this.requestData) === null || _a === void 0 ? void 0 : _a.HEADERS) || {};
+        this.callHeaders = this.getCallHeaders();
         this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         if (this.eventType === "incoming_message" /* incoming_message */) {
             this.incomingMessage = this.getIncomingMessage();
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
-            this.replyMessage.conversation = this.requestData.conversation;
+            this.replyMessage.conversation = utils_1.default.clone(this.requestData.conversation);
             this.replyMessage.payload.push({
                 type: "properties",
                 message_type: "text"
             });
         }
-    }
-    static getHeaderValue(context, name, defaultValue) {
-        return (typeof context.request.headers[name] !== "undefined") ? context.request.headers[name] : defaultValue;
     }
     /**
      * load Databases
@@ -113,13 +109,14 @@ class VoximplantKit {
      * Get incoming message
      */
     getIncomingMessage() {
-        return this.requestData;
+        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.requestData) : null;
     }
     /**
      * Set auth token
      * @param token
      */
     setAccessToken(token) {
+        // TODO why use this method?
         this.accessToken = token;
         this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
     }
@@ -145,16 +142,21 @@ class VoximplantKit {
     deleteVariable(name) {
         delete this.variables[name];
     }
+    getCallHeaders() {
+        const headers = this.requestData.HEADERS;
+        return headers ? utils_1.default.clone(headers) : null;
+    }
     /**
      * Get all call data
      */
     getCallData() {
-        return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null;
+        const call = this.requestData.CALL;
+        return (typeof call !== "undefined") ? utils_1.default.clone(call) : null;
     }
     /**
      * Get all variables
      */
-    getVariables() {
+    getVariablesFromContext() {
         var _a, _b, _c, _d, _e;
         let variables = {};
         if (this.eventType === "incoming_message" /* incoming_message */) {
@@ -163,13 +165,17 @@ class VoximplantKit {
         else if (this.eventType === "in_call_function" /* in_call_function */) {
             variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
         }
-        return variables;
+        return utils_1.default.clone(variables);
+    }
+    getVariables() {
+        return utils_1.default.clone(this.variables);
     }
     /**
      * Get all skills
      */
     getSkills() {
-        return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : [];
+        const skills = this.requestData.SKILLS;
+        return (typeof skills !== "undefined") ? utils_1.default.clone(skills) : [];
     }
     /**
      * Set skill
@@ -287,6 +293,7 @@ class VoximplantKit {
      * @private
      */
     saveDb(type) {
+        // TODO why use this method?
         let _dbName = null;
         if (type === "function") {
             _dbName = "function_" + this.functionId;
@@ -323,7 +330,7 @@ class VoximplantKit {
      * @param scope
      */
     dbGetAll(scope = "global") {
-        return this.DB.getScopeAllValues(scope);
+        return utils_1.default.clone(this.DB.getScopeAllValues(scope));
     }
     /**
      * Commit DB changes
@@ -383,11 +390,6 @@ class VoximplantKit {
             file_size: 123
         });
         return true;
-    }
-    getCallHeaders() {
-        if (this.eventType !== "in_call_function" /* in_call_function */)
-            return {};
-        return Object.assign({}, this.HEADERS);
     }
     /**
      * Get client version

@@ -3,21 +3,8 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, ApiInstance, DataBaseType } from "@voximplant/kit-functions-sdk/types";
-    const enum EVENT_TYPES {
-            in_call_function = "in_call_function",
-            incoming_message = "incoming_message",
-            webhook = "webhook"
-    }
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "@voximplant/kit-functions-sdk/types";
     class VoximplantKit {
-            eventType: EVENT_TYPES;
-            call: CallObject;
-            variables: object;
-            headers: object;
-            skills: Array<SkillObject>;
-            incomingMessage: MessageObject;
-            replyMessage: MessageObject;
-            api: ApiInstance;
             constructor(context: ContextObject, isTest?: boolean);
             static default: typeof VoximplantKit;
             /**
@@ -32,42 +19,38 @@ declare module '@voximplant/kit-functions-sdk' {
             /**
                 * Get incoming message
                 */
-            getIncomingMessage(): MessageObject;
+            getIncomingMessage(): MessageObject | null;
             /**
                 * Set auth token
                 * @param token
                 */
-            setAccessToken(token: any): void;
+            setAccessToken(token: string): void;
             /**
                 * Get Variable
                 * @param name
                 */
-            getVariable(name: string): any;
+            getVariable(name: string): string | null;
             /**
                 * Set variable
                 * @param name {String} - Variable name
                 * @param value {String} - Variable value
                 */
-            setVariable(name: any, value: any): void;
+            setVariable(name: string, value: string): void;
             /**
                 * Delete variable
                 * @param name {String} - Variable name
                 */
             deleteVariable(name: string): void;
+            getCallHeaders(): ObjectType | null;
             /**
                 * Get all call data
                 */
-            getCallData(): any;
-            /**
-                * Get all variables
-                */
-            getVariables(): {
-                    [key: string]: string;
-            };
+            getCallData(): CallObject | null;
+            getVariables(): ObjectType;
             /**
                 * Get all skills
                 */
-            getSkills(): any;
+            getSkills(): SkillObject[];
             /**
                 * Set skill
                 * @param name
@@ -114,7 +97,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * Get all DB scope by name
                 * @param scope
                 */
-            dbGetAll(scope?: DataBaseType): import("./types").ObjectType;
+            dbGetAll(scope?: DataBaseType): ObjectType;
             /**
                 * Commit DB changes
                 */
@@ -145,7 +128,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @returns {Boolean}
                 */
             addPhoto(url: string): boolean;
-            getCallHeaders(): {};
             /**
                 * Get client version
                 */
@@ -172,21 +154,15 @@ declare module '@voximplant/kit-functions-sdk/types' {
         request: RequestObject;
     }
     export interface RequestObject {
-        body: RequestObjectCallBody | MessageObject | {};
-        headers: object;
+        body: RequestData;
+        headers: ObjectType;
     }
+    export type RequestData = RequestObjectCallBody | MessageObject | {};
     export interface RequestObjectCallBody {
-        CALL: {
-            phone_a: string;
-            phone_b: string;
-            record_url: string;
-            attempt_num: number;
-            session_id: number;
-            id: number;
-            result_code: number;
-        };
+        CALL: CallObject;
         SKILLS: [];
         VARIABLES: ObjectType;
+        HEADERS: ObjectType;
     }
     export interface SkillObject {
         skill_name: string;

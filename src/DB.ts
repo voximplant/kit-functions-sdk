@@ -1,5 +1,6 @@
 import { ApiInstance, ObjectType, DataBase, DataBaseType } from "./types";
 import axios from "axios";
+import utils from './utils';
 
 /**
  * @hidden
@@ -22,7 +23,7 @@ export default class DB {
       key: db_name
     }).then((response) => {
       return response.data
-    }).catch(e => {
+    }).catch(() => {
       return {}
     })
   }
@@ -41,12 +42,12 @@ export default class DB {
       ttl: -1
     }).then((response) => {
       return response.data
-    }).catch(e => {
+    }).catch(() => {
       return {}
     })
   }
 
-  public getAllDB(_DBs) {
+  public getAllDB(_DBs: Promise<unknown>[]) {
     return axios.all(_DBs).then(axios.spread((func: ObjectType, acc: ObjectType, conv?: ObjectType) => {
       const functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
       const accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
@@ -60,14 +61,14 @@ export default class DB {
     }));
   }
 
-  public putAllDB(_DBs) {
+  public putAllDB(_DBs: Promise<unknown>[]) {
     axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
       console.log("result", func, acc, conv)
     }))
   }
 
-  public getScopeValue(key: string, scope: DataBaseType = "global"): ObjectType {
-    return this.scope[scope]
+  public getScopeValue(key: string, scope: DataBaseType = "global"): string {
+    return this.scope[scope][key]
   }
 
   public setScopeValue(key: string, value: any, scope: DataBaseType = "global"): void {
@@ -75,6 +76,6 @@ export default class DB {
   }
 
   public getScopeAllValues(scope: DataBaseType = "global"): ObjectType {
-    return typeof this.scope[scope] !== "undefined" ? this.scope[scope] as ObjectType : {}
+    return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as ObjectType : {}
   }
 }
