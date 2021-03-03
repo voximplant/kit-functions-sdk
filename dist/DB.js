@@ -69,10 +69,12 @@ class DB {
         var _a, _b;
         if ((_b = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) === null || _b === void 0 ? void 0 : _b[key]) {
             this.scope[scope][key] = value;
+            return true;
         }
+        return false;
     }
     getScopeAllValues(scope = "global") {
-        return typeof this.scope[scope] !== "undefined" ? utils_1.default.clone(this.scope[scope]) : {};
+        return typeof this.scope[scope] !== "undefined" ? utils_1.default.clone(this.scope[scope]) : null;
     }
 }
 exports.default = DB;

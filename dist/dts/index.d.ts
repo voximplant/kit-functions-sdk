@@ -37,7 +37,7 @@ declare class VoximplantKit {
      * Set auth token
      * @param token
      */
-    setAccessToken(token: string): void;
+    setAccessToken(token: string): boolean;
     /**
      * Get Variable
      * @param name
@@ -48,7 +48,7 @@ declare class VoximplantKit {
      * @param name {String} - Variable name
      * @param value {String} - Variable value
      */
-    setVariable(name: string, value: string): void;
+    setVariable(name: string, value: string): boolean;
     /**
      * Delete variable
      * @param name {String} - Variable name
@@ -73,13 +73,13 @@ declare class VoximplantKit {
      * @param name
      * @param level
      */
-    setSkill(name: string, level: number): void;
+    setSkill(name: string, level: number): boolean;
     /**
      * Remove skill
      * @param name
      */
-    removeSkill(name: string): void;
-    setPriority(value: number): number;
+    removeSkill(name: string): boolean;
+    setPriority(value: number): boolean;
     getPriority(): number;
     /**
      * Finish current request in conversation
@@ -115,12 +115,12 @@ declare class VoximplantKit {
      * @param value
      * @param scope {DataBaseType}
      */
-    dbSet(key: string, value: any, scope?: DataBaseType): void;
+    dbSet(key: string, value: any, scope?: DataBaseType): boolean;
     /**
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: DataBaseType): ObjectType;
+    dbGetAll(scope?: DataBaseType): ObjectType | null;
     /**
      * Commit DB changes
      */

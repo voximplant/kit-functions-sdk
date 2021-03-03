@@ -22,11 +22,11 @@ export interface RequestObject {
   headers: ObjectType
 }
 
-export type RequestData = RequestObjectCallBody | MessageObject | {};
+export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 
 export interface RequestObjectCallBody {
   CALL: CallObject,
-  SKILLS: [],
+  SKILLS: SkillObject[],
   VARIABLES: ObjectType,
   HEADERS: ObjectType
 }

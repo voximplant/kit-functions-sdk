@@ -120,7 +120,9 @@ class VoximplantKit {
         if (typeof token === 'string') {
             this.accessToken = token;
             this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+            return true;
         }
+        return false;
     }
     /**
      * Get Variable
@@ -137,7 +139,9 @@ class VoximplantKit {
     setVariable(name, value) {
         if (typeof name === 'string' && typeof value === 'string') {
             this.variables[name] = value;
+            return true;
         }
+        return false;
     }
     /**
      * Delete variable
@@ -190,7 +194,7 @@ class VoximplantKit {
      */
     setSkill(name, level) {
         if (typeof name !== 'string' || typeof level !== 'number')
-            return;
+            return false;
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
         });
@@ -201,6 +205,7 @@ class VoximplantKit {
             });
         else
             this.skills[skillIndex].level = level;
+        return true;
     }
     /**
      * Remove skill
@@ -212,16 +217,19 @@ class VoximplantKit {
         });
         if (skillIndex > -1) {
             this.skills.splice(skillIndex, 1);
+            return true;
         }
+        return false;
     }
     setPriority(value) {
         if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
             this.priority = value;
+            return true;
         }
         else {
             console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
+            return false;
         }
-        return this.priority;
     }
     getPriority() {
         return this.priority;
@@ -333,7 +341,7 @@ class VoximplantKit {
      * @param scope {DataBaseType}
      */
     dbSet(key, value, scope = "global") {
-        this.DB.setScopeValue(key, value, scope);
+        return this.DB.setScopeValue(key, value, scope);
     }
     /**
      * Get all DB scope by name
@@ -353,7 +361,12 @@ class VoximplantKit {
         if (this.eventType === "incoming_message" /* incoming_message */) {
             _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'));
         }
-        this.DB.putAllDB(_DBs);
+        try {
+            await this.DB.putAllDB(_DBs);
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
     /**
      * Send SMS message
@@ -368,6 +381,8 @@ class VoximplantKit {
             sms_body: message
         }).then(r => {
             return r.data;
+        }).catch(err => {
+            console.log(err);
         });
     }
     /**
@@ -378,6 +393,8 @@ class VoximplantKit {
     apiProxy(url, data) {
         return this.api.request(url, data).then(r => {
             return r.data;
+        }).catch(err => {
+            console.log(err);
         });
     }
     /**

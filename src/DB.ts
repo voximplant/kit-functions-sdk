@@ -76,13 +76,15 @@ export default class DB {
     return this.scope?.[scope]?.[key] || null;
   }
 
-  public setScopeValue(key: string, value: any, scope: DataBaseType = "global"): void {
+  public setScopeValue(key: string, value: any, scope: DataBaseType = "global"): boolean {
     if (this.scope?.[scope]?.[key]) {
       this.scope[scope][key] = value;
+      return true;
     }
+    return false;
   }
 
-  public getScopeAllValues(scope: DataBaseType = "global"): ObjectType {
-    return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as ObjectType : {}
+  public getScopeAllValues(scope: DataBaseType = "global"): ObjectType | null {
+    return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as ObjectType : null;
   }
 }

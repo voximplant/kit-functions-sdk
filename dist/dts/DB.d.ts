@@ -13,6 +13,6 @@ export default class DB {
     getAllDB(_DBs: Promise<DbResponse>[]): Promise<void>;
     putAllDB(_DBs: Promise<DbResponse>[]): void;
     getScopeValue(key: string, scope?: DataBaseType): string | null;
-    setScopeValue(key: string, value: any, scope?: DataBaseType): void;
-    getScopeAllValues(scope?: DataBaseType): ObjectType;
+    setScopeValue(key: string, value: any, scope?: DataBaseType): boolean;
+    getScopeAllValues(scope?: DataBaseType): ObjectType | null;
 }
