@@ -29,6 +29,7 @@ class VoximplantKit {
   private DB: DB;
   private priority: number = 0;
   private http: AxiosInstance;
+  private HEADERS = {};
 
   eventType: EVENT_TYPES = EVENT_TYPES.webhook
   call: CallObject = null;
@@ -74,7 +75,8 @@ class VoximplantKit {
     this.variables = this.getVariables()
     // Store skills data
     this.skills = this.getSkills()
-
+    // Store Call headers
+    this.HEADERS = this.requestData?.HEADERS || {};
     this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
     this.DB = new DB(this.api);
 
@@ -446,11 +448,17 @@ class VoximplantKit {
     return true
   }
 
+  getCallHeaders() {
+    if (this.eventType !== EVENT_TYPES.in_call_function) return {};
+
+    return Object.assign({}, this.HEADERS);
+  }
+
   /**
    * Get client version
    */
   public version() {
-    return "0.0.36"
+    return "0.0.37"
   }
 }
 
