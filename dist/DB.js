@@ -62,8 +62,8 @@ class DB {
         });
     }
     getScopeValue(key, scope = "global") {
-        var _a, _b;
-        return ((_b = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) === null || _b === void 0 ? void 0 : _b[key]) || null;
+        var _a, _b, _c;
+        return (_c = (_b = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) === null || _b === void 0 ? void 0 : _b[key]) !== null && _c !== void 0 ? _c : null;
     }
     setScopeValue(key, value, scope = "global") {
         var _a, _b;
