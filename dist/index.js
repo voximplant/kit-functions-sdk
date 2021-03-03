@@ -117,15 +117,17 @@ class VoximplantKit {
      */
     setAccessToken(token) {
         // TODO why use this method?
-        this.accessToken = token;
-        this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        if (typeof token === 'string') {
+            this.accessToken = token;
+            this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        }
     }
     /**
      * Get Variable
      * @param name
      */
     getVariable(name) {
-        return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null;
+        return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null;
     }
     /**
      * Set variable
@@ -133,14 +135,18 @@ class VoximplantKit {
      * @param value {String} - Variable value
      */
     setVariable(name, value) {
-        this.variables[name] = `${value}`;
+        if (typeof name === 'string' && typeof value === 'string') {
+            this.variables[name] = value;
+        }
     }
     /**
      * Delete variable
      * @param name {String} - Variable name
      */
     deleteVariable(name) {
-        delete this.variables[name];
+        if (typeof name === 'string') {
+            delete this.variables[name];
+        }
     }
     getCallHeaders() {
         const headers = this.requestData.HEADERS;
@@ -183,6 +189,8 @@ class VoximplantKit {
      * @param level
      */
     setSkill(name, level) {
+        if (typeof name !== 'string' || typeof level !== 'number')
+            return;
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
         });
@@ -257,6 +265,7 @@ class VoximplantKit {
             queue.queue_id = null;
         if (typeof queue.queue_name === "undefined")
             queue.queue_name = null;
+        // TODO find out if there should be an OR operator
         if (queue.queue_id === null && queue.queue_name === null)
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -292,7 +301,7 @@ class VoximplantKit {
      * @param type
      * @private
      */
-    saveDb(type) {
+    async saveDb(type) {
         // TODO why use this method?
         let _dbName = null;
         if (type === "function") {
@@ -306,7 +315,8 @@ class VoximplantKit {
         }
         if (_dbName === null)
             return false;
-        return this.DB.putDB(_dbName, type);
+        await this.DB.putDB(_dbName, type);
+        return true;
     }
     /**
      * Get value from DB by key

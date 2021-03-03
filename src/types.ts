@@ -183,4 +183,9 @@ export interface ApiInstance {
   request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>
 }
 
-export type ObjectType = Record<string, string>
+export type DbResponse = { result: string };
+
+// Vox doc do not support native type Record
+export type ObjectType = {
+  [id: string]: string
+}

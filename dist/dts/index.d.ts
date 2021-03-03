@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
 declare class VoximplantKit {
     private isTest;
     private requestData;
@@ -15,9 +15,9 @@ declare class VoximplantKit {
     private variables;
     private call;
     private skills;
-    private incomingMessage;
-    private replyMessage;
     private eventType;
+    replyMessage: MessageObject;
+    incomingMessage: MessageObject;
     constructor(context: ContextObject, isTest?: boolean);
     static default: typeof VoximplantKit;
     /**
@@ -54,7 +54,7 @@ declare class VoximplantKit {
      * @param name {String} - Variable name
      */
     deleteVariable(name: string): void;
-    getCallHeaders(): Record<string, string> | null;
+    getCallHeaders(): ObjectType | null;
     /**
      * Get all call data
      */
@@ -63,7 +63,7 @@ declare class VoximplantKit {
      * Get all variables
      */
     private getVariablesFromContext;
-    getVariables(): Record<string, string>;
+    getVariables(): ObjectType;
     /**
      * Get all skills
      */
@@ -108,7 +108,7 @@ declare class VoximplantKit {
      * @param key
      * @param scope
      */
-    dbGet(key: string, scope?: DataBaseType): any;
+    dbGet(key: string, scope?: DataBaseType): string | null;
     /**
      * Set value in DB by key
      * @param key
@@ -120,7 +120,7 @@ declare class VoximplantKit {
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: DataBaseType): Record<string, string>;
+    dbGetAll(scope?: DataBaseType): ObjectType;
     /**
      * Commit DB changes
      */

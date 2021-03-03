@@ -1,4 +1,4 @@
-import { ApiInstance, DataBase, DataBaseType, ObjectType } from "./types";
+import { ApiInstance, DataBase, DataBaseType, DbResponse, ObjectType } from "./types";
 import axios from "axios";
 import utils from './utils';
 
@@ -12,19 +12,19 @@ export default class DB {
   constructor(api: ApiInstance) {
     this.api = api;
     this.scope = {
-      function: {} ,
+      function: {},
       global: {},
       conversation: {}
     };
   }
 
-  public getDB(db_name: string) {
+  public getDB(db_name: string): Promise<DbResponse> {
     return this.api.request("/v2/kv/get", {
       key: db_name
     }).then((response) => {
-      return response.data
+      return response.data as DbResponse;
     }).catch(() => {
-      return {}
+      return { result: null }
     })
   }
 
@@ -41,30 +41,35 @@ export default class DB {
       value: value,
       ttl: -1
     }).then((response) => {
-      return response.data
+      return response.data as DbResponse
     }).catch(() => {
-      return {}
+      return { result: null }
     })
   }
 
-  public getAllDB(_DBs: Promise<unknown>[]) {
-    return axios.all(_DBs).then(axios.spread((func: ObjectType, acc: ObjectType, conv?: ObjectType) => {
-      const functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
-      const accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
-      const conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {}
+  public getAllDB(_DBs: Promise<DbResponse>[]) {
+    return axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
+      const functionDB = (typeof func !== "undefined" && func?.result) ? JSON.parse(func.result) : {}
+      const accountDB = (typeof acc !== "undefined" && acc?.result) ? JSON.parse(acc.result) : {}
+      const conversationDB = (typeof conv !== "undefined" && conv?.result) ? JSON.parse(conv.result) : {}
 
       this.scope = {
         function: functionDB,
         global: accountDB,
         conversation: conversationDB
       };
-    }));
+    })).catch((err) => {
+      console.log(err);
+    })
   }
 
-  public putAllDB(_DBs: Promise<unknown>[]) {
-    axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
+
+  public putAllDB(_DBs: Promise<DbResponse>[]) {
+    axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
       console.log("result", func, acc, conv)
-    }))
+    })).catch((err) => {
+      console.log(err);
+    })
   }
 
   public getScopeValue(key: string, scope: DataBaseType = "global"): string | null {

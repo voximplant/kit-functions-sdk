@@ -35,9 +35,11 @@ class VoximplantKit {
   private variables: ObjectType = {};
   private call: CallObject = null;
   private skills: Array<SkillObject> = [];
-  private incomingMessage: MessageObject;
-  private replyMessage: MessageObject;
-  private eventType: EVENT_TYPES = EVENT_TYPES.webhook
+  private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
+
+  // TODO find out if these properties should be private?
+  public replyMessage: MessageObject;
+  public incomingMessage: MessageObject;
 
   constructor(context: ContextObject, isTest: boolean = false) {
     this.incomingMessage = new Message();
@@ -152,8 +154,10 @@ class VoximplantKit {
    */
   public setAccessToken(token: string) {
     // TODO why use this method?
-    this.accessToken = token;
-    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    if (typeof token === 'string') {
+      this.accessToken = token;
+      this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    }
   }
 
   /**
@@ -161,7 +165,7 @@ class VoximplantKit {
    * @param name
    */
   public getVariable(name: string): string | null {
-    return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
+    return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
   /**
@@ -170,7 +174,9 @@ class VoximplantKit {
    * @param value {String} - Variable value
    */
   public setVariable(name: string, value: string): void {
-    this.variables[name] = `${ value }`;
+    if (typeof name === 'string' && typeof value === 'string') {
+      this.variables[name] = value;
+    }
   }
 
   /**
@@ -178,7 +184,9 @@ class VoximplantKit {
    * @param name {String} - Variable name
    */
   deleteVariable(name: string) {
-    delete this.variables[name];
+    if (typeof name === 'string') {
+      delete this.variables[name];
+    }
   }
 
   public getCallHeaders(): ObjectType | null {
@@ -227,6 +235,8 @@ class VoximplantKit {
    * @param level
    */
   public setSkill(name: string, level: number) {
+    if (typeof name !== 'string' || typeof level !== 'number') return;
+
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
@@ -303,6 +313,7 @@ class VoximplantKit {
     if (typeof queue.queue_id === "undefined") queue.queue_id = null;
     if (typeof queue.queue_name === "undefined") queue.queue_name = null;
 
+    // TODO find out if there should be an OR operator
     if (queue.queue_id === null && queue.queue_name === null) return false
 
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -341,7 +352,7 @@ class VoximplantKit {
    * @param type
    * @private
    */
-  private saveDb(type: DataBaseType) {
+  private async saveDb(type: DataBaseType): Promise<boolean> {
     // TODO why use this method?
     let _dbName = null;
 
@@ -359,7 +370,8 @@ class VoximplantKit {
 
     if (_dbName === null) return false
 
-    return this.DB.putDB(_dbName, type)
+    await this.DB.putDB(_dbName, type);
+    return true;
   }
 
   /**
