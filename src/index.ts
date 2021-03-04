@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -32,12 +32,14 @@ class VoximplantKit {
   private http: AxiosInstance;
   private api: ApiInstance;
   private callHeaders = {};
-  private variables: Record<string, string> = {};
+  private variables: ObjectType = {};
   private call: CallObject = null;
   private skills: Array<SkillObject> = [];
-  private incomingMessage: MessageObject;
-  private replyMessage: MessageObject;
-  private eventType: EVENT_TYPES = EVENT_TYPES.webhook
+  private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
+
+  // TODO find out if these properties should be private?
+  public replyMessage: MessageObject;
+  public incomingMessage: MessageObject;
 
   constructor(context: ContextObject, isTest: boolean = false) {
     this.incomingMessage = new Message();
@@ -151,9 +153,13 @@ class VoximplantKit {
    * @param token
    */
   public setAccessToken(token: string) {
-    // TODO why use this method?
-    this.accessToken = token;
-    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    // TODO find out why use this method?
+    if (typeof token === 'string') {
+      this.accessToken = token;
+      this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -161,7 +167,7 @@ class VoximplantKit {
    * @param name
    */
   public getVariable(name: string): string | null {
-    return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
+    return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
   /**
@@ -169,8 +175,12 @@ class VoximplantKit {
    * @param name {String} - Variable name
    * @param value {String} - Variable value
    */
-  public setVariable(name: string, value: string): void {
-    this.variables[name] = `${ value }`;
+  public setVariable(name: string, value: string): boolean {
+    if (typeof name === 'string' && typeof value === 'string') {
+      this.variables[name] = value;
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -178,10 +188,12 @@ class VoximplantKit {
    * @param name {String} - Variable name
    */
   deleteVariable(name: string) {
-    delete this.variables[name];
+    if (typeof name === 'string') {
+      delete this.variables[name];
+    }
   }
 
-  public getCallHeaders(): Record<string, string> | null {
+  public getCallHeaders(): ObjectType | null {
     const headers = (this.requestData as RequestObjectCallBody).HEADERS;
     return headers ? utils.clone(headers) : null;
   }
@@ -197,7 +209,7 @@ class VoximplantKit {
   /**
    * Get all variables
    */
-  private getVariablesFromContext(): Record<string, string> {
+  private getVariablesFromContext(): ObjectType {
     let variables = {};
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -209,7 +221,7 @@ class VoximplantKit {
     return utils.clone(variables);
   }
 
-  public getVariables(): Record<string, string> {
+  public getVariables(): ObjectType {
     return utils.clone(this.variables);
   }
 
@@ -226,7 +238,9 @@ class VoximplantKit {
    * @param name
    * @param level
    */
-  public setSkill(name: string, level: number) {
+  public setSkill(name: string, level: number): boolean {
+    if (typeof name !== 'string' || typeof level !== 'number') return false;
+
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
@@ -234,29 +248,34 @@ class VoximplantKit {
       "skill_name": name,
       "level": level
     })
-    else this.skills[skillIndex].level = level
+    else this.skills[skillIndex].level = level;
+
+    return true;
   }
 
   /**
    * Remove skill
    * @param name
    */
-  public removeSkill(name: string) {
+  public removeSkill(name: string): boolean {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
     if (skillIndex > -1) {
-      this.skills.splice(skillIndex, 1)
+      this.skills.splice(skillIndex, 1);
+      return true;
     }
+    return false;
   }
 
-  public setPriority(value: number) {
+  public setPriority(value: number): boolean {
     if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
       this.priority = value;
+      return true;
     } else {
-      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`)
+      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
+      return false;
     }
-    return this.priority;
   }
 
   public getPriority() {
@@ -303,6 +322,7 @@ class VoximplantKit {
     if (typeof queue.queue_id === "undefined") queue.queue_id = null;
     if (typeof queue.queue_name === "undefined") queue.queue_name = null;
 
+    // TODO find out if there should be an OR operator
     if (queue.queue_id === null && queue.queue_name === null) return false
 
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -341,8 +361,8 @@ class VoximplantKit {
    * @param type
    * @private
    */
-  private saveDb(type: DataBaseType) {
-    // TODO why use this method?
+  private async saveDb(type: DataBaseType): Promise<boolean> {
+    // TODO find out why use this method?
     let _dbName = null;
 
     if (type === "function") {
@@ -359,7 +379,8 @@ class VoximplantKit {
 
     if (_dbName === null) return false
 
-    return this.DB.putDB(_dbName, type)
+    await this.DB.putDB(_dbName, type);
+    return true;
   }
 
   /**
@@ -367,7 +388,7 @@ class VoximplantKit {
    * @param key
    * @param scope
    */
-  public dbGet(key: string, scope: DataBaseType = "global"): any {
+  public dbGet(key: string, scope: DataBaseType = "global"): string | null {
     return this.DB.getScopeValue(key, scope);
   }
 
@@ -377,15 +398,15 @@ class VoximplantKit {
    * @param value
    * @param scope {DataBaseType}
    */
-  public dbSet(key: string, value: any, scope: DataBaseType = "global"): void {
-    this.DB.setScopeValue(key, value, scope);
+  public dbSet(key: string, value: any, scope: DataBaseType = "global"): boolean {
+    return this.DB.setScopeValue(key, value, scope);
   }
 
   /**
    * Get all DB scope by name
    * @param scope
    */
-  public dbGetAll(scope: DataBaseType = "global") {
+  public dbGetAll(scope: DataBaseType = "global"): ObjectType | null {
     return utils.clone(this.DB.getScopeAllValues(scope));
   }
 
@@ -402,7 +423,12 @@ class VoximplantKit {
       _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
     }
 
-    this.DB.putAllDB(_DBs);
+    try {
+      return await this.DB.putAllDB(_DBs);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
 
   /**
@@ -418,6 +444,8 @@ class VoximplantKit {
       sms_body: message
     }).then(r => {
       return r.data
+    }).catch(err => {
+      console.log(err);
     })
   }
 
@@ -429,6 +457,8 @@ class VoximplantKit {
   public apiProxy(url: string, data: any) {
     return this.api.request(url, data).then(r => {
       return r.data
+    }).catch(err => {
+      console.log(err);
     })
   }
 

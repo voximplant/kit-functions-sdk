@@ -116,16 +116,20 @@ class VoximplantKit {
      * @param token
      */
     setAccessToken(token) {
-        // TODO why use this method?
-        this.accessToken = token;
-        this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        // TODO find out why use this method?
+        if (typeof token === 'string') {
+            this.accessToken = token;
+            this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+            return true;
+        }
+        return false;
     }
     /**
      * Get Variable
      * @param name
      */
     getVariable(name) {
-        return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null;
+        return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null;
     }
     /**
      * Set variable
@@ -133,14 +137,20 @@ class VoximplantKit {
      * @param value {String} - Variable value
      */
     setVariable(name, value) {
-        this.variables[name] = `${value}`;
+        if (typeof name === 'string' && typeof value === 'string') {
+            this.variables[name] = value;
+            return true;
+        }
+        return false;
     }
     /**
      * Delete variable
      * @param name {String} - Variable name
      */
     deleteVariable(name) {
-        delete this.variables[name];
+        if (typeof name === 'string') {
+            delete this.variables[name];
+        }
     }
     getCallHeaders() {
         const headers = this.requestData.HEADERS;
@@ -183,6 +193,8 @@ class VoximplantKit {
      * @param level
      */
     setSkill(name, level) {
+        if (typeof name !== 'string' || typeof level !== 'number')
+            return false;
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
         });
@@ -193,6 +205,7 @@ class VoximplantKit {
             });
         else
             this.skills[skillIndex].level = level;
+        return true;
     }
     /**
      * Remove skill
@@ -204,16 +217,19 @@ class VoximplantKit {
         });
         if (skillIndex > -1) {
             this.skills.splice(skillIndex, 1);
+            return true;
         }
+        return false;
     }
     setPriority(value) {
         if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
             this.priority = value;
+            return true;
         }
         else {
             console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
+            return false;
         }
-        return this.priority;
     }
     getPriority() {
         return this.priority;
@@ -257,6 +273,7 @@ class VoximplantKit {
             queue.queue_id = null;
         if (typeof queue.queue_name === "undefined")
             queue.queue_name = null;
+        // TODO find out if there should be an OR operator
         if (queue.queue_id === null && queue.queue_name === null)
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -292,8 +309,8 @@ class VoximplantKit {
      * @param type
      * @private
      */
-    saveDb(type) {
-        // TODO why use this method?
+    async saveDb(type) {
+        // TODO find out why use this method?
         let _dbName = null;
         if (type === "function") {
             _dbName = "function_" + this.functionId;
@@ -306,7 +323,8 @@ class VoximplantKit {
         }
         if (_dbName === null)
             return false;
-        return this.DB.putDB(_dbName, type);
+        await this.DB.putDB(_dbName, type);
+        return true;
     }
     /**
      * Get value from DB by key
@@ -323,7 +341,7 @@ class VoximplantKit {
      * @param scope {DataBaseType}
      */
     dbSet(key, value, scope = "global") {
-        this.DB.setScopeValue(key, value, scope);
+        return this.DB.setScopeValue(key, value, scope);
     }
     /**
      * Get all DB scope by name
@@ -343,7 +361,13 @@ class VoximplantKit {
         if (this.eventType === "incoming_message" /* incoming_message */) {
             _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'));
         }
-        this.DB.putAllDB(_DBs);
+        try {
+            return await this.DB.putAllDB(_DBs);
+        }
+        catch (err) {
+            console.log(err);
+            return false;
+        }
     }
     /**
      * Send SMS message
@@ -358,6 +382,8 @@ class VoximplantKit {
             sms_body: message
         }).then(r => {
             return r.data;
+        }).catch(err => {
+            console.log(err);
         });
     }
     /**
@@ -368,6 +394,8 @@ class VoximplantKit {
     apiProxy(url, data) {
         return this.api.request(url, data).then(r => {
             return r.data;
+        }).catch(err => {
+            console.log(err);
         });
     }
     /**

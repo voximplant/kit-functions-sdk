@@ -3,8 +3,10 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "@voximplant/kit-functions-sdk/types";
     class VoximplantKit {
+            replyMessage: MessageObject;
+            incomingMessage: MessageObject;
             constructor(context: ContextObject, isTest?: boolean);
             static default: typeof VoximplantKit;
             /**
@@ -24,7 +26,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * Set auth token
                 * @param token
                 */
-            setAccessToken(token: string): void;
+            setAccessToken(token: string): boolean;
             /**
                 * Get Variable
                 * @param name
@@ -35,18 +37,18 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @param name {String} - Variable name
                 * @param value {String} - Variable value
                 */
-            setVariable(name: string, value: string): void;
+            setVariable(name: string, value: string): boolean;
             /**
                 * Delete variable
                 * @param name {String} - Variable name
                 */
             deleteVariable(name: string): void;
-            getCallHeaders(): Record<string, string> | null;
+            getCallHeaders(): ObjectType | null;
             /**
                 * Get all call data
                 */
             getCallData(): CallObject | null;
-            getVariables(): Record<string, string>;
+            getVariables(): ObjectType;
             /**
                 * Get all skills
                 */
@@ -56,13 +58,13 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @param name
                 * @param level
                 */
-            setSkill(name: string, level: number): void;
+            setSkill(name: string, level: number): boolean;
             /**
                 * Remove skill
                 * @param name
                 */
-            removeSkill(name: string): void;
-            setPriority(value: number): number;
+            removeSkill(name: string): boolean;
+            setPriority(value: number): boolean;
             getPriority(): number;
             /**
                 * Finish current request in conversation
@@ -85,23 +87,23 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @param key
                 * @param scope
                 */
-            dbGet(key: string, scope?: DataBaseType): any;
+            dbGet(key: string, scope?: DataBaseType): string | null;
             /**
                 * Set value in DB by key
                 * @param key
                 * @param value
                 * @param scope {DataBaseType}
                 */
-            dbSet(key: string, value: any, scope?: DataBaseType): void;
+            dbSet(key: string, value: any, scope?: DataBaseType): boolean;
             /**
                 * Get all DB scope by name
                 * @param scope
                 */
-            dbGetAll(scope?: DataBaseType): Record<string, string>;
+            dbGetAll(scope?: DataBaseType): ObjectType | null;
             /**
                 * Commit DB changes
                 */
-            dbCommit(): Promise<void>;
+            dbCommit(): Promise<boolean>;
             /**
                 * Send SMS message
                 * @param from
@@ -155,14 +157,14 @@ declare module '@voximplant/kit-functions-sdk/types' {
     }
     export interface RequestObject {
         body: RequestData;
-        headers: Record<string, string>;
+        headers: ObjectType;
     }
-    export type RequestData = RequestObjectCallBody | MessageObject | {};
+    export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
     export interface RequestObjectCallBody {
         CALL: CallObject;
-        SKILLS: [];
-        VARIABLES: Record<string, string>;
-        HEADERS: Record<string, string>;
+        SKILLS: SkillObject[];
+        VARIABLES: ObjectType;
+        HEADERS: ObjectType;
     }
     export interface SkillObject {
         skill_name: string;
@@ -217,7 +219,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
         handling_start_time: number;
         end_time: number;
         completed: boolean;
-        variables: Record<string, string>;
+        variables: ObjectType;
     }
     export interface ConversationCustomDataClientDataObject {
         client_id: string;
@@ -280,14 +282,20 @@ declare module '@voximplant/kit-functions-sdk/types' {
         file_size?: number;
     }
     export interface DataBase {
-        function: Record<string, string>;
-        global: Record<string, string>;
-        conversation: Record<string, string>;
+        function: ObjectType;
+        global: ObjectType;
+        conversation: ObjectType;
     }
     export type DataBaseType = 'function' | 'global' | 'conversation';
     export type AgentChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
     export interface ApiInstance {
         request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
     }
+    export type DbResponse = {
+        result: string;
+    };
+    export type ObjectType = {
+        [id: string]: string;
+    };
 }
 

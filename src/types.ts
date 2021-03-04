@@ -19,16 +19,16 @@ export interface ContextObject {
 
 export interface RequestObject {
   body: RequestData,
-  headers: Record<string, string>
+  headers: ObjectType
 }
 
-export type RequestData = RequestObjectCallBody | MessageObject | {};
+export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 
 export interface RequestObjectCallBody {
   CALL: CallObject,
-  SKILLS: [],
-  VARIABLES: Record<string, string>,
-  HEADERS: Record<string, string>
+  SKILLS: SkillObject[],
+  VARIABLES: ObjectType,
+  HEADERS: ObjectType
 }
 
 export interface SkillObject {
@@ -89,7 +89,7 @@ export interface ConversationCustomDataRequestData {
   handling_start_time: number,
   end_time: number,
   completed: boolean,
-  variables: Record<string, string>
+  variables: ObjectType
 }
 
 export interface ConversationCustomDataClientDataObject {
@@ -161,9 +161,9 @@ export interface MessagePayloadItem {
 }
 
 export interface DataBase {
-  function: Record<string, string>,
-  global: Record<string, string>,
-  conversation: Record<string, string>
+  function: ObjectType,
+  global: ObjectType,
+  conversation: ObjectType
 }
 
 export type DataBaseType = 'function' | 'global' | 'conversation';
@@ -181,4 +181,11 @@ export type AgentChannelType =
 
 export interface ApiInstance {
   request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>
+}
+
+export type DbResponse = { result: string };
+
+// Vox doc do not support native type Record
+export type ObjectType = {
+  [id: string]: string
 }

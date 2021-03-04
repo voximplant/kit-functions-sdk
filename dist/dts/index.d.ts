@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
 declare class VoximplantKit {
     private isTest;
     private requestData;
@@ -15,9 +15,9 @@ declare class VoximplantKit {
     private variables;
     private call;
     private skills;
-    private incomingMessage;
-    private replyMessage;
     private eventType;
+    replyMessage: MessageObject;
+    incomingMessage: MessageObject;
     constructor(context: ContextObject, isTest?: boolean);
     static default: typeof VoximplantKit;
     /**
@@ -37,7 +37,7 @@ declare class VoximplantKit {
      * Set auth token
      * @param token
      */
-    setAccessToken(token: string): void;
+    setAccessToken(token: string): boolean;
     /**
      * Get Variable
      * @param name
@@ -48,13 +48,13 @@ declare class VoximplantKit {
      * @param name {String} - Variable name
      * @param value {String} - Variable value
      */
-    setVariable(name: string, value: string): void;
+    setVariable(name: string, value: string): boolean;
     /**
      * Delete variable
      * @param name {String} - Variable name
      */
     deleteVariable(name: string): void;
-    getCallHeaders(): Record<string, string> | null;
+    getCallHeaders(): ObjectType | null;
     /**
      * Get all call data
      */
@@ -63,7 +63,7 @@ declare class VoximplantKit {
      * Get all variables
      */
     private getVariablesFromContext;
-    getVariables(): Record<string, string>;
+    getVariables(): ObjectType;
     /**
      * Get all skills
      */
@@ -73,13 +73,13 @@ declare class VoximplantKit {
      * @param name
      * @param level
      */
-    setSkill(name: string, level: number): void;
+    setSkill(name: string, level: number): boolean;
     /**
      * Remove skill
      * @param name
      */
-    removeSkill(name: string): void;
-    setPriority(value: number): number;
+    removeSkill(name: string): boolean;
+    setPriority(value: number): boolean;
     getPriority(): number;
     /**
      * Finish current request in conversation
@@ -108,23 +108,23 @@ declare class VoximplantKit {
      * @param key
      * @param scope
      */
-    dbGet(key: string, scope?: DataBaseType): any;
+    dbGet(key: string, scope?: DataBaseType): string | null;
     /**
      * Set value in DB by key
      * @param key
      * @param value
      * @param scope {DataBaseType}
      */
-    dbSet(key: string, value: any, scope?: DataBaseType): void;
+    dbSet(key: string, value: any, scope?: DataBaseType): boolean;
     /**
      * Get all DB scope by name
      * @param scope
      */
-    dbGetAll(scope?: DataBaseType): Record<string, string>;
+    dbGetAll(scope?: DataBaseType): ObjectType | null;
     /**
      * Commit DB changes
      */
-    dbCommit(): Promise<void>;
+    dbCommit(): Promise<boolean>;
     /**
      * Send SMS message
      * @param from
