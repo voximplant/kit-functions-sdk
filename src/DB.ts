@@ -64,11 +64,13 @@ export default class DB {
   }
 
 
-  public putAllDB(_DBs: Promise<DbResponse>[]) {
-    axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
-      console.log("result", func, acc, conv)
+  public putAllDB(_DBs: Promise<DbResponse>[]): Promise<boolean> {
+    return axios.all(_DBs)
+      .then(axios.spread(() => {
+      return true;
     })).catch((err) => {
       console.log(err);
+      return false;
     })
   }
 

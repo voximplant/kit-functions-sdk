@@ -55,10 +55,12 @@ class DB {
         });
     }
     putAllDB(_DBs) {
-        axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
-            console.log("result", func, acc, conv);
+        return axios_1.default.all(_DBs)
+            .then(axios_1.default.spread(() => {
+            return true;
         })).catch((err) => {
             console.log(err);
+            return false;
         });
     }
     getScopeValue(key, scope = "global") {

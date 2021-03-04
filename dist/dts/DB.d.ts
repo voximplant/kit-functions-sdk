@@ -11,7 +11,7 @@ export default class DB {
         result: any;
     }>;
     getAllDB(_DBs: Promise<DbResponse>[]): Promise<void>;
-    putAllDB(_DBs: Promise<DbResponse>[]): void;
+    putAllDB(_DBs: Promise<DbResponse>[]): Promise<boolean>;
     getScopeValue(key: string, scope?: DataBaseType): string | null;
     setScopeValue(key: string, value: any, scope?: DataBaseType): boolean;
     getScopeAllValues(scope?: DataBaseType): ObjectType | null;

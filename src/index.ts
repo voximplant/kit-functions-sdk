@@ -424,9 +424,10 @@ class VoximplantKit {
     }
 
     try {
-      await this.DB.putAllDB(_DBs);
+      return await this.DB.putAllDB(_DBs);
     } catch (err) {
       console.log(err);
+      return false;
     }
   }
 

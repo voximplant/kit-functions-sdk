@@ -362,10 +362,11 @@ class VoximplantKit {
             _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'));
         }
         try {
-            await this.DB.putAllDB(_DBs);
+            return await this.DB.putAllDB(_DBs);
         }
         catch (err) {
             console.log(err);
+            return false;
         }
     }
     /**

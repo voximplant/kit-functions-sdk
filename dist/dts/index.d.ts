@@ -124,7 +124,7 @@ declare class VoximplantKit {
     /**
      * Commit DB changes
      */
-    dbCommit(): Promise<void>;
+    dbCommit(): Promise<boolean>;
     /**
      * Send SMS message
      * @param from
