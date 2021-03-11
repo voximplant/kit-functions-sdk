@@ -1,148 +1,49 @@
 import axios, { AxiosInstance } from 'axios'
-import api from "./api"
-import { CallObject, ContextObject, MessageObject, QueueInfo, ResponseDataObject, SkillObject } from "./types";
+import Balab from "./Api"
+import DB from "./DB"
+import {
+  CallObject,
+  ContextObject,
+  QueueInfo,
+  SkillObject,
+  MessageObject,
+  ApiInstance,
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType
+} from "./types";
+import Message from "./Message";
+import utils from './utils';
 
-const EVENT_TYPES = {
-  in_call_function: "in_call_function",
-  incoming_message: "incoming_message",
-  webhook: "webhook"
+const enum EVENT_TYPES {
+  in_call_function = "in_call_function",
+  incoming_message = "incoming_message",
+  webhook = "webhook"
 }
 
 class VoximplantKit {
-  private isTest: boolean = false
-  private requestData: any = {}
-  private responseData: ResponseDataObject = {
-    VARIABLES: {},
-    SKILLS: []
-  }
-  // private responseMessageData:MessageObject = {}
-
-  private accessToken: string = null
-  private sessionAccessUrl: string = null
-  private apiUrl: string = null
-  private domain: string = null
-  private functionId: number = null
-
-  eventType: string = EVENT_TYPES.webhook
-  call: CallObject = null
-  variables: object = {}
-  headers: object = {}
-  skills: Array<SkillObject> = []
+  private isTest: boolean;
+  private requestData: RequestData = {}
+  private accessToken: string = ''
+  private sessionAccessUrl: string = ''
+  private apiUrl: string = ''
+  private domain: string = ''
+  private functionId: number = 0;
+  private DB: DB;
   private priority: number = 0;
+  private http: AxiosInstance;
+  private api: ApiInstance;
+  private callHeaders = {};
+  private variables: ObjectType = {};
+  private call: CallObject = null;
+  private skills: Array<SkillObject> = [];
+  private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
 
-  incomingMessage: MessageObject = {
-    text: null,
-    type: null,
-    sender: {
-      is_bot: null
-    },
-    conversation: {
-      id: null,
-      uuid: null,
-      client_id: null,
-      custom_data: {
-        conversation_data: {
-          last_message_text: null,
-          last_message_time: null,
-          channel_type: null,
-          last_message_sender_type: null,
-          is_read: null
-        },
-        client_data: {
-          client_id: null,
-          client_avatar: null,
-          client_display_name: null,
-          client_phone: null
-        }
-      },
-      current_status: null,
-      current_request: {
-        id: null,
-        start_sequence: null,
-        end_sequence: null,
-        start_time: null,
-        handling_start_time: null,
-        end_time: null,
-        completed: null,
-        conversation_id: null
-      },
-      channel: null,
-      customer_id: null
-    },
-    customer: {
-      id: null,
-      customer_display_name: null,
-      customer_details: null,
-      customer_photo: null,
-      customer_phones: null,
-      customer_client_ids: null,
-      customer_external_id: null,
-      customer_emails: null
-    },
-    payload: []
-  }
-  replyMessage: MessageObject = {
-    text: null,
-    type: null,
-    sender: {
-      is_bot: true
-    },
-    conversation: {
-      id: null,
-      uuid: null,
-      client_id: null,
-      custom_data: {
-        conversation_data: {
-          last_message_text: null,
-          last_message_time: null,
-          channel_type: null,
-          last_message_sender_type: null,
-          is_read: null
-        },
-        client_data: {
-          client_id: null,
-          client_avatar: null,
-          client_display_name: null,
-          client_phone: null
-        }
-      },
-      current_status: null,
-      current_request: {
-        id: null,
-        start_sequence: null,
-        end_sequence: null,
-        start_time: null,
-        handling_start_time: null,
-        end_time: null,
-        completed: null,
-        conversation_id: null
-      },
-      channel: null,
-      customer_id: null
-    },
-    customer: {
-      id: null,
-      customer_display_name: null,
-      customer_details: null,
-      customer_photo: null,
-      customer_phones: null,
-      customer_client_ids: null,
-      customer_external_id: null,
-      customer_emails: null
-    },
-    payload: []
-  }
-  // maxSkillLevel:number = 5
-
-  private conversationDB: any = {}
-  private functionDB: any = {}
-  private accountDB: any = {}
-  private db: any = {}
-
-  api: any
-  http: AxiosInstance
+  // TODO find out if these properties should be private?
+  public replyMessage: MessageObject;
+  public incomingMessage: MessageObject;
 
   constructor(context: ContextObject, isTest: boolean = false) {
+    this.incomingMessage = new Message();
+    this.replyMessage = new Message(true);
     this.isTest = isTest
     this.http = axios
 
@@ -156,38 +57,35 @@ class VoximplantKit {
     }
 
     // Store request data
-    this.requestData = context.request.body
+    this.requestData = context.request.body;
     // Get event type
-    this.eventType = (typeof context.request.headers["x-kit-event-type"] !== "undefined") ? context.request.headers["x-kit-event-type"] : EVENT_TYPES.webhook
+    this.eventType = utils.getHeaderValue(context, 'x-kit-event-type', EVENT_TYPES.webhook) as EVENT_TYPES;
     // Get access token
-    this.accessToken = (typeof context.request.headers["x-kit-access-token"] !== "undefined") ? context.request.headers["x-kit-access-token"] : ""
+    this.accessToken = utils.getHeaderValue(context, 'x-kit-access-token', '') as string;
     // Get api url
-    this.apiUrl = (typeof context.request.headers["x-kit-api-url"] !== "undefined") ? context.request.headers["x-kit-api-url"] : "kitapi-eu.voximplant.com"
+    this.apiUrl = utils.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com') as string;
     // Get domain
-    this.domain = (typeof context.request.headers["x-kit-domain"] !== "undefined") ? context.request.headers["x-kit-domain"] : "annaclover"
+    this.domain = utils.getHeaderValue(context, 'x-kit-domain', '') as string;
     // Get function ID
-    this.functionId = (typeof context.request.headers["x-kit-function-id"] !== "undefined") ? context.request.headers["x-kit-function-id"] : 88
+    this.functionId = utils.getHeaderValue(context, 'x-kit-function-id', 0) as number;
     // Get session access url
-    this.sessionAccessUrl = (typeof context.request.headers["x-kit-session-access-url"] !== "undefined") ? context.request.headers["x-kit-session-access-url"] : ""
+    this.sessionAccessUrl = utils.getHeaderValue(context, 'x-kit-session-access-url', '') as string;
     // Store call data
     this.call = this.getCallData()
     // Store variables data
-    this.variables = this.getVariables()
+    this.variables = this.getVariablesFromContext();
     // Store skills data
     this.skills = this.getSkills()
-
-    this.responseData = {
-      VARIABLES: {},
-      SKILLS: []
-    }
-
-    this.api = new api(this.domain, this.accessToken, this.isTest, this.apiUrl)
+    // Store Call headers
+    this.callHeaders = this.getCallHeaders();
+    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.DB = new DB(this.api);
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
       this.incomingMessage = this.getIncomingMessage()
-      this.replyMessage.type = this.requestData.type
+      this.replyMessage.type = (this.requestData as MessageObject).type
       this.replyMessage.sender.is_bot = true
-      this.replyMessage.conversation = this.requestData.conversation
+      this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation)
       this.replyMessage.payload.push({
         type: "properties",
         message_type: "text"
@@ -196,50 +94,34 @@ class VoximplantKit {
   }
 
   static default = VoximplantKit;
-  // load Databases
-  async loadDatabases() {
-    let _this = this
-    let _DBs = [
-      this.loadDB("function_" + this.functionId),
-      this.loadDB("accountdb_" + this.domain)
+
+  /**
+   * load Databases
+   */
+  public async loadDatabases() {
+    const _DBs = [
+      this.DB.getDB("function_" + this.functionId),
+      this.DB.getDB("accountdb_" + this.domain)
     ];
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
-      _DBs.push(this.loadDB("conversation_" + this.incomingMessage.conversation.uuid))
+      _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
     }
 
-    await axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
-      _this.functionDB = (typeof func !== "undefined" && typeof func.result !== "undefined" && func.result !== null) ? JSON.parse(func.result) : {}
-      _this.accountDB = (typeof acc !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(acc.result) : {}
-      _this.conversationDB = (typeof conv !== "undefined" && typeof acc.result !== "undefined" && acc.result !== null) ? JSON.parse(conv.result) : {}
-      _this.db = {
-        function: _this.functionDB,
-        global: _this.accountDB,
-        conversation: _this.conversationDB
-      }
-    }))
+    await this.DB.getAllDB(_DBs);
   }
 
-  setPriority(value: number) {
-    if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
-      this.priority = value;
-    } else {
-      console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`)
-    }
-    return this.priority;
-  }
-
-  getPriority() {
-    return this.priority;
-  }
-
-  // Get function response
-  getResponseBody(data: any) {
+  /**
+   * Get function response
+   * @param data
+   */
+  public getResponseBody(data: any) {
     if (this.eventType === EVENT_TYPES.in_call_function)
       return {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
+
     if (this.eventType === EVENT_TYPES.incoming_message) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
@@ -252,49 +134,113 @@ class VoximplantKit {
 
       return {
         text: this.replyMessage.text,
-        payload: this.replyMessage.payload
+        payload: this.replyMessage.payload,
+        variables: this.variables
       }
     } else
       return data
   }
 
-  // Get incoming message
-  getIncomingMessage(): MessageObject {
-    return this.requestData
+  /**
+   * Get incoming message
+   */
+  public getIncomingMessage(): MessageObject | null {
+    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.requestData as MessageObject)) : null;
   }
 
-  // Set auth token
-  setAccessToken(token) {
-    this.accessToken = token
+  /**
+   * Set auth token
+   * @param token
+   */
+  public setAccessToken(token: string) {
+    // TODO find out why use this method?
+    if (typeof token === 'string') {
+      this.accessToken = token;
+      this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+      return true;
+    }
+    return false;
   }
 
-  // Get Variable
-  getVariable(name: string) {
-    return (typeof this.variables[name] !== "undefined") ? this.variables[name] : null
+  /**
+   * Get Variable
+   * @param name
+   */
+  public getVariable(name: string): string | null {
+    return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
-  // Set variable
-  setVariable(name, value) {
-    this.variables[name] = value
+  /**
+   * Set variable
+   * @param name {String} - Variable name
+   * @param value {String} - Variable value
+   */
+  public setVariable(name: string, value: string): boolean {
+    if (typeof name === 'string' && typeof value === 'string') {
+      this.variables[name] = value;
+      return true;
+    }
+    return false;
   }
 
-  // Get all call data
-  getCallData() {
-    return (typeof this.requestData.CALL !== "undefined") ? this.requestData.CALL : null
+  /**
+   * Delete variable
+   * @param name {String} - Variable name
+   */
+  deleteVariable(name: string) {
+    if (typeof name === 'string') {
+      delete this.variables[name];
+    }
   }
 
-  // Get all variables
-  getVariables() {
-    return (typeof this.requestData.VARIABLES !== "undefined") ? this.requestData.VARIABLES : {}
+  public getCallHeaders(): ObjectType | null {
+    const headers = (this.requestData as RequestObjectCallBody).HEADERS;
+    return headers ? utils.clone(headers) : null;
   }
 
-  // Get all skills
-  getSkills() {
-    return (typeof this.requestData.SKILLS !== "undefined") ? this.requestData.SKILLS : []
+  /**
+   * Get all call data
+   */
+  public getCallData(): CallObject | null {
+    const call = (this.requestData as RequestObjectCallBody).CALL;
+    return (typeof call !== "undefined") ? utils.clone(call) : null;
   }
 
-  // Set skill
-  setSkill(name: string, level: number) {
+  /**
+   * Get all variables
+   */
+  private getVariablesFromContext(): ObjectType {
+    let variables = {};
+
+    if (this.eventType === EVENT_TYPES.incoming_message) {
+      variables = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.variables || {}
+    } else if (this.eventType === EVENT_TYPES.in_call_function) {
+      variables = (this.requestData as RequestObjectCallBody)?.VARIABLES || {};
+    }
+
+    return utils.clone(variables);
+  }
+
+  public getVariables(): ObjectType {
+    return utils.clone(this.variables);
+  }
+
+  /**
+   * Get all skills
+   */
+  public getSkills(): SkillObject[] {
+    const skills = (this.requestData as RequestObjectCallBody).SKILLS;
+    return (typeof skills !== "undefined") ? utils.clone(skills) : [];
+  }
+
+  /**
+   * Set skill
+   * @param name
+   * @param level
+   */
+  public setSkill(name: string, level: number): boolean {
+    if (typeof name !== 'string' || typeof level !== 'number') return false;
+
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
@@ -302,21 +248,44 @@ class VoximplantKit {
       "skill_name": name,
       "level": level
     })
-    else this.skills[skillIndex].level = level
+    else this.skills[skillIndex].level = level;
+
+    return true;
   }
 
-  // Remove skill
-  removeSkill(name: string) {
+  /**
+   * Remove skill
+   * @param name
+   */
+  public removeSkill(name: string): boolean {
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
     })
     if (skillIndex > -1) {
-      this.skills.splice(skillIndex, 1)
+      this.skills.splice(skillIndex, 1);
+      return true;
+    }
+    return false;
+  }
+
+  public setPriority(value: number): boolean {
+    if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
+      this.priority = value;
+      return true;
+    } else {
+      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
+      return false;
     }
   }
 
-  // Finish current request in conversation
-  finishRequest() {
+  public getPriority() {
+    return this.priority;
+  }
+
+  /**
+   * Finish current request in conversation
+   */
+  public finishRequest() {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
@@ -330,8 +299,10 @@ class VoximplantKit {
     return true
   }
 
-  // Cancel finish current request in conversation
-  cancelFinishRequest() {
+  /**
+   * Cancel finish current request in conversation
+   */
+  public cancelFinishRequest() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
     })
@@ -342,13 +313,16 @@ class VoximplantKit {
     return true
   }
 
-  // Transfer to queue
-  transferToQueue(queue: QueueInfo) {
+  /**
+   * Transfer to queue
+   */
+  public transferToQueue(queue: QueueInfo) {
     if (this.eventType !== EVENT_TYPES.incoming_message) return false
 
     if (typeof queue.queue_id === "undefined") queue.queue_id = null;
     if (typeof queue.queue_name === "undefined") queue.queue_name = null;
 
+    // TODO find out if there should be an OR operator
     if (queue.queue_id === null && queue.queue_name === null) return false
 
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -368,8 +342,10 @@ class VoximplantKit {
     return true
   }
 
-  // Cancel transfer to queue
-  cancelTransferToQueue() {
+  /**
+   * Cancel transfer to queue
+   */
+  public cancelTransferToQueue() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "transfer_to_queue"
     })
@@ -380,105 +356,125 @@ class VoximplantKit {
     return true
   }
 
-  private loadDB(db_name: string) {
-    return this.api.request("/v2/kv/get", {
-      key: db_name
-    }).then((response) => {
-      return response.data
-    }).catch(e => {
-      return {}
-    })
-  }
-
-  private saveDB(db_name: string, value: string) {
-    return this.api.request("/v2/kv/put", {
-      key: db_name,
-      value: value,
-      ttl: -1
-    }).then((response) => {
-      return response.data
-    }).catch(e => {
-      return {}
-    })
-  }
-
-  // Save DB by scope name
-  private saveDb(type: string) {
-    let _dbName = null
-    let _dbValue = null
+  /**
+   * Save DB by scope name
+   * @param type
+   * @private
+   */
+  private async saveDb(type: DataBaseType): Promise<boolean> {
+    // TODO find out why use this method?
+    let _dbName = null;
 
     if (type === "function") {
       _dbName = "function_" + this.functionId
-      _dbValue = this.functionDB
     }
 
-    if (type === "account") {
+    if (type === "global") {
       _dbName = "accountdb_" + this.domain
-      _dbValue = this.accountDB
     }
 
     if (type === "conversation" && this.eventType == EVENT_TYPES.incoming_message) {
       _dbName = "conversation_" + this.incomingMessage.conversation.uuid
-      _dbValue = this.conversationDB
     }
 
     if (_dbName === null) return false
 
-    return this.saveDB(_dbName, JSON.stringify(_dbValue))
+    await this.DB.putDB(_dbName, type);
+    return true;
   }
 
-  // Get value from DB by key
-  dbGet(key: string, scope: string = "global"): any {
-    return this.db[scope]
+  /**
+   * Get value from DB by key
+   * @param key
+   * @param scope
+   */
+  public dbGet(key: string, scope: DataBaseType = "global"): string | null {
+    return this.DB.getScopeValue(key, scope);
   }
 
-  // Set value in DB by key
-  dbSet(key: string, value: any, scope: string = "global"): void {
-    this.db[scope][key] = value
+  /**
+   * Set value in DB by key
+   * @param key
+   * @param value
+   * @param scope {DataBaseType}
+   */
+  public dbSet(key: string, value: any, scope: DataBaseType = "global"): boolean {
+    return this.DB.setScopeValue(key, value, scope);
   }
 
-  // Get all DB scope by name
-  dbGetAll(scope: string = "global") {
-    return typeof this.db[scope] !== "undefined" ? this.db[scope] : null
+  /**
+   * Get all DB scope by name
+   * @param scope
+   */
+  public dbGetAll(scope: DataBaseType = "global"): ObjectType | null {
+    return utils.clone(this.DB.getScopeAllValues(scope));
   }
 
-  // Commit DB chnges
-  async dbCommit() {
-    let _this = this
-    let _DBs = [
-      this.saveDB("function_" + this.functionId, JSON.stringify(this.db.function)),
-      this.saveDB("accountdb_" + this.domain, JSON.stringify(this.db.global))
+  /**
+   * Commit DB changes
+   */
+  public async dbCommit() {
+    const _DBs = [
+      this.DB.putDB("function_" + this.functionId, 'function'),
+      this.DB.putDB("accountdb_" + this.domain, 'global')
     ];
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
-      _DBs.push(this.saveDB("conversation_" + this.incomingMessage.conversation.uuid, JSON.stringify(this.db.conversation)))
+      _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
     }
 
-    await axios.all(_DBs).then(axios.spread((func, acc, conv?) => {
-      console.log("result", func, acc, conv)
-    }))
+    try {
+      return await this.DB.putAllDB(_DBs);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
   }
 
-  // Send SMS message
-  sendSMS(from: string, to: string, message: string) {
+  /**
+   * Send SMS message
+   * @param from
+   * @param to
+   * @param message
+   */
+  public sendSMS(from: string, to: string, message: string) {
     return this.api.request("/v2/phone/sendSms", {
       source: from,
       destination: to,
       sms_body: message
     }).then(r => {
       return r.data
+    }).catch(err => {
+      console.log(err);
     })
   }
 
-  // Voximplant Kit API proxy
-  apiProxy(url: string, data: any) {
+  /**
+   * Voximplant Kit API proxy
+   * @param url {string} - Url address
+   * @param data
+   */
+  public apiProxy(url: string, data: any) {
     return this.api.request(url, data).then(r => {
       return r.data
+    }).catch(err => {
+      console.log(err);
     })
   }
 
-  // Add photo
-  addPhoto(url) {
+  /**
+   * Add photo
+   * ```js
+   * module.exports = async function(context, callback) {
+   *  const kit = new VoximplantKit(context);
+   *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+   *  callback(200, kit.getResponseBody());
+   *}
+   * ```
+   * @param url {String} - Url address
+   * @returns {Boolean}
+   */
+  public addPhoto(url: string) {
     this.replyMessage.payload.push({
       type: "photo",
       url: url,
@@ -489,9 +485,12 @@ class VoximplantKit {
     return true
   }
 
-  // Client version
-  version() {
-    return "0.0.34"
+
+  /**
+   * Get client version
+   */
+  public version() {
+    return "0.0.37"
   }
 }
 

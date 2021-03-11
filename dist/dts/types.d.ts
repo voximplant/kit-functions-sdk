@@ -1,3 +1,4 @@
+import { AxiosResponse } from "axios";
 export interface CallObject {
     id: number;
     result_code: number;
@@ -14,16 +15,29 @@ export interface ContextObject {
     request: RequestObject;
 }
 export interface RequestObject {
-    body: object;
-    headers: object;
+    body: RequestData;
+    headers: ObjectType;
+}
+export declare type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
+export interface RequestObjectCallBody {
+    CALL: CallObject;
+    SKILLS: SkillObject[];
+    VARIABLES: ObjectType;
+    HEADERS: ObjectType;
 }
 export interface SkillObject {
     skill_name: string;
     level: number;
 }
-export interface ResponseDataObject {
-    VARIABLES: object;
-    SKILLS: Array<SkillObject>;
+export interface MessageObject {
+    id: number;
+    text: string;
+    type: string;
+    sender: MessageSender;
+    conversation: MessageConversation;
+    payload: Array<MessagePayloadItem>;
+    customer: MessageCustomer;
+    HasMedia: boolean;
 }
 export interface MessageConversation {
     id: number;
@@ -39,7 +53,7 @@ export interface MessageConversationChannel {
     id: number;
     channel_uuid: string;
     account: object;
-    channel_type: string;
+    channel_type: AgentChannelType;
     channel_settings: object;
     processing_method: string;
     processing_queue: object;
@@ -50,6 +64,21 @@ export interface MessageConversationChannel {
 export interface ConversationCustomDataObject {
     client_data: ConversationCustomDataClientDataObject;
     conversation_data: ConversationCustomDataConversationDataObject;
+    request_data: ConversationCustomDataRequestData;
+    customer_data?: {
+        id: number;
+    };
+}
+export interface ConversationCustomDataRequestData {
+    id: number;
+    conversation_id: number;
+    start_sequence: number;
+    end_sequence: any;
+    start_time: number;
+    handling_start_time: number;
+    end_time: number;
+    completed: boolean;
+    variables: ObjectType;
 }
 export interface ConversationCustomDataClientDataObject {
     client_id: string;
@@ -68,14 +97,6 @@ export interface QueueInfo {
     queue_id: number;
     queue_name: string;
 }
-export interface MessageObject {
-    text: string;
-    type: string;
-    sender: MessageSender;
-    conversation: MessageConversation;
-    payload: Array<MessagePayloadItem>;
-    customer: MessageCustomer;
-}
 export interface MessageCustomer {
     id: number;
     customer_display_name: string;
@@ -90,14 +111,6 @@ export interface MessageCustomerClientIds {
     client_id: string;
     client_type: string;
 }
-export interface IncomingMessageObject {
-    text: string;
-    type: string;
-    conversation_uuid: string;
-    client_data: ConversationCustomDataClientDataObject;
-    conversation_data: ConversationCustomDataConversationDataObject;
-    current_request: IncomingRequestObject;
-}
 export interface IncomingRequestObject {
     id: number;
     conversation_id: number;
@@ -107,12 +120,6 @@ export interface IncomingRequestObject {
     handling_start_time: number;
     end_time: number;
     completed: boolean;
-}
-export interface MessageSenderObject {
-    client_id: string;
-    client_phone: string;
-    client_avatar: string;
-    client_display_name: string;
 }
 export interface MessageSender {
     is_bot: boolean;
@@ -133,3 +140,19 @@ export interface MessagePayloadItem {
     file_name?: string;
     file_size?: number;
 }
+export interface DataBase {
+    function: ObjectType;
+    global: ObjectType;
+    conversation: ObjectType;
+}
+export declare type DataBaseType = 'function' | 'global' | 'conversation';
+export declare type AgentChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
+export interface ApiInstance {
+    request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
+}
+export declare type DbResponse = {
+    result: string;
+};
+export declare type ObjectType = {
+    [id: string]: string;
+};

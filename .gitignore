@@ -77,3 +77,6 @@ fabric.properties
 /dist/test.js
 /voximplant-kit-functions-sdk-*.tgz
 /demo.js
+/doc_internal
+/java.json
+/data.js

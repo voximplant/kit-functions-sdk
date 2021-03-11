@@ -1,7 +1,12 @@
 import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
 import * as qs from 'qs';
+import { ApiInstance } from "./types";
 
-export default class api {
+
+/**
+ * @hidden
+ */
+export default class Api implements ApiInstance{
     private client:AxiosInstance;
 
     constructor(domain:string, token:string, isTest:boolean, url: string) {
@@ -27,7 +32,10 @@ export default class api {
         });
     }
 
-    request<T, R = AxiosResponse<T>> (requestUrl, data = {}):Promise<R> {
+    /**
+     * Api request
+     **/
+    request<T, R = AxiosResponse<T>> (requestUrl: string, data: any):Promise<R> {
         return this.client.request({
             url: requestUrl,
             data: data

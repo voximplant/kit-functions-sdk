@@ -1,0 +1,22 @@
+{
+  "name": "kit-functions-sdk",
+  "json": "doc_internal/json/doc.json",
+  "exclude": [
+    "**/*.tsx",
+    "!src/*.ts",
+    "**/*.vue",
+    "__test__/**/*ts",
+    "dist/**/*ts"
+  ],
+  "mode": "file",
+  "out": "doc_internal",
+  "ignoreCompilerErrors": true,
+  "includeDeclarations": true,
+  "excludeExternals": true,
+  "excludeNotExported": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "target": "ES2018",
+  "experimentalDecorators": true,
+  "module": "commonjs"
+}

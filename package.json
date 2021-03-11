@@ -1,15 +1,16 @@
 {
   "name": "@voximplant/kit-functions-sdk",
-  "version": "0.0.34",
+  "version": "0.0.37",
   "description": "Voximplant Kit cloud functions client",
   "main": "dist/index.js",
   "typescript": {
-    "definition": "dist/index.d.ts"
+    "definition": "dist/dts/index.d.ts"
   },
-  "typings": "dist/index.d.ts",
+  "typings": "dist/dts/index.d.ts",
   "scripts": {
     "test": "jest --silent",
-    "build": "node clear.js && tsc && node bundle.js"
+    "build": "node clear.js && tsc && node bundle.js && typedoc && node doc/converter/converter.js",
+    "doc": "typedoc && node doc/converter/converter.js"
   },
   "private": false,
   "repository": {
@@ -30,7 +31,10 @@
     "querystring": "^0.2.0"
   },
   "devDependencies": {
+    "colors": "^1.4.0",
+    "dts-bundle": "^0.7.3",
     "jest": "^26.6.3",
-    "dts-bundle": "^0.7.3"
+    "typedoc": "^0.19.2",
+    "typescript": "^3.9.5"
   }
 }
