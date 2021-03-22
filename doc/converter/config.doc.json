@@ -4,10 +4,5 @@
   "baseFqdn": "references.kit_functions",
   "exclude": [
     "isPrivate"
-  ],
-  "wrapper": {
-    "title": "Kit Functions",
-    "kind": "ref_folder",
-    "description": ""
-  }
+  ]
 }
