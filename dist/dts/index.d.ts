@@ -150,7 +150,7 @@ declare class VoximplantKit {
      * @param url {String} - Url address
      * @returns {Boolean}
      */
-    addPhoto(url: string): boolean;
+    private addPhoto;
     /**
      * Get client version
      */

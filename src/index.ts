@@ -474,7 +474,7 @@ class VoximplantKit {
    * @param url {String} - Url address
    * @returns {Boolean}
    */
-  public addPhoto(url: string) {
+  private addPhoto(url: string) {
     this.replyMessage.payload.push({
       type: "photo",
       url: url,
