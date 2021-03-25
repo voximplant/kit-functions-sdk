@@ -106,10 +106,24 @@ class VoximplantKit {
             return data;
     }
     /**
-     * Get incoming message
+     * Get incoming message (Read only)
      */
     getIncomingMessage() {
-        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.requestData) : null;
+        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.incomingMessage) : null;
+    }
+    /**
+     * Get reply message (Read only)
+     * @readonly
+     */
+    getReplyMessage() {
+        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.replyMessage) : null;
+    }
+    setReplyMessageText(text) {
+        if (typeof text === "string") {
+            this.replyMessage.text = text;
+            return true;
+        }
+        return false;
     }
     /**
      * Set auth token
@@ -423,8 +437,11 @@ class VoximplantKit {
      * Get client version
      */
     version() {
-        return "0.0.37";
+        return "0.0.38";
     }
 }
+/**
+ * @hidden
+ */
 VoximplantKit.default = VoximplantKit;
 module.exports = VoximplantKit;

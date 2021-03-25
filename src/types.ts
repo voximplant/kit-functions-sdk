@@ -13,17 +13,29 @@ export interface CallObject {
   record_url: string
 }
 
+/**
+ * @hidden
+ */
 export interface ContextObject {
   request: RequestObject
 }
 
+/**
+ * @hidden
+ */
 export interface RequestObject {
   body: RequestData,
   headers: ObjectType
 }
 
+/**
+ * @hidden
+ */
 export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 
+/**
+ * @hidden
+ */
 export interface RequestObjectCallBody {
   CALL: CallObject,
   SKILLS: SkillObject[],
@@ -62,7 +74,7 @@ export interface MessageConversationChannel {
   id: number
   channel_uuid: string,
   account: object,
-  channel_type: AgentChannelType,// 'telegram'
+  channel_type: ChannelType,// 'telegram'
   channel_settings: object,
   processing_method: string,
   processing_queue: object,
@@ -168,7 +180,7 @@ export interface DataBase {
 
 export type DataBaseType = 'function' | 'global' | 'conversation';
 
-export type AgentChannelType =
+export type ChannelType =
   'telegram'
   | 'whatsapp-edna'
   | 'viber'
@@ -179,6 +191,9 @@ export type AgentChannelType =
   | 'custom'
   | 'webchat';
 
+/**
+ * @hidden
+ */
 export interface ApiInstance {
   request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>
 }

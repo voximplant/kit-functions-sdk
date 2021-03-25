@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import Balab from "./Api"
+import Api from "./Api"
 import DB from "./DB"
 import {
   CallObject,
@@ -13,6 +13,9 @@ import {
 import Message from "./Message";
 import utils from './utils';
 
+/**
+ * @hidden
+ */
 const enum EVENT_TYPES {
   in_call_function = "in_call_function",
   incoming_message = "incoming_message",
@@ -36,10 +39,8 @@ class VoximplantKit {
   private call: CallObject = null;
   private skills: Array<SkillObject> = [];
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
-
-  // TODO find out if these properties should be private?
-  public replyMessage: MessageObject;
-  public incomingMessage: MessageObject;
+  private replyMessage: MessageObject;
+  private incomingMessage: MessageObject;
 
   constructor(context: ContextObject, isTest: boolean = false) {
     this.incomingMessage = new Message();
@@ -78,7 +79,7 @@ class VoximplantKit {
     this.skills = this.getSkills()
     // Store Call headers
     this.callHeaders = this.getCallHeaders();
-    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
     this.DB = new DB(this.api);
 
     if (this.eventType === EVENT_TYPES.incoming_message) {
@@ -93,6 +94,11 @@ class VoximplantKit {
     }
   }
 
+
+
+  /**
+   * @hidden
+   */
   static default = VoximplantKit;
 
   /**
@@ -142,10 +148,27 @@ class VoximplantKit {
   }
 
   /**
-   * Get incoming message
+   * Get incoming message (Read only)
    */
   public getIncomingMessage(): MessageObject | null {
-    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.requestData as MessageObject)) : null;
+    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.incomingMessage as MessageObject)) : null;
+  }
+
+  /**
+   * Get reply message (Read only)
+   * @readonly
+   */
+  public getReplyMessage(): MessageObject | null {
+    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.replyMessage as MessageObject)) : null;
+  }
+
+  public setReplyMessageText(text: string) {
+    if (typeof text === "string") {
+      this.replyMessage.text = text;
+      return true;
+    }
+
+    return false;
   }
 
   /**
@@ -156,7 +179,7 @@ class VoximplantKit {
     // TODO find out why use this method?
     if (typeof token === 'string') {
       this.accessToken = token;
-      this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+      this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
       return true;
     }
     return false;
@@ -490,7 +513,7 @@ class VoximplantKit {
    * Get client version
    */
   public version() {
-    return "0.0.37"
+    return "0.0.38"
   }
 }
 

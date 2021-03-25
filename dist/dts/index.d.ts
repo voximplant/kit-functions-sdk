@@ -16,9 +16,12 @@ declare class VoximplantKit {
     private call;
     private skills;
     private eventType;
-    replyMessage: MessageObject;
-    incomingMessage: MessageObject;
+    private replyMessage;
+    private incomingMessage;
     constructor(context: ContextObject, isTest?: boolean);
+    /**
+     * @hidden
+     */
     static default: typeof VoximplantKit;
     /**
      * load Databases
@@ -30,9 +33,15 @@ declare class VoximplantKit {
      */
     getResponseBody(data: any): any;
     /**
-     * Get incoming message
+     * Get incoming message (Read only)
      */
     getIncomingMessage(): MessageObject | null;
+    /**
+     * Get reply message (Read only)
+     * @readonly
+     */
+    getReplyMessage(): MessageObject | null;
+    setReplyMessageText(text: string): boolean;
     /**
      * Set auth token
      * @param token
