@@ -23,6 +23,8 @@ declare class VoximplantKit {
      * @hidden
      */
     static default: typeof VoximplantKit;
+    private getRequestDataProperty;
+    private getRequestDataVariables;
     /**
      * load Databases
      */
@@ -42,6 +44,14 @@ declare class VoximplantKit {
      */
     getReplyMessage(): MessageObject | null;
     setReplyMessageText(text: string): boolean;
+    /**
+     * The function was called from a call
+     */
+    isCall(): boolean;
+    /**
+     * The function was called from a message
+     */
+    isMessage(): boolean;
     /**
      * Set auth token
      * @param token
@@ -68,15 +78,11 @@ declare class VoximplantKit {
      * Get all call data
      */
     getCallData(): CallObject | null;
-    /**
-     * Get all variables
-     */
-    private getVariablesFromContext;
     getVariables(): ObjectType;
     /**
      * Get all skills
      */
-    getSkills(): SkillObject[];
+    getSkills(): SkillObject[] | null;
     /**
      * Set skill
      * @param name

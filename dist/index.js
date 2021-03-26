@@ -45,17 +45,17 @@ class VoximplantKit {
         // Get session access url
         this.sessionAccessUrl = utils_1.default.getHeaderValue(context, 'x-kit-session-access-url', '');
         // Store call data
-        this.call = this.getCallData();
-        // Store variables data
-        this.variables = this.getVariablesFromContext();
-        // Store skills data
-        this.skills = this.getSkills();
+        this.call = this.getRequestDataProperty('CALL');
         // Store Call headers
-        this.callHeaders = this.getCallHeaders();
+        this.callHeaders = this.getRequestDataProperty('HEADERS');
+        // Store variables data
+        this.variables = this.getRequestDataVariables();
+        // Store skills data
+        this.skills = this.getRequestDataProperty('SKILLS', []); //this.getSkills()
         this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
         this.DB = new DB_1.default(this.api);
-        if (this.eventType === "incoming_message" /* incoming_message */) {
-            this.incomingMessage = this.getIncomingMessage();
+        if (this.isMessage()) {
+            this.incomingMessage = utils_1.default.clone(this.requestData);
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
             this.replyMessage.conversation = utils_1.default.clone(this.requestData.conversation);
@@ -65,6 +65,22 @@ class VoximplantKit {
             });
         }
     }
+    getRequestDataProperty(name, defaultProp = {}) {
+        var _a;
+        const prop = (_a = this.requestData) === null || _a === void 0 ? void 0 : _a[name];
+        return prop ? utils_1.default.clone(prop) : defaultProp;
+    }
+    getRequestDataVariables() {
+        var _a, _b, _c, _d, _e;
+        let variables = {};
+        if (this.isMessage()) {
+            variables = ((_d = (_c = (_b = (_a = this.requestData) === null || _a === void 0 ? void 0 : _a.conversation) === null || _b === void 0 ? void 0 : _b.custom_data) === null || _c === void 0 ? void 0 : _c.request_data) === null || _d === void 0 ? void 0 : _d.variables) || {};
+        }
+        else if (this.isCall()) {
+            variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
+        }
+        return utils_1.default.clone(variables);
+    }
     /**
      * load Databases
      */
@@ -73,7 +89,7 @@ class VoximplantKit {
             this.DB.getDB("function_" + this.functionId),
             this.DB.getDB("accountdb_" + this.domain)
         ];
-        if (this.eventType === "incoming_message" /* incoming_message */) {
+        if (this.isMessage()) {
             _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid));
         }
         await this.DB.getAllDB(_DBs);
@@ -83,12 +99,12 @@ class VoximplantKit {
      * @param data
      */
     getResponseBody(data) {
-        if (this.eventType === "in_call_function" /* in_call_function */)
+        if (this.isCall())
             return {
                 "VARIABLES": this.variables,
                 "SKILLS": this.skills
             };
-        if (this.eventType === "incoming_message" /* incoming_message */) {
+        if (this.isMessage()) {
             const payloadIndex = this.replyMessage.payload.findIndex(item => {
                 return item.type === "cmd" && item.name === "transfer_to_queue";
             });
@@ -109,14 +125,14 @@ class VoximplantKit {
      * Get incoming message (Read only)
      */
     getIncomingMessage() {
-        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.incomingMessage) : null;
+        return this.isMessage() ? utils_1.default.clone(this.incomingMessage) : null;
     }
     /**
      * Get reply message (Read only)
      * @readonly
      */
     getReplyMessage() {
-        return this.eventType === "incoming_message" /* incoming_message */ ? utils_1.default.clone(this.replyMessage) : null;
+        return this.isMessage() ? utils_1.default.clone(this.replyMessage) : null;
     }
     setReplyMessageText(text) {
         if (typeof text === "string") {
@@ -124,6 +140,18 @@ class VoximplantKit {
             return true;
         }
         return false;
+    }
+    /**
+     * The function was called from a call
+     */
+    isCall() {
+        return this.eventType === "in_call_function" /* in_call_function */;
+    }
+    /**
+     * The function was called from a message
+     */
+    isMessage() {
+        return this.eventType === "incoming_message" /* incoming_message */;
     }
     /**
      * Set auth token
@@ -167,29 +195,13 @@ class VoximplantKit {
         }
     }
     getCallHeaders() {
-        const headers = this.requestData.HEADERS;
-        return headers ? utils_1.default.clone(headers) : null;
+        return this.isCall() ? utils_1.default.clone(this.callHeaders) : null;
     }
     /**
      * Get all call data
      */
     getCallData() {
-        const call = this.requestData.CALL;
-        return (typeof call !== "undefined") ? utils_1.default.clone(call) : null;
-    }
-    /**
-     * Get all variables
-     */
-    getVariablesFromContext() {
-        var _a, _b, _c, _d, _e;
-        let variables = {};
-        if (this.eventType === "incoming_message" /* incoming_message */) {
-            variables = ((_d = (_c = (_b = (_a = this.requestData) === null || _a === void 0 ? void 0 : _a.conversation) === null || _b === void 0 ? void 0 : _b.custom_data) === null || _c === void 0 ? void 0 : _c.request_data) === null || _d === void 0 ? void 0 : _d.variables) || {};
-        }
-        else if (this.eventType === "in_call_function" /* in_call_function */) {
-            variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
-        }
-        return utils_1.default.clone(variables);
+        return this.isCall() ? utils_1.default.clone(this.call) : null;
     }
     getVariables() {
         return utils_1.default.clone(this.variables);
@@ -198,8 +210,7 @@ class VoximplantKit {
      * Get all skills
      */
     getSkills() {
-        const skills = this.requestData.SKILLS;
-        return (typeof skills !== "undefined") ? utils_1.default.clone(skills) : [];
+        return this.isCall() ? utils_1.default.clone(this.skills) : null;
     }
     /**
      * Set skill
@@ -252,7 +263,7 @@ class VoximplantKit {
      * Finish current request in conversation
      */
     finishRequest() {
-        if (this.eventType !== "incoming_message" /* incoming_message */)
+        if (!this.isMessage())
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
             return item.type === "cmd" && item.name === "finish_request";
@@ -281,7 +292,7 @@ class VoximplantKit {
      * Transfer to queue
      */
     transferToQueue(queue) {
-        if (this.eventType !== "incoming_message" /* incoming_message */)
+        if (!this.isMessage())
             return false;
         if (typeof queue.queue_id === "undefined")
             queue.queue_id = null;
@@ -372,7 +383,7 @@ class VoximplantKit {
             this.DB.putDB("function_" + this.functionId, 'function'),
             this.DB.putDB("accountdb_" + this.domain, 'global')
         ];
-        if (this.eventType === "incoming_message" /* incoming_message */) {
+        if (this.isMessage()) {
             _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'));
         }
         try {
@@ -437,7 +448,7 @@ class VoximplantKit {
      * Get client version
      */
     version() {
-        return "0.0.38";
+        return "0.0.39";
     }
 }
 /**
