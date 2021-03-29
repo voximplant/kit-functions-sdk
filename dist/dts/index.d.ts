@@ -149,6 +149,21 @@ declare class VoximplantKit {
     sendSMS(from: string, to: string, message: string): Promise<unknown>;
     /**
      * Voximplant Kit API proxy
+     * ```js
+     * // Example of getting an account name
+     * module.exports = async function(context, callback) {
+     *  const kit = new VoximplantKit(context);
+     *  try {
+     *     const { success, result } = await kit.apiProxy('/v2/account/getAccountInfo');
+     *     if (success) {
+     *        console.log('Account name', result.domain.name);
+     *     }
+     *  } catch (err) {
+     *     console.log(err);
+     *  }
+     *  callback(200, kit.getResponseBody());
+     *}
+     * ```
      * @param url {string} - Url address
      * @param data
      */
