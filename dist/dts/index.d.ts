@@ -1,6 +1,5 @@
 import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
 declare class VoximplantKit {
-    private isTest;
     private requestData;
     private accessToken;
     private sessionAccessUrl;
@@ -18,7 +17,20 @@ declare class VoximplantKit {
     private eventType;
     private replyMessage;
     private incomingMessage;
-    constructor(context: ContextObject, isTest?: boolean);
+    /**
+     * The class VoximplantKit is a middleware for working with functions
+     * ```js
+     * module.exports = async function(context, callback) {
+     *  // Initializing a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Some code
+     *  console.log(Date.now());
+     *  // End of function work
+     *  callback(200, kit.getResponseBody());
+     *}
+     * ```
+     */
+    constructor(context: ContextObject);
     /**
      * @hidden
      */
@@ -27,6 +39,19 @@ declare class VoximplantKit {
     private getRequestDataVariables;
     /**
      * load Databases
+     * ```js
+     *  // Initializing a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  try {
+     *    // Connecting the internal database
+     *    await kit.loadDatabases();
+     *    // Reading the contents of the database
+     *    const scopes = kit.dbGetAll();
+     *    console.log(scopes)
+     *  } catch(err) {
+     *    console.log(err);
+     *  }
+     * ```
      */
     loadDatabases(): Promise<void>;
     /**
@@ -38,11 +63,6 @@ declare class VoximplantKit {
      * Get incoming message (Read only)
      */
     getIncomingMessage(): MessageObject | null;
-    /**
-     * Get reply message (Read only)
-     * @readonly
-     */
-    getReplyMessage(): MessageObject | null;
     setReplyMessageText(text: string): boolean;
     /**
      * The function was called from a call
@@ -52,11 +72,6 @@ declare class VoximplantKit {
      * The function was called from a message
      */
     isMessage(): boolean;
-    /**
-     * Set auth token
-     * @param token
-     */
-    setAccessToken(token: string): boolean;
     /**
      * Get Variable
      * @param name
@@ -82,7 +97,7 @@ declare class VoximplantKit {
     /**
      * Get all skills
      */
-    getSkills(): SkillObject[] | null;
+    getSkills(): SkillObject[];
     /**
      * Set skill
      * @param name
@@ -140,13 +155,6 @@ declare class VoximplantKit {
      * Commit DB changes
      */
     dbCommit(): Promise<boolean>;
-    /**
-     * Send SMS message
-     * @param from
-     * @param to
-     * @param message
-     */
-    sendSMS(from: string, to: string, message: string): Promise<unknown>;
     /**
      * Voximplant Kit API proxy
      * ```js

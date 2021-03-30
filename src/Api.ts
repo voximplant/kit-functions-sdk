@@ -9,10 +9,10 @@ import { ApiInstance } from "./types";
 export default class Api implements ApiInstance{
     private client:AxiosInstance;
 
-    constructor(domain:string, token:string, isTest:boolean, url: string) {
+    constructor(domain:string, token:string, url: string) {
 
         this.client = axios.create({
-            baseURL: isTest ? "https://voximplant.xyz/api" : `https://${url}/api`,
+            baseURL: `https://${url}/api`,
             method: "POST",
             responseType: "json",
             headers: {

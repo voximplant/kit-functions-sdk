@@ -5,7 +5,20 @@ const DB_1 = require("./DB");
 const Message_1 = require("./Message");
 const utils_1 = require("./utils");
 class VoximplantKit {
-    constructor(context, isTest = false) {
+    /**
+     * The class VoximplantKit is a middleware for working with functions
+     * ```js
+     * module.exports = async function(context, callback) {
+     *  // Initializing a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Some code
+     *  console.log(Date.now());
+     *  // End of function work
+     *  callback(200, kit.getResponseBody());
+     *}
+     * ```
+     */
+    constructor(context) {
         this.requestData = {};
         this.accessToken = '';
         this.sessionAccessUrl = '';
@@ -20,7 +33,6 @@ class VoximplantKit {
         this.eventType = "webhook" /* webhook */;
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
-        this.isTest = isTest;
         this.http = axios_1.default;
         if (typeof context === 'undefined' || typeof context.request === "undefined") {
             context = {
@@ -52,7 +64,7 @@ class VoximplantKit {
         this.variables = this.getRequestDataVariables();
         // Store skills data
         this.skills = this.getRequestDataProperty('SKILLS', []); //this.getSkills()
-        this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
+        this.api = new Api_1.default(this.domain, this.accessToken, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         if (this.isMessage()) {
             this.incomingMessage = utils_1.default.clone(this.requestData);
@@ -83,6 +95,19 @@ class VoximplantKit {
     }
     /**
      * load Databases
+     * ```js
+     *  // Initializing a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  try {
+     *    // Connecting the internal database
+     *    await kit.loadDatabases();
+     *    // Reading the contents of the database
+     *    const scopes = kit.dbGetAll();
+     *    console.log(scopes)
+     *  } catch(err) {
+     *    console.log(err);
+     *  }
+     * ```
      */
     async loadDatabases() {
         const _DBs = [
@@ -92,7 +117,7 @@ class VoximplantKit {
         if (this.isMessage()) {
             _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid));
         }
-        await this.DB.getAllDB(_DBs);
+        return await this.DB.getAllDB(_DBs);
     }
     /**
      * Get function response
@@ -127,13 +152,6 @@ class VoximplantKit {
     getIncomingMessage() {
         return this.isMessage() ? utils_1.default.clone(this.incomingMessage) : null;
     }
-    /**
-     * Get reply message (Read only)
-     * @readonly
-     */
-    getReplyMessage() {
-        return this.isMessage() ? utils_1.default.clone(this.replyMessage) : null;
-    }
     setReplyMessageText(text) {
         if (typeof text === "string") {
             this.replyMessage.text = text;
@@ -152,19 +170,6 @@ class VoximplantKit {
      */
     isMessage() {
         return this.eventType === "incoming_message" /* incoming_message */;
-    }
-    /**
-     * Set auth token
-     * @param token
-     */
-    setAccessToken(token) {
-        // TODO find out why use this method?
-        if (typeof token === 'string') {
-            this.accessToken = token;
-            this.api = new Api_1.default(this.domain, this.accessToken, this.isTest, this.apiUrl);
-            return true;
-        }
-        return false;
     }
     /**
      * Get Variable
@@ -210,7 +215,7 @@ class VoximplantKit {
      * Get all skills
      */
     getSkills() {
-        return this.isCall() ? utils_1.default.clone(this.skills) : null;
+        return utils_1.default.clone(this.skills);
     }
     /**
      * Set skill
@@ -393,23 +398,6 @@ class VoximplantKit {
             console.log(err);
             return false;
         }
-    }
-    /**
-     * Send SMS message
-     * @param from
-     * @param to
-     * @param message
-     */
-    sendSMS(from, to, message) {
-        return this.api.request("/v2/phone/sendSms", {
-            source: from,
-            destination: to,
-            sms_body: message
-        }).then(r => {
-            return r.data;
-        }).catch(err => {
-            console.log(err);
-        });
     }
     /**
      * Voximplant Kit API proxy

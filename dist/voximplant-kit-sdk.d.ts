@@ -5,13 +5,39 @@
 declare module '@voximplant/kit-functions-sdk' {
     import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "@voximplant/kit-functions-sdk/types";
     class VoximplantKit {
-            constructor(context: ContextObject, isTest?: boolean);
+            /**
+                * The class VoximplantKit is a middleware for working with functions
+                * ```js
+                * module.exports = async function(context, callback) {
+                *  // Initializing a VoximplantKit instance
+                *  const kit = new VoximplantKit(context);
+                *  // Some code
+                *  console.log(Date.now());
+                *  // End of function work
+                *  callback(200, kit.getResponseBody());
+                *}
+                * ```
+                */
+            constructor(context: ContextObject);
             /**
                 * @hidden
                 */
             static default: typeof VoximplantKit;
             /**
                 * load Databases
+                * ```js
+                *  // Initializing a VoximplantKit instance
+                *  const kit = new VoximplantKit(context);
+                *  try {
+                *    // Connecting the internal database
+                *    await kit.loadDatabases();
+                *    // Reading the contents of the database
+                *    const scopes = kit.dbGetAll();
+                *    console.log(scopes)
+                *  } catch(err) {
+                *    console.log(err);
+                *  }
+                * ```
                 */
             loadDatabases(): Promise<void>;
             /**
@@ -23,11 +49,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * Get incoming message (Read only)
                 */
             getIncomingMessage(): MessageObject | null;
-            /**
-                * Get reply message (Read only)
-                * @readonly
-                */
-            getReplyMessage(): MessageObject | null;
             setReplyMessageText(text: string): boolean;
             /**
                 * The function was called from a call
@@ -37,11 +58,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * The function was called from a message
                 */
             isMessage(): boolean;
-            /**
-                * Set auth token
-                * @param token
-                */
-            setAccessToken(token: string): boolean;
             /**
                 * Get Variable
                 * @param name
@@ -67,7 +83,7 @@ declare module '@voximplant/kit-functions-sdk' {
             /**
                 * Get all skills
                 */
-            getSkills(): SkillObject[] | null;
+            getSkills(): SkillObject[];
             /**
                 * Set skill
                 * @param name
@@ -120,13 +136,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             dbCommit(): Promise<boolean>;
             /**
-                * Send SMS message
-                * @param from
-                * @param to
-                * @param message
-                */
-            sendSMS(from: string, to: string, message: string): Promise<unknown>;
-            /**
                 * Voximplant Kit API proxy
                 * ```js
                 * // Example of getting an account name
@@ -159,6 +168,9 @@ declare module '@voximplant/kit-functions-sdk/types' {
     import { AxiosResponse } from "axios";
     export interface CallObject {
             id: number;
+            /**
+                * @hidden
+                */
             result_code: number;
             attempt_num: number;
             session_id: string;
@@ -202,21 +214,36 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export interface MessageObject {
             id: number;
             text: string;
+            /**
+                * @hidden
+                */
             type: string;
             sender: MessageSender;
             conversation: MessageConversation;
+            /**
+                * @hidden
+                */
             payload: Array<MessagePayloadItem>;
             customer: MessageCustomer;
+            /**
+                * @hidden
+                */
             HasMedia: boolean;
     }
     export interface MessageConversation {
             id: number;
+            /**
+                * @hidden
+                */
             uuid: string;
             client_id: string;
             custom_data: ConversationCustomDataObject;
             current_status: string;
             current_request: IncomingRequestObject;
             channel: MessageConversationChannel;
+            /**
+                * @hidden
+                */
             customer_id?: number;
     }
     export interface MessageConversationChannel {
@@ -284,7 +311,13 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export interface IncomingRequestObject {
             id: number;
             conversation_id: number;
+            /**
+                * @hidden
+                */
             start_sequence: number;
+            /**
+                * @hidden
+                */
             end_sequence: number;
             start_time: number;
             handling_start_time: number;
@@ -294,6 +327,10 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export interface MessageSender {
             is_bot: boolean;
     }
+    /**
+        * TODO add methods to get properties
+        * @hidden
+        */
     export interface MessagePayloadItem {
             type: string;
             message_type?: string;

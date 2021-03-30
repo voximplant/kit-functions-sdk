@@ -23,7 +23,6 @@ const enum EVENT_TYPES {
 }
 
 class VoximplantKit {
-  private isTest: boolean;
   private requestData: RequestData = {}
   private accessToken: string = ''
   private sessionAccessUrl: string = ''
@@ -42,10 +41,22 @@ class VoximplantKit {
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
 
-  constructor(context: ContextObject, isTest: boolean = false) {
+  /**
+   * The class VoximplantKit is a middleware for working with functions
+   * ```js
+   * module.exports = async function(context, callback) {
+   *  // Initializing a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Some code
+   *  console.log(Date.now());
+   *  // End of function work
+   *  callback(200, kit.getResponseBody());
+   *}
+   * ```
+   */
+  constructor(context: ContextObject) {
     this.incomingMessage = new Message();
     this.replyMessage = new Message(true);
-    this.isTest = isTest
     this.http = axios
 
     if (typeof context === 'undefined' || typeof context.request === "undefined") {
@@ -80,7 +91,7 @@ class VoximplantKit {
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
 
-    this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
 
     if (this.isMessage()) {
@@ -119,6 +130,19 @@ class VoximplantKit {
 
   /**
    * load Databases
+   * ```js
+   *  // Initializing a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connecting the internal database
+   *    await kit.loadDatabases();
+   *    // Reading the contents of the database
+   *    const scopes = kit.dbGetAll();
+   *    console.log(scopes)
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   * ```
    */
   public async loadDatabases() {
     const _DBs = [
@@ -130,7 +154,7 @@ class VoximplantKit {
       _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
     }
 
-    await this.DB.getAllDB(_DBs);
+    return await this.DB.getAllDB(_DBs);
   }
 
   /**
@@ -170,14 +194,6 @@ class VoximplantKit {
     return this.isMessage() ? utils.clone((this.incomingMessage as MessageObject)) : null;
   }
 
-  /**
-   * Get reply message (Read only)
-   * @readonly
-   */
-  public getReplyMessage(): MessageObject | null {
-    return this.isMessage() ? utils.clone((this.replyMessage as MessageObject)) : null;
-  }
-
   public setReplyMessageText(text: string) {
     if (typeof text === "string") {
       this.replyMessage.text = text;
@@ -199,20 +215,6 @@ class VoximplantKit {
    */
   public isMessage(): boolean {
     return this.eventType === EVENT_TYPES.incoming_message;
-  }
-
-  /**
-   * Set auth token
-   * @param token
-   */
-  public setAccessToken(token: string) {
-    // TODO find out why use this method?
-    if (typeof token === 'string') {
-      this.accessToken = token;
-      this.api = new Api(this.domain, this.accessToken, this.isTest, this.apiUrl);
-      return true;
-    }
-    return false;
   }
 
   /**
@@ -264,8 +266,8 @@ class VoximplantKit {
   /**
    * Get all skills
    */
-  public getSkills(): SkillObject[] | null {
-    return this.isCall() ? utils.clone(this.skills) : null;
+  public getSkills(): SkillObject[] {
+    return utils.clone(this.skills);
   }
 
   /**
@@ -465,24 +467,6 @@ class VoximplantKit {
       console.log(err);
       return false;
     }
-  }
-
-  /**
-   * Send SMS message
-   * @param from
-   * @param to
-   * @param message
-   */
-  public sendSMS(from: string, to: string, message: string) {
-    return this.api.request("/v2/phone/sendSms", {
-      source: from,
-      destination: to,
-      sms_body: message
-    }).then(r => {
-      return r.data
-    }).catch(err => {
-      console.log(err);
-    })
   }
 
   /**
