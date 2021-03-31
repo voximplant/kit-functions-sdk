@@ -2,6 +2,9 @@ import { AxiosResponse } from "axios";
 
 export interface CallObject {
   id: number
+  /**
+   * @hidden
+   */
   result_code: number
   attempt_num: number
   session_id: string
@@ -51,22 +54,37 @@ export interface SkillObject {
 export interface MessageObject {
   id: number,
   text: string;
+  /**
+   * @hidden
+   */
   type: string;
   sender: MessageSender;
   conversation: MessageConversation;
+  /**
+   * @hidden
+   */
   payload: Array<MessagePayloadItem>;
   customer: MessageCustomer;
+  /**
+   * @hidden
+   */
   HasMedia: boolean
 }
 
 export interface MessageConversation {
   id: number
+  /**
+   * @hidden
+   */
   uuid: string
   client_id: string
   custom_data: ConversationCustomDataObject
   current_status: string
   current_request: IncomingRequestObject,
   channel: MessageConversationChannel,
+  /**
+   * @hidden
+   */
   customer_id?: number,
 }
 
@@ -143,7 +161,13 @@ export interface MessageCustomerClientIds {
 export interface IncomingRequestObject {
   id: number
   conversation_id: number
+  /**
+   * @hidden
+   */
   start_sequence: number
+  /**
+   * @hidden
+   */
   end_sequence: number
   start_time: number
   handling_start_time: number
@@ -155,6 +179,10 @@ export interface MessageSender {
   is_bot: boolean
 }
 
+/**
+ * TODO add methods to get properties
+ * @hidden
+ */
 export interface MessagePayloadItem {
   type: string
   message_type?: string
@@ -202,5 +230,5 @@ export type DbResponse = { result: string };
 
 // Vox doc do not support native type Record
 export type ObjectType = {
-  [id: string]: string
+  [key: string]: string
 }

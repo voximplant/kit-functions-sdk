@@ -6,9 +6,9 @@ const qs = require("qs");
  * @hidden
  */
 class Api {
-    constructor(domain, token, isTest, url) {
+    constructor(domain, token, url) {
         this.client = axios_1.default.create({
-            baseURL: isTest ? "https://voximplant.xyz/api" : `https://${url}/api`,
+            baseURL: `https://${url}/api`,
             method: "POST",
             responseType: "json",
             headers: {
