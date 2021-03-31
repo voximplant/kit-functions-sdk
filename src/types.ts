@@ -230,5 +230,5 @@ export type DbResponse = { result: string };
 
 // Vox doc do not support native type Record
 export type ObjectType = {
-  [id: string]: string
+  [key: string]: string
 }

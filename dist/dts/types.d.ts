@@ -197,5 +197,5 @@ export declare type DbResponse = {
     result: string;
 };
 export declare type ObjectType = {
-    [id: string]: string;
+    [key: string]: string;
 };
