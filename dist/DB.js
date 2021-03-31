@@ -68,9 +68,9 @@ class DB {
         return (_c = (_b = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) === null || _b === void 0 ? void 0 : _b[key]) !== null && _c !== void 0 ? _c : null;
     }
     setScopeValue(key, value, scope = "global") {
-        var _a, _b;
-        if ((_b = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) === null || _b === void 0 ? void 0 : _b[key]) {
-            this.scope[scope][key] = value;
+        var _a;
+        if (((_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) && typeof key === 'string') {
+            this.scope[scope][key] = `${value}`;
             return true;
         }
         return false;

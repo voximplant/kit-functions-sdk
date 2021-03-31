@@ -79,8 +79,8 @@ export default class DB {
   }
 
   public setScopeValue(key: string, value: any, scope: DataBaseType = "global"): boolean {
-    if (this.scope?.[scope]?.[key]) {
-      this.scope[scope][key] = value;
+    if (this.scope?.[scope] && typeof key === 'string') {
+      this.scope[scope][key] = `${value}`;
       return true;
     }
     return false;
