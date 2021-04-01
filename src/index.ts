@@ -142,6 +142,8 @@ class VoximplantKit {
    *  } catch(err) {
    *    console.log(err);
    *  }
+   *  // End of function work
+   *  callback(200, kit.getResponseBody());
    * ```
    */
   public async loadDatabases() {
@@ -370,7 +372,7 @@ class VoximplantKit {
    *  // Initializing a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
    *  const all_vars = kit.getVariables();
-   *  console.log('all_vars');
+   *  console.log(all_vars);
    *  // End of function work
    *  callback(200, kit.getResponseBody());
    * ```
