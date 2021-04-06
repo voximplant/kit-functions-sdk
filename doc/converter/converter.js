@@ -256,7 +256,7 @@ function reshapeNode(node, parentFqdn) {
       ? {attributes}
       : {}),
     ...(node.type || node.getSignature
-      ? {types: getTypes(node.type || node.getSignature.type, fqdn)}
+      ? {types: getTypes(node.type || node.getSignature.type ||node.getSignature[0].type, fqdn, false, node)}
       : {}),
     ...(children && children.length
       ? {children}
@@ -368,7 +368,8 @@ function getAttributes(tags) {
 /**
  * Get entity types
  */
-function getTypes(type, fqdn, isFuncParam = false) {
+function getTypes(type, fqdn, isFuncParam = false, node) {
+  console.log(node);
   /**
    * Exclude generic constant names and usages
    */

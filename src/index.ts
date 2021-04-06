@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import Balab from "./Api"
+import Api from "./Api"
 import DB from "./DB"
 import {
   CallObject,
@@ -13,6 +13,9 @@ import {
 import Message from "./Message";
 import utils from './utils';
 
+/**
+ * @hidden
+ */
 const enum EVENT_TYPES {
   in_call_function = "in_call_function",
   incoming_message = "incoming_message",
@@ -20,7 +23,6 @@ const enum EVENT_TYPES {
 }
 
 class VoximplantKit {
-  private isTest: boolean;
   private requestData: RequestData = {}
   private accessToken: string = ''
   private sessionAccessUrl: string = ''
@@ -31,20 +33,30 @@ class VoximplantKit {
   private priority: number = 0;
   private http: AxiosInstance;
   private api: ApiInstance;
-  private callHeaders = {};
+  private callHeaders: ObjectType = {};
   private variables: ObjectType = {};
   private call: CallObject = null;
   private skills: Array<SkillObject> = [];
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
+  private replyMessage: MessageObject;
+  private incomingMessage: MessageObject;
 
-  // TODO find out if these properties should be private?
-  public replyMessage: MessageObject;
-  public incomingMessage: MessageObject;
-
-  constructor(context: ContextObject, isTest: boolean = false) {
+  /**
+   * Voximplant Kit class, a middleware for working with functions.
+   * ```js
+   * module.exports = async function(context, callback) {
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Some code
+   *  console.log(Date.now());
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   *}
+   * ```
+   */
+  constructor(context: ContextObject) {
     this.incomingMessage = new Message();
     this.replyMessage = new Message(true);
-    this.isTest = isTest
     this.http = axios
 
     if (typeof context === 'undefined' || typeof context.request === "undefined") {
@@ -71,21 +83,22 @@ class VoximplantKit {
     // Get session access url
     this.sessionAccessUrl = utils.getHeaderValue(context, 'x-kit-session-access-url', '') as string;
     // Store call data
-    this.call = this.getCallData()
-    // Store variables data
-    this.variables = this.getVariablesFromContext();
-    // Store skills data
-    this.skills = this.getSkills()
+    this.call = this.getRequestDataProperty('CALL') as CallObject;
     // Store Call headers
-    this.callHeaders = this.getCallHeaders();
-    this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+    this.callHeaders = this.getRequestDataProperty('HEADERS');
+    // Store variables data
+    this.variables = this.getRequestDataVariables();
+    // Store skills data
+    this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
+
+    this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
 
-    if (this.eventType === EVENT_TYPES.incoming_message) {
-      this.incomingMessage = this.getIncomingMessage()
-      this.replyMessage.type = (this.requestData as MessageObject).type
-      this.replyMessage.sender.is_bot = true
-      this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation)
+    if (this.isMessage()) {
+      this.incomingMessage = utils.clone(this.requestData) as MessageObject;
+      this.replyMessage.type = (this.requestData as MessageObject).type;
+      this.replyMessage.sender.is_bot = true;
+      this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation);
       this.replyMessage.payload.push({
         type: "properties",
         message_type: "text"
@@ -93,10 +106,45 @@ class VoximplantKit {
     }
   }
 
+  /**
+   * @hidden
+   */
   static default = VoximplantKit;
 
+  private getRequestDataProperty(name: string, defaultProp: {} | [] = {}) {
+    const prop = (this.requestData as RequestData)?.[name];
+    return prop ? utils.clone(prop) : defaultProp;
+  }
+
+  private getRequestDataVariables(): ObjectType {
+    let variables = {};
+
+    if (this.isMessage()) {
+      variables = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.variables || {}
+    } else if (this.isCall()) {
+      variables = (this.requestData as RequestObjectCallBody)?.VARIABLES || {};
+    }
+
+    return utils.clone(variables);
+  }
+
   /**
-   * load Databases
+   * Loads the databases available in the scope.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Read contents from the global scope
+   *    const global_scope = kit.dbGetAll('global');
+   *    console.log(global_scope)
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public async loadDatabases() {
     const _DBs = [
@@ -104,25 +152,31 @@ class VoximplantKit {
       this.DB.getDB("accountdb_" + this.domain)
     ];
 
-    if (this.eventType === EVENT_TYPES.incoming_message) {
+    if (this.isMessage()) {
       _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
     }
 
-    await this.DB.getAllDB(_DBs);
+    return await this.DB.getAllDB(_DBs);
   }
 
   /**
-   * Get function response
+   * Gets a function response. Needs to be called at the end of each function.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    * @param data
    */
   public getResponseBody(data: any) {
-    if (this.eventType === EVENT_TYPES.in_call_function)
+    if (this.isCall())
       return {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
 
-    if (this.eventType === EVENT_TYPES.incoming_message) {
+    if (this.isMessage()) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
       })
@@ -142,38 +196,115 @@ class VoximplantKit {
   }
 
   /**
-   * Get incoming message
+   * Gets an incoming message.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Check if the function is called from a channel
+   *  if (kit.isMessage()) {
+   *    // Get text from an incoming message
+   *    const message = kit.getIncomingMessage();
+   *    console.log(message.text);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public getIncomingMessage(): MessageObject | null {
-    return this.eventType === EVENT_TYPES.incoming_message ? utils.clone((this.requestData as MessageObject)) : null;
+    return this.isMessage() ? utils.clone((this.incomingMessage as MessageObject)) : null;
   }
 
   /**
-   * Set auth token
-   * @param token
+   * Sets a reply message text.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Check if the function is called from a channel
+   *  if (kit.isMessage()) {
+   *    // Get text from an incoming message
+   *    const message = kit.getIncomingMessage();
+   *    console.log(message.text);
+   *    // Set text of the reply
+   *    kit.setReplyMessageText('you wrote ' + message.text);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param text {string} - Reply text
    */
-  public setAccessToken(token: string) {
-    // TODO find out why use this method?
-    if (typeof token === 'string') {
-      this.accessToken = token;
-      this.api = new Balab(this.domain, this.accessToken, this.isTest, this.apiUrl);
+  public setReplyMessageText(text: string) {
+    if (typeof text === "string") {
+      this.replyMessage.text = text;
       return true;
     }
+
     return false;
   }
 
   /**
-   * Get Variable
-   * @param name
+   * The function is called from a call.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isCall()) {
+   *    console.log('This function is called from the call')
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public isCall(): boolean {
+    return this.eventType === EVENT_TYPES.in_call_function;
+  }
+
+  /**
+   * The function is called from a message.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isMessage()) {
+   *    console.log('This function is called from the channel');
+   *    const message = kit.getIncomingMessage();
+   *    //...
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public isMessage(): boolean {
+    return this.eventType === EVENT_TYPES.incoming_message;
+  }
+
+  /**
+   * Gets a variable by name
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  const my_var = kit.getVariable('my_var');
+   *  if (my_var) {
+   *    console.log(my_var);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name {string} - Variable name
    */
   public getVariable(name: string): string | null {
     return (typeof name === 'string' && typeof this.variables[name] !== "undefined") ? this.variables[name] : null
   }
 
   /**
-   * Set variable
-   * @param name {String} - Variable name
-   * @param value {String} - Variable value
+   * Adds a variable or updates it if the variable name already exists.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  kit.setVariable('my_var', 'some_value');
+   *  console.log(kit.getVariable('my_var'));
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name {string} - Variable name
+   * @param value {string} - Variable value to add or update
    */
   public setVariable(name: string, value: string): boolean {
     if (typeof name === 'string' && typeof value === 'string') {
@@ -184,8 +315,17 @@ class VoximplantKit {
   }
 
   /**
-   * Delete variable
-   * @param name {String} - Variable name
+   * Deletes a variable by name.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  kit.deleteVariable('my_var');
+   *  // Console will print null
+   *  console.log(kit.getVariable('my_var'));
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name {string} - Variable name
    */
   deleteVariable(name: string) {
     if (typeof name === 'string') {
@@ -193,50 +333,86 @@ class VoximplantKit {
     }
   }
 
+  /**
+   * Gets call headers.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isCall()) {
+   *    const headers = kit.getCallHeaders();
+   *    console.log(headers);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
   public getCallHeaders(): ObjectType | null {
-    const headers = (this.requestData as RequestObjectCallBody).HEADERS;
-    return headers ? utils.clone(headers) : null;
+    return this.isCall() ? utils.clone(this.callHeaders) : null;
   }
 
   /**
-   * Get all call data
+   * Gets all call data.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isCall()) {
+   *    const call = kit.getCallData();
+   *    // Get the phone number from which the call is made
+   *    console.log(call.phone_a);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public getCallData(): CallObject | null {
-    const call = (this.requestData as RequestObjectCallBody).CALL;
-    return (typeof call !== "undefined") ? utils.clone(call) : null;
+    return this.isCall() ? utils.clone(this.call) : null;
   }
 
   /**
-   * Get all variables
+   * Gets all variables.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  const all_vars = kit.getVariables();
+   *  console.log(all_vars);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
-  private getVariablesFromContext(): ObjectType {
-    let variables = {};
-
-    if (this.eventType === EVENT_TYPES.incoming_message) {
-      variables = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.variables || {}
-    } else if (this.eventType === EVENT_TYPES.in_call_function) {
-      variables = (this.requestData as RequestObjectCallBody)?.VARIABLES || {};
-    }
-
-    return utils.clone(variables);
-  }
-
   public getVariables(): ObjectType {
     return utils.clone(this.variables);
   }
 
   /**
-   * Get all skills
+   * Gets all skills.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (this.isCall()) {
+   *    const all_skills = kit.getSkills();
+   *    console.log('All skills:', all_skills);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public getSkills(): SkillObject[] {
-    const skills = (this.requestData as RequestObjectCallBody).SKILLS;
-    return (typeof skills !== "undefined") ? utils.clone(skills) : [];
+    return utils.clone(this.skills);
   }
 
   /**
-   * Set skill
-   * @param name
-   * @param level
+   * Adds a skill or updates it if the skill name already exists.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (this.isCall()) {
+   *    kit.setSkill('some_skill_name', 5);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name Skill name
+   * @param level Proficiency level
    */
   public setSkill(name: string, level: number): boolean {
     if (typeof name !== 'string' || typeof level !== 'number') return false;
@@ -254,8 +430,17 @@ class VoximplantKit {
   }
 
   /**
-   * Remove skill
-   * @param name
+   * Removes a skill by name.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (this.isCall()) {
+   *    kit.removeSkill('some_skill_name');
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name {string} - Name of the skill to remove
    */
   public removeSkill(name: string): boolean {
     const skillIndex = this.skills.findIndex(skill => {
@@ -268,6 +453,20 @@ class VoximplantKit {
     return false;
   }
 
+  /**
+   * Sets the call priority. The higher the priority, the less time a client will wait for the operator's answer.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Transfer a client to the queue
+   *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
+   *  // Set the highest priority
+   *  kit.setPriority(10);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param value {number} - Priority value, from 0 to 10
+   */
   public setPriority(value: number): boolean {
     if (typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 10) {
       this.priority = value;
@@ -278,15 +477,42 @@ class VoximplantKit {
     }
   }
 
-  public getPriority() {
+  /**
+   * Gets call priorities.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Return a number from 0 to 10
+   *  const priority = kit.getPriority();
+   *  if (priority === 10) {
+   *    // Something to do
+   *  } else if (priority === 5) {
+   *    // Something to do
+   *  } else {
+   *    // Something to do
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getPriority(): number {
     return this.priority;
   }
 
   /**
-   * Finish current request in conversation
+   * Closes the client's request.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (this.isMessage()) {
+   *    kit.finishRequest();
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
-  public finishRequest() {
-    if (this.eventType !== EVENT_TYPES.incoming_message) return false
+  public finishRequest(): boolean {
+    if (!this.isMessage()) return false
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
     })
@@ -300,12 +526,28 @@ class VoximplantKit {
   }
 
   /**
-   * Cancel finish current request in conversation
+   * Reopens the client's request.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (this.isMessage()) {
+   *    kit.finishRequest();
+   *  }
+   *  // ...
+   *  // Сondition for reopening
+   *  const shouldCancel = true;
+   *  if (shouldCancel) {
+   *    kit.cancelFinishRequest();
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public cancelFinishRequest() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === "finish_request"
-    })
+    });
+
     if (payloadIndex > -1) {
       this.replyMessage.payload.splice(payloadIndex, 1)
     }
@@ -314,10 +556,19 @@ class VoximplantKit {
   }
 
   /**
-   * Transfer to queue
+   * Transfers a client to the queue.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Transfer a client to the queue
+   *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param queue {QueueInfo} - Queue name or id
    */
   public transferToQueue(queue: QueueInfo) {
-    if (this.eventType !== EVENT_TYPES.incoming_message) return false
+    if (!this.isMessage()) return false;
 
     if (typeof queue.queue_id === "undefined") queue.queue_id = null;
     if (typeof queue.queue_name === "undefined") queue.queue_name = null;
@@ -343,7 +594,21 @@ class VoximplantKit {
   }
 
   /**
-   * Cancel transfer to queue
+   * Cancels transferring a client to the queue.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // Transfer a client to the queue
+   *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
+   *  //...
+   *  // Condition for canceling the transfer to the queue
+   *  const shouldCancel = true;
+   *  if (shouldCancel) {
+   *    kit.cancelTransferToQueue();
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public cancelTransferToQueue() {
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -357,61 +622,104 @@ class VoximplantKit {
   }
 
   /**
-   * Save DB by scope name
-   * @param type
-   * @private
-   */
-  private async saveDb(type: DataBaseType): Promise<boolean> {
-    // TODO find out why use this method?
-    let _dbName = null;
-
-    if (type === "function") {
-      _dbName = "function_" + this.functionId
-    }
-
-    if (type === "global") {
-      _dbName = "accountdb_" + this.domain
-    }
-
-    if (type === "conversation" && this.eventType == EVENT_TYPES.incoming_message) {
-      _dbName = "conversation_" + this.incomingMessage.conversation.uuid
-    }
-
-    if (_dbName === null) return false
-
-    await this.DB.putDB(_dbName, type);
-    return true;
-  }
-
-  /**
-   * Get value from DB by key
-   * @param key
-   * @param scope
+   * Gets a value from the database scope by key. Available only after loadDatabases() execution.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Get the value from the function scope by key
+   *    const _test = kit.dbGet('test_key', 'function')
+   *    console.log(_test);
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param key {string} - Key
+   * @param scope {DataBaseType} - Database scope 
    */
   public dbGet(key: string, scope: DataBaseType = "global"): string | null {
     return this.DB.getScopeValue(key, scope);
   }
 
   /**
-   * Set value in DB by key
-   * @param key
-   * @param value
-   * @param scope {DataBaseType}
+   * Adds a value to the database scope or updates it if the key already exists. Available only after loadDatabases() execution.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Get a value from the function scope by key
+   *    const _test = kit.dbGet('test_key', 'function')
+   *    // If there is no data
+   *    if (_test === null) {
+   *      kit.dbSet('test_key', 'Hello world!!!', 'function');
+   *    }
+   *    // Write changes to the database
+   *    kit.dbCommit()
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param key {string} - Key
+   * @param value {any} - Value to add or update
+   * @param scope {DataBaseType} - Database scope
    */
   public dbSet(key: string, value: any, scope: DataBaseType = "global"): boolean {
     return this.DB.setScopeValue(key, value, scope);
   }
 
   /**
-   * Get all DB scope by name
-   * @param scope
+   * Gets the whole database scope by name. Available only after loadDatabases() execution.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Read contents from the global scope
+   *    const global_scope = kit.dbGetAll('global');
+   *    console.log(global_scope)
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param scope {DataBaseType} - Database scope 
    */
   public dbGetAll(scope: DataBaseType = "global"): ObjectType | null {
     return utils.clone(this.DB.getScopeAllValues(scope));
   }
 
   /**
-   * Commit DB changes
+   * Adds changes to the database. Available only after loadDatabases() execution.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Get a value from the function scope by key
+   *    const _test = kit.dbGet('test_key', 'function')
+   *    // If there is no data
+   *    if (_test === null) {
+   *      kit.dbSet('test_key', 'Hello world!!!', 'function');
+   *    }
+   *    // Write changes to the database
+   *    kit.dbCommit()
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public async dbCommit() {
     const _DBs = [
@@ -419,7 +727,7 @@ class VoximplantKit {
       this.DB.putDB("accountdb_" + this.domain, 'global')
     ];
 
-    if (this.eventType === EVENT_TYPES.incoming_message) {
+    if (this.isMessage()) {
       _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
     }
 
@@ -432,26 +740,22 @@ class VoximplantKit {
   }
 
   /**
-   * Send SMS message
-   * @param from
-   * @param to
-   * @param message
-   */
-  public sendSMS(from: string, to: string, message: string) {
-    return this.api.request("/v2/phone/sendSms", {
-      source: from,
-      destination: to,
-      sms_body: message
-    }).then(r => {
-      return r.data
-    }).catch(err => {
-      console.log(err);
-    })
-  }
-
-  /**
-   * Voximplant Kit API proxy
-   * @param url {string} - Url address
+   * Allows you to use the Voximplant Kit API.
+   * ```js
+   * // Example of getting an account name
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *     const { success, result } = await kit.apiProxy('/v2/account/getAccountInfo');
+   *     if (success) {
+   *        console.log('Account name', result.domain.name);
+   *     }
+   *  } catch (err) {
+   *     console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param url {string} - URL address
    * @param data
    */
   public apiProxy(url: string, data: any) {
@@ -463,18 +767,19 @@ class VoximplantKit {
   }
 
   /**
-   * Add photo
+   * Adds a photo.
    * ```js
    * module.exports = async function(context, callback) {
    *  const kit = new VoximplantKit(context);
    *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
+   *  // End of function
    *  callback(200, kit.getResponseBody());
    *}
    * ```
-   * @param url {String} - Url address
+   * @param url {String} - URL address of the photo
    * @returns {Boolean}
    */
-  public addPhoto(url: string) {
+  private addPhoto(url: string) {
     this.replyMessage.payload.push({
       type: "photo",
       url: url,
@@ -487,10 +792,17 @@ class VoximplantKit {
 
 
   /**
-   * Get client version
+   * Gets a client’s SDK version.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  // Get a client’s SDK version
+   *  kit.version();
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   public version() {
-    return "0.0.37"
+    return "0.0.40"
   }
 }
 
