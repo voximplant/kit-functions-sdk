@@ -129,9 +129,8 @@ class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param data
      */
-    getResponseBody(data) {
+    getResponseBody() {
         if (this.isCall())
             return {
                 "VARIABLES": this.variables,
@@ -149,10 +148,9 @@ class VoximplantKit {
                 text: this.replyMessage.text,
                 payload: this.replyMessage.payload,
                 variables: this.variables
-            };
-        }
-        else
-            return data;
+            }; // To be added in the future
+        } /*else
+          return data*/
     }
     /**
      * Gets an incoming message.
@@ -733,7 +731,7 @@ class VoximplantKit {
      * ```
      */
     version() {
-        return "0.0.40";
+        return "0.0.41";
     }
 }
 /**

@@ -64,9 +64,20 @@ declare class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param data
      */
-    getResponseBody(data: any): any;
+    getResponseBody(): {
+        VARIABLES: ObjectType;
+        SKILLS: SkillObject[];
+        text?: undefined;
+        payload?: undefined;
+        variables?: undefined;
+    } | {
+        text: string;
+        payload: import("./types").MessagePayloadItem[];
+        variables: ObjectType;
+        VARIABLES?: undefined;
+        SKILLS?: undefined;
+    };
     /**
      * Gets an incoming message.
      * ```js

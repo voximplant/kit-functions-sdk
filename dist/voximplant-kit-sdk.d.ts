@@ -50,9 +50,20 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  // End of function
                 *  callback(200, kit.getResponseBody());
                 * ```
-                * @param data
                 */
-            getResponseBody(data: any): any;
+            getResponseBody(): {
+                    VARIABLES: ObjectType;
+                    SKILLS: SkillObject[];
+                    text?: undefined;
+                    payload?: undefined;
+                    variables?: undefined;
+            } | {
+                    text: string;
+                    payload: import("./types").MessagePayloadItem[];
+                    variables: ObjectType;
+                    VARIABLES?: undefined;
+                    SKILLS?: undefined;
+            };
             /**
                 * Gets an incoming message.
                 * ```js
@@ -606,19 +617,28 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 */
             id: number;
             channel_uuid: string;
+            /**
+                * @hidden
+                */
             account: object;
             /**
                 * Channel name
                 */
             channel_type: ChannelType;
             /**
-                * Channel settings
+                * @hidden
                 */
             channel_settings: object;
             processing_method: string;
             processing_queue: object;
             processing_function: number;
+            /**
+                * @hidden
+                */
             partner_id: number;
+            /**
+                * @hidden
+                */
             access_token: string;
     }
     export interface ConversationCustomDataObject {
@@ -647,7 +667,13 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * Conversation id (the whole chat in the channel)
                 */
             conversation_id: number;
+            /**
+                * @hidden
+                */
             start_sequence: number;
+            /**
+                * @hidden
+                */
             end_sequence: any;
             /**
                 * Time when the request was created
