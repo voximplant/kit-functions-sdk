@@ -167,9 +167,8 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param data
    */
-  public getResponseBody(data: any) {
+  public getResponseBody() {
     if (this.isCall())
       return {
         "VARIABLES": this.variables,
@@ -190,9 +189,9 @@ class VoximplantKit {
         text: this.replyMessage.text,
         payload: this.replyMessage.payload,
         variables: this.variables
-      }
-    } else
-      return data
+      } // To be added in the future
+    } /*else
+      return data*/
   }
 
   /**
@@ -639,7 +638,7 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    * @param key {string} - Key
-   * @param scope {DataBaseType} - Database scope 
+   * @param scope {DataBaseType} - Database scope
    */
   public dbGet(key: string, scope: DataBaseType = "global"): string | null {
     return this.DB.getScopeValue(key, scope);
@@ -692,7 +691,7 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param scope {DataBaseType} - Database scope 
+   * @param scope {DataBaseType} - Database scope
    */
   public dbGetAll(scope: DataBaseType = "global"): ObjectType | null {
     return utils.clone(this.DB.getScopeAllValues(scope));
@@ -802,7 +801,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.40"
+    return "0.0.41"
   }
 }
 

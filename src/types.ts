@@ -145,19 +145,28 @@ export interface MessageConversationChannel {
    */
   id: number
   channel_uuid: string,
+  /**
+   * @hidden
+   */
   account: object,
   /**
    * Channel name
    */
   channel_type: ChannelType,// 'telegram'
   /**
-   * Channel settings
+   * @hidden
    */
   channel_settings: object,
   processing_method: string,
   processing_queue: object,
   processing_function: number,
+  /**
+   * @hidden
+   */
   partner_id: number,
+  /**
+   * @hidden
+   */
   access_token: string
 }
 
@@ -188,7 +197,13 @@ export interface ConversationCustomDataRequestData {
    * Conversation id (the whole chat in the channel)
    */
   conversation_id: number,
+  /**
+   * @hidden
+   */
   start_sequence: number,
+  /**
+   * @hidden
+   */
   end_sequence: any,
   /**
    * Time when the request was created
@@ -240,7 +255,7 @@ export interface ConversationCustomDataConversationDataObject {
   /**
    * Channel from which the message was sent
    */
-  channel_type: string
+  channel_type: ChannelType
   /**
    * Sender of the last message
    */
