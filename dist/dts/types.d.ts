@@ -242,7 +242,7 @@ export interface ConversationCustomDataConversationDataObject {
     /**
      * Channel from which the message was sent
      */
-    channel_type: string;
+    channel_type: ChannelType;
     /**
      * Sender of the last message
      */
