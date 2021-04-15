@@ -8,7 +8,8 @@
   },
   "typings": "dist/dts/index.d.ts",
   "scripts": {
-    "test": "jest --silent",
+    "test:silent": "jest --silent",
+    "test": "jest",
     "build": "node clear.js && tsc && node bundle.js && typedoc && node doc/converter/converter.js",
     "doc": "typedoc && node doc/converter/converter.js"
   },
