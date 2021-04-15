@@ -1,57 +1,20 @@
 const VoximplantKit = require('../dist/index.js');
 const axios = require('axios');
 const api = require('../dist/Api')
-const callContext = require('../temp.js').CallContext;
-console.log(callContext);
+const callContext = require('../../temp.js').CallContext;
+
+
+jest.mock('../dist/Api');
+const mMock = jest.fn();
+api.default.mockImplementation(() => {
+  return {
+    request: mMock
+  }
+});
 
 const kit = new VoximplantKit(callContext);
-/*jest.mock('axios', () => {
-  return {
-    interceptors: {
-      request: { use: jest.fn(), eject: jest.fn() },
-      response: { use: jest.fn(), eject: jest.fn() },
-    },
-    default: {
-      create: jest.fn(),
-    },
-    request: jest.fn(() => Promise.resolve()),
-  };
-});*/
 
-jest.mock('../dist/Api', () => {
 
-  return  {
-    default: jest.fn().mockReturnValue(() => {
-      return {
-        request: jest.fn(),
-      }
-    }),
-    request: jest.fn()
-  }
-})
-
-/*jest.mock('axios', () => {
-  return {
-    default: {
-      create: jest.fn(() => ({
-        get: jest.fn(),
-        interceptors: {
-          request: { use: jest.fn(), eject: jest.fn() },
-          response: { use: jest.fn(), eject: jest.fn() }
-        },
-        request: jest.fn(),
-      })),
-    },
-    create: jest.fn(() => ({
-      get: jest.fn(),
-      interceptors: {
-        request: { use: jest.fn(), eject: jest.fn() },
-        response: { use: jest.fn(), eject: jest.fn() }
-      },
-    })),
-    get: jest.fn(),
-  }
-})*/
 
 /**
  * kit.setPriority
@@ -75,17 +38,11 @@ describe('Get incoming message without context', () => {
 });
 
 describe.only('check api mock', () => {
-
-  console.log(api);
-
-  //axios.default.create.request.mockResolvedValue(resp)
   test('check api proxy', () => {
     const users = [{name: 'Bob'}];
-    const resp = users;
-    api.default.request.mockResolvedValue({data: users})
+    mMock.mockResolvedValue({data: users});
     return kit.apiProxy('/v2/account/getAccountInfo').then(data => expect(data).toEqual(users))
-  })
-
+  });
 })
 
 
