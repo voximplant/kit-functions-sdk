@@ -52,14 +52,13 @@ describe('getIncomingMessage', () => {
     const kit = new VoximplantKit(messageContext);
 
     test('Should contain text and type', () => {
-      expect(kit.getIncomingMessage()).toEqual( expect.objectContaining({
+      expect(kit.getIncomingMessage()).toEqual(expect.objectContaining({
         text: expect.any(String),
         type: expect.any(String),
       }),);
     });
   });
 })
-
 
 
 describe('apiProxy', () => {
@@ -324,7 +323,7 @@ describe('getVariable', () => {
   });
 });
 
-describe.only('getVariables', () => {
+describe('getVariables', () => {
   const kit = new VoximplantKit();
   const vars = kit.getVariables();
 
@@ -333,4 +332,70 @@ describe.only('getVariables', () => {
   });
 })
 
+describe('isCall', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+    const isCall = kit.isCall();
+
+    test('Should return true', () => {
+      expect(isCall).toEqual(true);
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKit(messageContext);
+    const isCall = kit.isCall();
+
+    test('Should return false', () => {
+      expect(isCall).toEqual(false);
+    });
+  });
+});
+
+describe('isMessage', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+    const isMessage = kit.isMessage();
+
+    test('Should return false', () => {
+      expect(isMessage).toEqual(false);
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKit(messageContext);
+    const isMessage = kit.isMessage();
+
+    test('Should return true', () => {
+      expect(isMessage).toEqual(true);
+    });
+  });
+});
+
+describe.only('removeSkill', () => {
+  describe.each([callContext, messageContext])('with %# context', (a) => {
+    const kit = new VoximplantKit(a.value);
+    const isSet = kit.setSkill('my_skill', 5);
+    const result = kit.removeSkill('my_skill');
+    const localSkills = kit.getSkills();
+
+    test('setSkill should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+
+    test('removeSkill should return true', () => {
+      expect(result).toEqual(true);
+    });
+
+    test('getSkills must not contain my_skill', () => {
+      const expected = [{
+        skill_name: 'my_skill',
+        level: 5
+      }];
+      expect(localSkills).toEqual(
+        expect.not.arrayContaining(expected),
+      );
+    });
+  });
+});
 
