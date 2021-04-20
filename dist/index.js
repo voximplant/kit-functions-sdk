@@ -360,8 +360,12 @@ class VoximplantKit {
      * @param level Proficiency level
      */
     setSkill(name, level) {
-        if (typeof name !== 'string' || typeof level !== 'number')
+        if (typeof name !== 'string' || !Number.isInteger(level))
             return false;
+        if (level < 1 || level > 5) {
+            console.warn('The level property must be a number from 1 to 5');
+            return false;
+        }
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
         });
@@ -510,11 +514,10 @@ class VoximplantKit {
     transferToQueue(queue) {
         if (!this.isMessage())
             return false;
-        if (typeof queue.queue_id === "undefined")
+        if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id))
             queue.queue_id = null;
-        if (typeof queue.queue_name === "undefined")
+        if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string")
             queue.queue_name = null;
-        // TODO find out if there should be an OR operator
         if (queue.queue_id === null && queue.queue_name === null)
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {

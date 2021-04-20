@@ -2,7 +2,9 @@ const VoximplantKit = require('../dist/index.js');
 const api = require('../dist/Api')
 const callContext = require('../../temp.js').CallContext;
 const messageContext = require('../../temp.js').MessageContext;
-
+const notString = [11, Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []];
+const notNumber = ['11', '-11', Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []];
+const notStringAndNumber = [Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []]
 
 jest.mock('../dist/Api');
 const mMock = jest.fn();
@@ -12,53 +14,8 @@ api.default.mockImplementation(() => {
   }
 });
 
-/**
- * kit.setPriority
- */
-describe('setPriority', () => {
-  const kit = new VoximplantKit();
 
-  describe.each([
-    11, 2, -100, 10, Infinity, -Infinity, 'sdfsd', 'asdas', new Error(), () => 11, NaN
-  ])('set value %p as priority', (a) => {
-    const priority = kit.setPriority(a);
 
-    test(`Returns a priority ${a} equal to a value between 0 and 10`, () => {
-      expect(typeof priority === 'boolean').toBeTruthy();
-      expect(kit.getPriority()).toBeGreaterThanOrEqual(0);
-      expect(kit.getPriority()).toBeLessThanOrEqual(10);
-    });
-  });
-})
-
-describe('getIncomingMessage', () => {
-  describe('without context', () => {
-    const kit = new VoximplantKit();
-
-    test('Return null', () => {
-      expect(kit.getIncomingMessage()).toBeNull();
-    });
-  });
-
-  describe('with call context', () => {
-    const kit = new VoximplantKit(callContext);
-
-    test('Return null', () => {
-      expect(kit.getIncomingMessage()).toBeNull();
-    });
-  });
-
-  describe('with message context', () => {
-    const kit = new VoximplantKit(messageContext);
-
-    test('Should contain text and type', () => {
-      expect(kit.getIncomingMessage()).toEqual(expect.objectContaining({
-        text: expect.any(String),
-        type: expect.any(String),
-      }),);
-    });
-  });
-})
 
 
 describe('apiProxy', () => {
@@ -70,31 +27,31 @@ describe('apiProxy', () => {
   });
 })
 
-describe('finishRequest', () => {
+describe('cancelFinishRequest', () => {
   describe('With call context', () => {
     const kit = new VoximplantKit(callContext);
-    const result = kit.finishRequest();
+    const result = kit.cancelFinishRequest();
 
-    test('should return false', () => {
-      expect(result).toBeFalsy()
+    test('should return true', () => {
+      expect(result).toEqual(true);
     });
   });
 
   describe('With message context', () => {
     const kit = new VoximplantKit(messageContext);
-    const result = kit.finishRequest();
+    const result = kit.cancelFinishRequest();
     const {payload} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(result).toBeTruthy()
+      expect(result).toEqual(true);
     });
 
-    test('Payload should contain finish_request command', () => {
+    test('Payload should not contain finish_request command', () => {
       const expected = [{
         type: "cmd",
         name: "finish_request"
       }];
-      expect(payload).toEqual(expect.arrayContaining(expected));
+      expect(payload).toEqual(expect.not.arrayContaining(expected));
     });
   });
 })
@@ -115,7 +72,7 @@ describe('cancelTransferToQueue', () => {
     const {payload} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(result).toBeTruthy()
+      expect(result).toEqual(true)
     });
 
     test('Payload must not contain transfer_to_queue command', () => {
@@ -178,10 +135,10 @@ describe('finishRequest', () => {
     const {payload} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(isSet).toBeTruthy();
+      expect(isSet).toEqual(true);
     });
 
-    test('Payload should contain transfer_to_queue command', () => {
+    test('Payload should contain finish_request command', () => {
       const expected = [{
         type: "cmd",
         name: "finish_request"
@@ -236,6 +193,35 @@ describe('getCallHeaders', () => {
   });
 })
 
+describe('getIncomingMessage', () => {
+  describe('without context', () => {
+    const kit = new VoximplantKit();
+
+    test('Return null', () => {
+      expect(kit.getIncomingMessage()).toBeNull();
+    });
+  });
+
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+
+    test('Return null', () => {
+      expect(kit.getIncomingMessage()).toBeNull();
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKit(messageContext);
+
+    test('Should contain text and type', () => {
+      expect(kit.getIncomingMessage()).toEqual(expect.objectContaining({
+        text: expect.any(String),
+        type: expect.any(String),
+      }),);
+    });
+  });
+});
+
 describe('getPriority', () => {
   const kit = new VoximplantKit(callContext);
   const priority = kit.getPriority();
@@ -265,7 +251,7 @@ describe('getResponseBody', () => {
     });
   });
 
-  describe('with call context', () => {
+  describe('with message context', () => {
     const kit = new VoximplantKit(messageContext);
     const body = kit.getResponseBody();
 
@@ -301,9 +287,10 @@ describe('getSkills', () => {
 });
 
 describe('getVariable', () => {
-  const kit = new VoximplantKit();
+
 
   describe('without context', () => {
+    const kit = new VoximplantKit();
     kit.setVariable('test_var', 'var value');
     const testVar = kit.getVariable('test_var');
 
@@ -315,6 +302,7 @@ describe('getVariable', () => {
   describe.each([
     11, Infinity, -Infinity, () => undefined, null, new Error(), () => 11, NaN
   ])('set %p as parameter', (a) => {
+    const kit = new VoximplantKit();
     const testVar = kit.getVariable(a);
 
     test(`Returns a value ${a} equal to equal null`, () => {
@@ -372,7 +360,7 @@ describe('isMessage', () => {
   });
 });
 
-describe.only('removeSkill', () => {
+describe('removeSkill', () => {
   describe.each([callContext, messageContext])('with %# context', (a) => {
     const kit = new VoximplantKit(a.value);
     const isSet = kit.setSkill('my_skill', 5);
@@ -399,3 +387,261 @@ describe.only('removeSkill', () => {
   });
 });
 
+describe('setPriority', () => {
+  const kit = new VoximplantKit();
+
+  describe.each([
+    11, 2, -100, 10, Infinity, -Infinity, 'sdfsd', 'asdas', new Error(), () => 11, NaN
+  ])('set value %p as priority', (a) => {
+    const isSet = kit.setPriority(a);
+
+    test(`Returns a priority ${a} equal to a value between 0 and 10`, () => {
+      expect(typeof isSet === 'boolean').toBeTruthy();
+      expect(kit.getPriority()).toBeGreaterThanOrEqual(0);
+      expect(kit.getPriority()).toBeLessThanOrEqual(10);
+    });
+  });
+})
+
+describe('setReplyMessageText', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setReplyMessageText('test text');
+
+    test('Should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKit(messageContext);
+    const isSet = kit.setReplyMessageText('test text');
+    const body = kit.getResponseBody();
+
+    test('Should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+
+    test('Must contain text', () => {
+      expect(body).toEqual(
+        expect.objectContaining({text: 'test text'}),
+      );
+    });
+  });
+
+  describe.each(notString)('set value %p as reply message text', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setReplyMessageText(a);
+
+    test(`setReplyMessageText with ${a} value, return false`, () => {
+      expect(isSet).toEqual(false);
+    });
+  });
+});
+
+describe('setSkill', () => {
+  const kit = new VoximplantKit(callContext);
+  const isSet = kit.setSkill('my_skill', 5);
+  const localSkills = kit.getSkills();
+  const {SKILLS} = kit.getResponseBody();
+
+  test('setSkill should return true', () => {
+    expect(isSet).toEqual(true);
+  });
+
+  test('getSkills must not contain my_skill', () => {
+    const expected = [{
+      skill_name: 'my_skill',
+      level: 5
+    }];
+    expect(localSkills).toEqual(
+      expect.arrayContaining(expected),
+    );
+  });
+
+  test('Response body skills must contain my_skill', () => {
+    const expected = [{skill_name: 'my_skill', level: 5}];
+    expect(SKILLS).toEqual(
+      expect.arrayContaining(expected),
+    );
+  });
+
+  describe.each([
+    {name: true, value: undefined},
+    {name: 22, value: false},
+    {name: 22, value: 'ssss'},
+    {name: 'sss', value: NaN},
+  ])('set skill %#', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setSkill(a.name, a.value);
+    console.log(isSet, a.value)
+    test(`Should return false`, () => {
+      expect(isSet).toEqual(false);
+    });
+  });
+
+  describe.each([1, 2, 3, 4, 5])('set level %p', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setSkill('my_skill', a);
+    test(`Should return true`, () => {
+      expect(isSet).toEqual(true);
+    });
+  });
+
+  describe.each([-1, -2, 0, 6, 7, 8])('set level %p', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setSkill('my_skill', a);
+    console.log(isSet);
+    test(`Should return false`, () => {
+      expect(isSet).toEqual(false);
+    });
+  });
+})
+
+describe('setVariable', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setVariable('test_var', 'var value');
+    const value = kit.getVariable('test_var');
+    const {VARIABLES} = kit.getResponseBody();
+
+    test('Should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+
+    test('The value must be equal to var value', () => {
+      expect(value).toEqual('var value');
+    });
+
+    test('Response body should contain my_var', () => {
+      expect(VARIABLES).toEqual(expect.objectContaining({
+        'test_var': 'var value',
+      }),);
+    })
+  });
+
+  describe.each(notString)('Set not a string %p as variable name', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setVariable(a, 'my_value');
+    const value = kit.getVariable(a);
+
+    test(`Should return false`, () => {
+      expect(isSet).toEqual(false);
+    });
+
+    test('The value must be null', () => {
+      expect(value).toBeNull();
+    });
+  });
+
+  describe.each(notString)('Set not a string %p as variable value', (a) => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.setVariable('test_var', a);
+    const value = kit.getVariable('test_var');
+
+    test(`Should return false`, () => {
+      expect(isSet).toEqual(false);
+    });
+
+    test('The value must be null', () => {
+      expect(value).toBeNull();
+    });
+  });
+});
+
+describe('transferToQueue', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKit(callContext);
+    const isSet = kit.transferToQueue({queue_id: 155, queue_name: 'test_queue'});
+
+    test('Should return false', () => {
+      expect(isSet).toEqual(false);
+    });
+  });
+
+  describe('with message context', () => {
+    describe('Set valid queue_id and queue_name', () => {
+      const kit = new VoximplantKit(messageContext);
+      const isSet = kit.transferToQueue({queue_id: 155, queue_name: 'test_queue'});
+      const {payload} = kit.getResponseBody();
+
+      test('Should return true', () => {
+        expect(isSet).toEqual(true);
+      });
+
+      test('Payload should contain transfer_to_queue command', () => {
+        const expected = [{
+          "name": "transfer_to_queue",
+          "priority": 0,
+          "queue": {"queue_id": 155, "queue_name": "test_queue"},
+          "skills": [],
+          "type": "cmd"
+        }];
+        expect(payload).toEqual(expect.arrayContaining(expected));
+      });
+    });
+
+    describe.each(notStringAndNumber)('Set invalid value %p as queue_id and queue_name', (a) => {
+      const kit = new VoximplantKit(messageContext);
+      const isSet = kit.transferToQueue({queue_id: a, queue_name: a});
+
+      test('Should return false', () => {
+        expect(isSet).toEqual(false);
+      });
+    });
+
+
+    describe.each(notNumber)('Set not a number %p as queue_id and set valid queue_name', (a) => {
+      const kit = new VoximplantKit(messageContext);
+      const isSet = kit.transferToQueue({queue_id: a, queue_name: 'test_queue'});
+      const {payload} = kit.getResponseBody();
+
+      test('Should return true', () => {
+        expect(isSet).toEqual(true);
+      });
+
+      test('Payload should contain transfer_to_queue command', () => {
+        const expected = [{
+          "name": "transfer_to_queue",
+          "priority": 0,
+          "queue": {"queue_id": null, "queue_name": "test_queue"},
+          "skills": [],
+          "type": "cmd"
+        }];
+        expect(payload).toEqual(expect.arrayContaining(expected));
+      });
+    });
+
+    describe.each(notString)('Set not a string %p as queue_name and set valid queue_id', (a) => {
+      const kit = new VoximplantKit(messageContext);
+      const isSet = kit.transferToQueue({queue_id: 155, queue_name: a});
+      const {payload} = kit.getResponseBody();
+
+      test('Should return true', () => {
+        expect(isSet).toEqual(true);
+      });
+
+      test('Payload should contain transfer_to_queue command', () => {
+        const expected = [{
+          "name": "transfer_to_queue",
+          "priority": 0,
+          "queue": {"queue_id": 155, "queue_name": null},
+          "skills": [],
+          "type": "cmd"
+        }];
+        expect(payload).toEqual(expect.arrayContaining(expected));
+      });
+    })
+  });
+});
+
+describe('version', () => {
+  const kit = new VoximplantKit();
+  const version = kit.version();
+
+  test('Should return string', () => {
+    expect(typeof version).toEqual('string');
+  });
+});
+
+// TODO loadDatabases, dbCommit, dbGet, dbGetAll, dbSet
