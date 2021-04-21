@@ -2,9 +2,11 @@ const VoximplantKit = require('../dist/index.js');
 const api = require('../dist/Api')
 const callContext = require('../../temp.js').CallContext;
 const messageContext = require('../../temp.js').MessageContext;
-const notString = [11, Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []];
-const notNumber = ['11', '-11', Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []];
-const notStringAndNumber = [Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, []]
+
+const notStringAndNumber = [Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, [], true, false];
+const notString = [11, -11, ...notStringAndNumber];
+const notNumber = ['11', '-11',...notStringAndNumber];
+
 
 jest.mock('../dist/Api');
 const mMock = jest.fn();
