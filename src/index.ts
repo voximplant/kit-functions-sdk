@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody, ObjectType
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -147,16 +147,25 @@ class VoximplantKit {
    * ```
    */
   public async loadDatabases() {
-    const _DBs = [
+    /*const _DBs = [
       this.DB.getDB("function_" + this.functionId),
       this.DB.getDB("accountdb_" + this.domain)
     ];
 
     if (this.isMessage()) {
       _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
+    }*/
+
+    const names = [
+      'function_' + this.functionId,
+      'accountdb_' + this.domain,
+    ]
+
+    if(this.isMessage()) {
+      names.push('conversation_' + this.incomingMessage.conversation.uuid)
     }
 
-    return await this.DB.getAllDB(_DBs);
+    return await this.DB.getAllDB(names);
   }
 
   /**
@@ -726,17 +735,17 @@ class VoximplantKit {
    * ```
    */
   public async dbCommit() {
-    const _DBs = [
-      this.DB.putDB("function_" + this.functionId, 'function'),
-      this.DB.putDB("accountdb_" + this.domain, 'global')
-    ];
+    const params: DateBasePutParams[] = [
+      {name: 'function_' + this.functionId, scope: 'function'},
+      {name: 'accountdb_' + this.domain, scope: 'global'},
+    ]
 
     if (this.isMessage()) {
-      _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
+      params.push({name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' })
     }
 
     try {
-      return await this.DB.putAllDB(_DBs);
+      return await this.DB.putAllDB(params);
     } catch (err) {
       console.log(err);
       return false;

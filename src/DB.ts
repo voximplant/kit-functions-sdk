@@ -1,4 +1,4 @@
-import { ApiInstance, DataBase, DataBaseType, DbResponse, ObjectType } from "./types";
+import { ApiInstance, DataBase, DataBaseType, DateBasePutParams, DbResponse, ObjectType } from "./types";
 import axios from "axios";
 import utils from './utils';
 
@@ -18,7 +18,7 @@ export default class DB {
     };
   }
 
-  public getDB(db_name: string): Promise<DbResponse> {
+  private getDB(db_name: string): Promise<DbResponse> {
     return this.api.request("/v2/kv/get", {
       key: db_name
     }).then((response) => {
@@ -28,7 +28,7 @@ export default class DB {
     })
   }
 
-  public putDB(db_name: string, type: DataBaseType) {
+  private putDB(db_name: string, type: DataBaseType) {
     const value = this.scope?.[type];
 
     if (!value) {
@@ -47,7 +47,10 @@ export default class DB {
     })
   }
 
-  public getAllDB(_DBs: Promise<DbResponse>[]) {
+  public getAllDB(names: string[] = []) {
+    const _DBs: Promise<DbResponse>[] = [];
+    names.forEach((name) => _DBs.push(this.getDB(name)));
+
     return axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
       const functionDB = (typeof func !== "undefined" && func?.result) ? JSON.parse(func.result) : {}
       const accountDB = (typeof acc !== "undefined" && acc?.result) ? JSON.parse(acc.result) : {}
@@ -64,7 +67,10 @@ export default class DB {
   }
 
 
-  public putAllDB(_DBs: Promise<DbResponse>[]): Promise<boolean> {
+  public putAllDB(params: DateBasePutParams[]): Promise<boolean> {
+    const _DBs: Promise<DbResponse>[]  = [];
+    params.forEach(item => _DBs.push(this.putDB(item.name, item.scope)));
+
     return axios.all(_DBs)
       .then(axios.spread(() => {
       return true;
