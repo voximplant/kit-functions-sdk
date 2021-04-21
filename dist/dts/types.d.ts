@@ -380,6 +380,13 @@ export interface DataBase {
      */
     conversation: ObjectType;
 }
+/**
+ * @hidden
+ */
+export declare type DateBasePutParams = {
+    name: string;
+    scope: DataBaseType;
+};
 export declare type DataBaseType = 'function' | 'global' | 'conversation';
 export declare type ChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
 /**

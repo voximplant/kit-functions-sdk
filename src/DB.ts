@@ -50,18 +50,18 @@ export default class DB {
   public getAllDB(names: string[] = []) {
     const _DBs: Promise<DbResponse>[] = [];
     names.forEach((name) => _DBs.push(this.getDB(name)));
-
-    return axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
-      const functionDB = (typeof func !== "undefined" && func?.result) ? JSON.parse(func.result) : {}
-      const accountDB = (typeof acc !== "undefined" && acc?.result) ? JSON.parse(acc.result) : {}
-      const conversationDB = (typeof conv !== "undefined" && conv?.result) ? JSON.parse(conv.result) : {}
+    //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
+    return axios.all(_DBs).then(([func, acc, conv]) => {
+      const functionDB = (typeof func !== "undefined" && func?.result && typeof func.result === 'string') ? JSON.parse(func.result) : {}
+      const accountDB = (typeof acc !== "undefined" && acc?.result && typeof acc.result === 'string') ? JSON.parse(acc.result) : {}
+      const conversationDB = (typeof conv !== "undefined"  && conv?.result && typeof conv.result === 'string') ? JSON.parse(conv.result) : {}
 
       this.scope = {
         function: functionDB,
         global: accountDB,
         conversation: conversationDB
       };
-    })).catch((err) => {
+    }).catch((err) => {
       console.log(err);
     })
   }
@@ -72,9 +72,9 @@ export default class DB {
     params.forEach(item => _DBs.push(this.putDB(item.name, item.scope)));
 
     return axios.all(_DBs)
-      .then(axios.spread(() => {
-      return true;
-    })).catch((err) => {
+      .then(() => {
+        return true;
+      }).catch((err) => {
       console.log(err);
       return false;
     })

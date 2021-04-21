@@ -40,25 +40,30 @@ class DB {
             return { result: null };
         });
     }
-    getAllDB(_DBs) {
-        return axios_1.default.all(_DBs).then(axios_1.default.spread((func, acc, conv) => {
-            const functionDB = (typeof func !== "undefined" && (func === null || func === void 0 ? void 0 : func.result)) ? JSON.parse(func.result) : {};
-            const accountDB = (typeof acc !== "undefined" && (acc === null || acc === void 0 ? void 0 : acc.result)) ? JSON.parse(acc.result) : {};
-            const conversationDB = (typeof conv !== "undefined" && (conv === null || conv === void 0 ? void 0 : conv.result)) ? JSON.parse(conv.result) : {};
+    getAllDB(names = []) {
+        const _DBs = [];
+        names.forEach((name) => _DBs.push(this.getDB(name)));
+        //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
+        return axios_1.default.all(_DBs).then(([func, acc, conv]) => {
+            const functionDB = (typeof func !== "undefined" && (func === null || func === void 0 ? void 0 : func.result) && typeof func.result === 'string') ? JSON.parse(func.result) : {};
+            const accountDB = (typeof acc !== "undefined" && (acc === null || acc === void 0 ? void 0 : acc.result) && typeof acc.result === 'string') ? JSON.parse(acc.result) : {};
+            const conversationDB = (typeof conv !== "undefined" && (conv === null || conv === void 0 ? void 0 : conv.result) && typeof conv.result === 'string') ? JSON.parse(conv.result) : {};
             this.scope = {
                 function: functionDB,
                 global: accountDB,
                 conversation: conversationDB
             };
-        })).catch((err) => {
+        }).catch((err) => {
             console.log(err);
         });
     }
-    putAllDB(_DBs) {
+    putAllDB(params) {
+        const _DBs = [];
+        params.forEach(item => _DBs.push(this.putDB(item.name, item.scope)));
         return axios_1.default.all(_DBs)
-            .then(axios_1.default.spread(() => {
+            .then(() => {
             return true;
-        })).catch((err) => {
+        }).catch((err) => {
             console.log(err);
             return false;
         });

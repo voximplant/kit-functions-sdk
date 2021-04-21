@@ -16,10 +16,6 @@ api.default.mockImplementation(() => {
   }
 });
 
-
-
-
-
 describe('apiProxy', () => {
   const kit = new VoximplantKit();
   test('check api proxy', () => {
