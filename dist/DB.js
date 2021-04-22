@@ -19,7 +19,8 @@ class DB {
             key: db_name
         }).then((response) => {
             return response.data;
-        }).catch(() => {
+        }).catch((err) => {
+            console.log(err);
             return { result: null };
         });
     }
@@ -52,8 +53,9 @@ class DB {
             ttl: -1
         }).then((response) => {
             return response.data;
-        }).catch(() => {
-            return { result: null };
+        }).catch((err) => {
+            console.log(err);
+            return err;
         });
     }
     putAllDB(params) {

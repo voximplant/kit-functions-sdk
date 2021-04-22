@@ -1,6 +1,11 @@
 const Api = require('../dist/Api');
 const DB = require('../dist/DB.js');
 const axios = require('axios');
+const {
+  notStringAndNumber,
+  notString,
+  notNumber
+} = require('./constants');
 
 jest.mock('axios');
 
@@ -62,10 +67,24 @@ describe('getAllDB', () => {
 });
 
 describe('putDB', () => {
-  test.only('If a nonexistent type is passed scope returns false',  () => {
-
+  test('If a nonexistent type is passed scope returns false', () => {
     return db.putDB('functions', 'test')
       .catch(e => expect(e).toMatch('DB test not found'));
+  });
+
+  test('A successful request will return an object containing the result property with string', () => {
+    apiMock.mockResolvedValue({data: {result: ''}});
+    return db.putDB('functions_name', 'function').then(res => {
+      expect(res).toEqual(expect.objectContaining({result: expect.any(String)}))
+    })
+  });
+
+  test('A failure request will return an object containing the result property with null', () => {
+    apiMock.mockRejectedValue(new Error('failure request'));
+    return db.putDB('functions_name', 'function').catch(res => {
+      console.log(res);
+      expect(res).toMatch('failure request');
+    });
   });
 });
 
@@ -82,5 +101,99 @@ describe('putAllDB', () => {
     expect(result).toEqual(false);
   });
 });
+
+describe('getScopeValue', () => {
+  test('with valid key and scope, should return string test', async () => {
+    axios.default.all.mockResolvedValue([funcResponse, accResponse, convResponse]);
+    await db.getAllDB([]);
+
+    const valueFromGlobal = db.getScopeValue('client');
+    const valueFromGlobal2 = db.getScopeValue('client', 'global');
+    const valueFromFunc = db.getScopeValue('name', 'function');
+    const valueFromConv = db.getScopeValue('phone', 'conversation');
+
+    expect(valueFromGlobal).toEqual(expect.any(String));
+    expect(valueFromGlobal2).toEqual(expect.any(String));
+    expect(valueFromFunc).toEqual(expect.any(String));
+    expect(valueFromConv).toEqual(expect.any(String));
+  });
+
+  describe.each(['key', true, false, null, undefined, {}, [], 111, Infinity, NaN])('Get with invalid key %p', (a) => {
+    axios.default.all.mockResolvedValue([funcResponse, accResponse, convResponse]);
+
+    test('Should return null', async () => {
+      await db.getAllDB([]);
+      const valueFromGlobal = db.getScopeValue(a);
+      const valueFromFunc = db.getScopeValue(a, 'function');
+      const valueFromConv = db.getScopeValue(a, 'conversation');
+
+      expect(valueFromGlobal).toBeNull();
+      expect(valueFromFunc).toBeNull();
+      expect(valueFromConv).toBeNull();
+    })
+  })
+
+  describe.each(['key', true, false, null, undefined, {}, [], 111, Infinity, NaN])('Get from invalid scope %p', (a) => {
+    axios.default.all.mockResolvedValue([funcResponse, accResponse, convResponse]);
+
+    test('Should return null', async () => {
+      await db.getAllDB([]);
+      const valueFromGlobal = db.getScopeValue('name', a);
+
+      expect(valueFromGlobal).toBeNull();
+    });
+  });
+});
+
+describe.only('setScopeValue', () => {
+  describe.each([undefined, 'global', 'function', 'conversation'])('With valid scope %p', (scope) => {
+    const api = new Api.default();
+    const db = new DB.default(api);
+    const isSet = db.setScopeValue('key', 'value', scope);
+    const value = db.getScopeValue('key', scope);
+
+    test('set valid key and value should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+
+    test('value to be equal string \'value\'', () => {
+      expect(value).toEqual('value');
+    })
+  })
+
+  describe.each(notString)('set invalid key %p', (key) => {
+    const api = new Api.default();
+    const db = new DB.default(api);
+    const isSet = db.setScopeValue(key, 'value', 'global');
+
+    test('Should return false', () => {
+      expect(isSet).toEqual(false)
+    })
+
+    test(`Scope must not contain a key ${key}`, () => {
+      expect(`${key}` in db.scope).toEqual(false)
+    })
+  })
+
+  describe.each(notString)('set not string value %p', (value) => {
+    let api, db, isSet;
+    beforeEach(() => {
+      api = new Api.default();
+      db = new DB.default(api);
+      isSet = db.setScopeValue('test_key', value, 'global');
+    });
+
+    test('Should return false', () => {
+      expect(isSet).toEqual(true)
+    })
+
+    test(`Scope must not contain a key ${value}`, () => {
+      const val = db.getScopeValue('test_key', 'global');
+      expect(val).toEqual(`${value}`);
+    })
+  });
+})
+
+
 
 

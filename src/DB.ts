@@ -23,7 +23,8 @@ export default class DB {
       key: db_name
     }).then((response) => {
       return response.data as DbResponse;
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err);
       return { result: null }
     })
   }
@@ -60,8 +61,9 @@ export default class DB {
       ttl: -1
     }).then((response) => {
       return response.data as DbResponse
-    }).catch(() => {
-      return { result: null }
+    }).catch((err) => {
+      console.log(err);
+      return err;
     })
   }
 
