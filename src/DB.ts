@@ -28,25 +28,6 @@ export default class DB {
     })
   }
 
-  private putDB(db_name: string, type: DataBaseType) {
-    const value = this.scope?.[type];
-
-    if (!value) {
-      console.log(`DB ${ type } not found`);
-      return;
-    }
-
-    return this.api.request("/v2/kv/put", {
-      key: db_name,
-      value: value,
-      ttl: -1
-    }).then((response) => {
-      return response.data as DbResponse
-    }).catch(() => {
-      return { result: null }
-    })
-  }
-
   public getAllDB(names: string[] = []) {
     const _DBs: Promise<DbResponse>[] = [];
     names.forEach((name) => _DBs.push(this.getDB(name)));
@@ -66,6 +47,23 @@ export default class DB {
     })
   }
 
+  private putDB(db_name: string, type: DataBaseType) {
+    const value = this.scope?.[type];
+
+    if (!value) {
+      return Promise.reject(`DB ${ type } not found`);
+    }
+
+    return this.api.request("/v2/kv/put", {
+      key: db_name,
+      value: value,
+      ttl: -1
+    }).then((response) => {
+      return response.data as DbResponse
+    }).catch(() => {
+      return { result: null }
+    })
+  }
 
   public putAllDB(params: DateBasePutParams[]): Promise<boolean> {
     const _DBs: Promise<DbResponse>[]  = [];

@@ -23,23 +23,6 @@ class DB {
             return { result: null };
         });
     }
-    putDB(db_name, type) {
-        var _a;
-        const value = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[type];
-        if (!value) {
-            console.log(`DB ${type} not found`);
-            return;
-        }
-        return this.api.request("/v2/kv/put", {
-            key: db_name,
-            value: value,
-            ttl: -1
-        }).then((response) => {
-            return response.data;
-        }).catch(() => {
-            return { result: null };
-        });
-    }
     getAllDB(names = []) {
         const _DBs = [];
         names.forEach((name) => _DBs.push(this.getDB(name)));
@@ -55,6 +38,22 @@ class DB {
             };
         }).catch((err) => {
             console.log(err);
+        });
+    }
+    putDB(db_name, type) {
+        var _a;
+        const value = (_a = this.scope) === null || _a === void 0 ? void 0 : _a[type];
+        if (!value) {
+            return Promise.reject(`DB ${type} not found`);
+        }
+        return this.api.request("/v2/kv/put", {
+            key: db_name,
+            value: value,
+            ttl: -1
+        }).then((response) => {
+            return response.data;
+        }).catch(() => {
+            return { result: null };
         });
     }
     putAllDB(params) {

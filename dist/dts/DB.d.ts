@@ -7,8 +7,8 @@ export default class DB {
     private api;
     constructor(api: ApiInstance);
     private getDB;
-    private putDB;
     getAllDB(names?: string[]): Promise<void>;
+    private putDB;
     putAllDB(params: DateBasePutParams[]): Promise<boolean>;
     getScopeValue(key: string, scope?: DataBaseType): string | null;
     setScopeValue(key: string, value: any, scope?: DataBaseType): boolean;
