@@ -1,11 +1,12 @@
 const VoximplantKit = require('../dist/index.js');
 const api = require('../dist/Api')
-const callContext = require('../../temp.js').CallContext;
-const messageContext = require('../../temp.js').MessageContext;
-
-const notStringAndNumber = [Infinity, -Infinity, () => undefined, null, new Error(), () => null, NaN, {}, [], true, false];
-const notString = [11, -11, ...notStringAndNumber];
-const notNumber = ['11', '-11',...notStringAndNumber];
+const callContext = require('../context.js').CallContext;
+const messageContext = require('../context.js').MessageContext;
+const {
+  notStringAndNumber,
+  notString,
+  notNumber
+} = require('./constants');
 
 
 jest.mock('../dist/Api');
@@ -15,6 +16,13 @@ api.default.mockImplementation(() => {
     request: mMock
   }
 });
+
+let kitFromCall, kitFromMessage;
+
+beforeEach((() => {
+  kitFromCall = new VoximplantKit(callContext);
+  kitFromMessage = new VoximplantKit()
+}))
 
 describe('apiProxy', () => {
   const kit = new VoximplantKit();

@@ -145,7 +145,7 @@ describe('getScopeValue', () => {
   });
 });
 
-describe.only('setScopeValue', () => {
+describe('setScopeValue', () => {
   describe.each([undefined, 'global', 'function', 'conversation'])('With valid scope %p', (scope) => {
     const api = new Api.default();
     const db = new DB.default(api);
@@ -160,6 +160,16 @@ describe.only('setScopeValue', () => {
       expect(value).toEqual('value');
     })
   })
+
+  describe.each(notNumber)('With invalid scope %p', (scope) => {
+    const api = new Api.default();
+    const db = new DB.default(api);
+    const isSet = db.setScopeValue('key', 'value', scope);
+
+    test('set valid key and value should return false', () => {
+      expect(isSet).toEqual(false);
+    });
+  });
 
   describe.each(notString)('set invalid key %p', (key) => {
     const api = new Api.default();
@@ -184,6 +194,7 @@ describe.only('setScopeValue', () => {
     });
 
     test('Should return false', () => {
+      const isSet = db.setScopeValue('test_key', value, 'global');
       expect(isSet).toEqual(true)
     })
 
@@ -192,7 +203,31 @@ describe.only('setScopeValue', () => {
       expect(val).toEqual(`${value}`);
     })
   });
-})
+});
+
+describe('getScopeAllValues', () => {
+  describe.each([undefined, 'global', 'function', 'conversation'])('With valid scope %p', (scope) => {
+    test('set valid key and value should return true', () => {
+      const isSet = db.setScopeValue('key', 'value', scope);
+      expect(isSet).toEqual(true);
+    });
+
+    test('the result must contain a key and a value', () => {
+      db.setScopeValue('key', 'value', scope);
+      const result = db.getScopeAllValues(scope);
+      expect(result).toEqual(expect.objectContaining({key: 'value'}));
+    });
+  });
+
+  describe.each(notNumber)('With invalid scope %p', (scope) => {
+    test('set valid key and value should return false', () => {
+      db.setScopeValue('key', 'value', scope);
+      const values = db.getScopeAllValues('key', 'value', scope);
+      expect(values).toBeNull();
+    });
+  });
+});
+
 
 
 
