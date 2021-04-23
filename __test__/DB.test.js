@@ -1,5 +1,5 @@
 const Api = require('../dist/Api');
-const DB = require('../dist/DB.js');
+const DBTest = require('../dist/DB.js');
 const axios = require('axios');
 const {
   notStringAndNumber,
@@ -24,7 +24,7 @@ const convResponse = {result: JSON.stringify({phone: 'test'})};
 
 beforeEach(() => {
   api = new Api.default();
-  db = new DB.default(api);
+  db = new DBTest.default(api);
 });
 
 
@@ -148,7 +148,7 @@ describe('getScopeValue', () => {
 describe('setScopeValue', () => {
   describe.each([undefined, 'global', 'function', 'conversation'])('With valid scope %p', (scope) => {
     const api = new Api.default();
-    const db = new DB.default(api);
+    const db = new DBTest.default(api);
     const isSet = db.setScopeValue('key', 'value', scope);
     const value = db.getScopeValue('key', scope);
 
@@ -163,7 +163,7 @@ describe('setScopeValue', () => {
 
   describe.each(notNumber)('With invalid scope %p', (scope) => {
     const api = new Api.default();
-    const db = new DB.default(api);
+    const db = new DBTest.default(api);
     const isSet = db.setScopeValue('key', 'value', scope);
 
     test('set valid key and value should return false', () => {
@@ -173,7 +173,7 @@ describe('setScopeValue', () => {
 
   describe.each(notString)('set invalid key %p', (key) => {
     const api = new Api.default();
-    const db = new DB.default(api);
+    const db = new DBTest.default(api);
     const isSet = db.setScopeValue(key, 'value', 'global');
 
     test('Should return false', () => {
@@ -189,7 +189,7 @@ describe('setScopeValue', () => {
     let api, db, isSet;
     beforeEach(() => {
       api = new Api.default();
-      db = new DB.default(api);
+      db = new DBTest.default(api);
       isSet = db.setScopeValue('test_key', value, 'global');
     });
 

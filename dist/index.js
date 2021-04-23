@@ -47,11 +47,11 @@ class VoximplantKit {
         // Get event type
         this.eventType = utils_1.default.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
         // Get access token
-        this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', '');
+        this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', 'test');
         // Get api url
         this.apiUrl = utils_1.default.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
         // Get domain
-        this.domain = utils_1.default.getHeaderValue(context, 'x-kit-domain', '');
+        this.domain = utils_1.default.getHeaderValue(context, 'x-kit-domain', 'test');
         // Get function ID
         this.functionId = utils_1.default.getHeaderValue(context, 'x-kit-function-id', 0);
         // Get session access url
