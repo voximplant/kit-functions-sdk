@@ -59,7 +59,11 @@ class VoximplantKit {
     this.replyMessage = new Message(true);
     this.http = axios
 
-    if (typeof context === 'undefined' || typeof context.request === "undefined") {
+    if (typeof context === 'undefined') {
+      throw new Error('The context parameter is required');
+    }
+
+    if (typeof context.request === "undefined") {
       context = {
         request: {
           body: {},
@@ -161,7 +165,7 @@ class VoximplantKit {
       'accountdb_' + this.domain,
     ]
 
-    if(this.isMessage()) {
+    if (this.isMessage()) {
       names.push('conversation_' + this.incomingMessage.conversation.uuid)
     }
 
@@ -736,12 +740,12 @@ class VoximplantKit {
    */
   public async dbCommit() {
     const params: DateBasePutParams[] = [
-      {name: 'function_' + this.functionId, scope: 'function'},
-      {name: 'accountdb_' + this.domain, scope: 'global'},
+      { name: 'function_' + this.functionId, scope: 'function' },
+      { name: 'accountdb_' + this.domain, scope: 'global' },
     ]
 
     if (this.isMessage()) {
-      params.push({name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' })
+      params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' })
     }
 
     try {

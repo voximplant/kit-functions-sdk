@@ -35,12 +35,7 @@ class VoximplantKit {
         this.replyMessage = new Message_1.default(true);
         this.http = axios_1.default;
         if (typeof context === 'undefined' || typeof context.request === "undefined") {
-            context = {
-                request: {
-                    body: {},
-                    headers: {}
-                }
-            };
+            throw new Error('Context parameter is required');
         }
         // Store request data
         this.requestData = context.request.body;

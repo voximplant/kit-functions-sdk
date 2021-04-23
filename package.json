@@ -10,6 +10,7 @@
   "scripts": {
     "test:silent": "jest --silent",
     "test": "jest",
+    "test:cover": "jest --coverage=true",
     "build": "node clear.js && tsc && node bundle.js && typedoc && node doc/converter/converter.js",
     "doc": "typedoc && node doc/converter/converter.js"
   },

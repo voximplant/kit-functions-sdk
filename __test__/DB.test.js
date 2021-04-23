@@ -38,6 +38,15 @@ describe('getDB', () => {
       result: expect.any(String)
     }),));
   })
+
+  test('catch request error', () => {
+    apiMock.mockRejectedValueOnce({data: false});
+    return db.getDB('name').catch(err => {
+      expect(err).toEqual(false)
+    }).then(res => {
+      expect(res).toEqual({"result": null})
+    })
+  });
 })
 
 describe('getAllDB', () => {

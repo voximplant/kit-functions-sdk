@@ -60,6 +60,6 @@ describe('request', () => {
  test('call without url param throw Error', () => {
    const api = new Api('domain', 'token', 'url');
    expect( () =>  api.request()).toThrow(Error);
-   expect( () =>  api.request()).toThrow('The url parameter is not passed or is not a string');
+   expect( () =>  api.request()).toThrow('url parameter is not passed or is not a string');
  });
 });

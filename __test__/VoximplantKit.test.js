@@ -17,9 +17,20 @@ api.default.mockImplementation(() => {
   }
 });
 
+describe('constructor', () => {
+  test('calling without context throw error', () => {
+    expect(() => VoximplantKitTest()).toThrow(Error);
+    expect(() => new VoximplantKitTest()).toThrow(Error);
+    expect(() => new VoximplantKitTest).toThrow(Error);
+    expect(() => new VoximplantKitTest('token').__proto__.constructor()).toThrow(Error);
+    expect(() => new VoximplantKitTest(false)).toThrow(Error);
+    expect(() => new VoximplantKitTest({})).toThrow(Error);
+  });
+})
+
 
 describe('apiProxy', () => {
-  const kit = new VoximplantKitTest();
+  const kit = new VoximplantKitTest(callContext);
   test('check api proxy', () => {
     const users = [{name: 'Bob'}];
     mMock.mockResolvedValue({data: users});
@@ -68,11 +79,13 @@ describe('cancelTransferToQueue', () => {
 
   describe('with message context', () => {
     const kit = new VoximplantKitTest(messageContext);
+    const transfer = kit.transferToQueue({queue_id: 100, queue_name: 'test'})
     const result = kit.cancelTransferToQueue();
     const {payload} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(result).toEqual(true)
+      expect(result).toEqual(true);
+      expect(transfer).toEqual(true);
     });
 
     test('Payload must not contain transfer_to_queue command', () => {
@@ -194,14 +207,6 @@ describe('getCallHeaders', () => {
 })
 
 describe('getIncomingMessage', () => {
-  describe('without context', () => {
-    const kit = new VoximplantKitTest();
-
-    test('Return null', () => {
-      expect(kit.getIncomingMessage()).toBeNull();
-    });
-  });
-
   describe('with call context', () => {
     const kit = new VoximplantKitTest(callContext);
 
@@ -289,8 +294,8 @@ describe('getSkills', () => {
 describe('getVariable', () => {
 
 
-  describe('without context', () => {
-    const kit = new VoximplantKitTest();
+  describe('with callContext', () => {
+    const kit = new VoximplantKitTest(callContext);
     kit.setVariable('test_var', 'var value');
     const testVar = kit.getVariable('test_var');
 
@@ -302,7 +307,7 @@ describe('getVariable', () => {
   describe.each([
     11, Infinity, -Infinity, () => undefined, null, new Error(), () => 11, NaN
   ])('set %p as parameter', (a) => {
-    const kit = new VoximplantKitTest();
+    const kit = new VoximplantKitTest(callContext);
     const testVar = kit.getVariable(a);
 
     test(`Returns a value ${a} equal to equal null`, () => {
@@ -312,7 +317,7 @@ describe('getVariable', () => {
 });
 
 describe('getVariables', () => {
-  const kit = new VoximplantKitTest();
+  const kit = new VoximplantKitTest(callContext);
   const vars = kit.getVariables();
 
   test('Must be an instance of the Object', () => {
@@ -362,7 +367,7 @@ describe('isMessage', () => {
 
 describe('removeSkill', () => {
   describe.each([callContext, messageContext])('with %# context', (a) => {
-    const kit = new VoximplantKitTest(a.value);
+    const kit = new VoximplantKitTest(a);
     const isSet = kit.setSkill('my_skill', 5);
     const result = kit.removeSkill('my_skill');
     const localSkills = kit.getSkills();
@@ -388,7 +393,7 @@ describe('removeSkill', () => {
 });
 
 describe('setPriority', () => {
-  const kit = new VoximplantKitTest();
+  const kit = new VoximplantKitTest(callContext);
 
   describe.each([
     11, 2, -100, 10, Infinity, -Infinity, 'sdfsd', 'asdas', new Error(), () => 11, NaN
@@ -636,7 +641,7 @@ describe('transferToQueue', () => {
 });
 
 describe('version', () => {
-  const kit = new VoximplantKitTest();
+  const kit = new VoximplantKitTest(callContext);
   const version = kit.version();
 
   test('Should return string', () => {

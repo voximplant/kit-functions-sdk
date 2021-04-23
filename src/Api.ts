@@ -6,10 +6,10 @@ import { ApiInstance } from "./types";
  * @hidden
  */
 const dict = {
-    domain: 'The domain parameter is not passed or is not a string',
-    token: 'The token parameter is not passed or is not a string',
-    baseUrl: 'The baseUrl parameter is not passed or is not a string',
-    url: 'The url parameter is not passed or is not a string',
+    domain: 'domain parameter is not passed or is not a string',
+    token: 'token parameter is not passed or is not a string',
+    baseUrl: 'baseUrl parameter is not passed or is not a string',
+    url: 'url parameter is not passed or is not a string',
 }
 
 const checkParameter = (param, errorText: string): true | Error => {
