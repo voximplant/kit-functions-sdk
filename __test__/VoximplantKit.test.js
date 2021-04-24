@@ -1,5 +1,6 @@
 const VoximplantKitTest = require('../dist/index.js');
-const api = require('../dist/Api')
+const Api = require('../dist/Api')
+const DB = require('../dist/DB')
 const callContext = require('../context.js').CallContext;
 const messageContext = require('../context.js').MessageContext;
 const {
@@ -8,10 +9,12 @@ const {
   notNumber
 } = require('./constants');
 
+jest.mock('../dist/DB');
+
 
 jest.mock('../dist/Api');
 const mMock = jest.fn();
-api.default.mockImplementation(() => {
+Api.default.mockImplementation(() => {
   return {
     request: mMock
   }
@@ -64,6 +67,15 @@ describe('cancelFinishRequest', () => {
       }];
       expect(payload).toEqual(expect.not.arrayContaining(expected));
     });
+
+    test('canceling an existing request', () => {
+      const kit = new VoximplantKitTest(messageContext);
+      const isFinish = kit.finishRequest()
+      const result = kit.cancelFinishRequest();
+
+      expect(isFinish).toEqual(true);
+      expect(result).toEqual(true);
+    })
   });
 })
 
@@ -209,17 +221,19 @@ describe('getCallHeaders', () => {
 describe('getIncomingMessage', () => {
   describe('with call context', () => {
     const kit = new VoximplantKitTest(callContext);
+    const result = kit.getIncomingMessage();
 
     test('Return null', () => {
-      expect(kit.getIncomingMessage()).toBeNull();
+      expect(result).toBeNull();
     });
   });
 
   describe('with message context', () => {
     const kit = new VoximplantKitTest(messageContext);
+    const result = kit.getIncomingMessage();
 
     test('Should contain text and type', () => {
-      expect(kit.getIncomingMessage()).toEqual(expect.objectContaining({
+      expect(result).toEqual(expect.objectContaining({
         text: expect.any(String),
         type: expect.any(String),
       }),);
@@ -368,19 +382,15 @@ describe('isMessage', () => {
 describe('removeSkill', () => {
   describe.each([callContext, messageContext])('with %# context', (a) => {
     const kit = new VoximplantKitTest(a);
-    const isSet = kit.setSkill('my_skill', 5);
+    kit.setSkill('my_skill', 5);
     const result = kit.removeSkill('my_skill');
     const localSkills = kit.getSkills();
 
-    test('setSkill should return true', () => {
-      expect(isSet).toEqual(true);
-    });
-
-    test('removeSkill should return true', () => {
+    test('should return true', () => {
       expect(result).toEqual(true);
     });
 
-    test('getSkills must not contain my_skill', () => {
+    test('skills must not contain my_skill', () => {
       const expected = [{
         skill_name: 'my_skill',
         level: 5
@@ -389,6 +399,11 @@ describe('removeSkill', () => {
         expect.not.arrayContaining(expected),
       );
     });
+
+    test('with a nonexistent name', () => {
+      const result = kit.removeSkill('not_skill');
+      expect(result).toEqual(false);
+    })
   });
 });
 
@@ -463,6 +478,21 @@ describe('setSkill', () => {
       expect.arrayContaining(expected),
     );
   });
+
+  test('update local skill', () => {
+    const kit = new VoximplantKitTest(callContext);
+    kit.setSkill('my_skill1', 3);
+    kit.setSkill('my_skill1', 4);
+    const skills = kit.getSkills();
+
+    const expected = [{
+      skill_name: 'my_skill1',
+      level: 4
+    }];
+    expect(skills).toEqual(
+      expect.arrayContaining(expected),
+    );
+  })
 
   test('Response body skills must contain my_skill', () => {
     const expected = [{skill_name: 'my_skill', level: 5}];
@@ -586,6 +616,24 @@ describe('transferToQueue', () => {
       });
     });
 
+    describe('update transfer', () => {
+      const kit = new VoximplantKitTest(messageContext);
+      kit.transferToQueue({queue_id: 155, queue_name: 'test_queue'});
+      kit.transferToQueue({queue_id: 160, queue_name: 'test_queue2'});
+      const {payload} = kit.getResponseBody();
+
+      test('Payload should contain transfer_to_queue command', () => {
+        const expected = [{
+          "name": "transfer_to_queue",
+          "priority": 0,
+          "queue": {"queue_id": 160, "queue_name": "test_queue2"},
+          "skills": [],
+          "type": "cmd"
+        }];
+        expect(payload).toEqual(expect.arrayContaining(expected));
+      });
+    })
+
     describe.each(notStringAndNumber)('Set invalid value %p as queue_id and queue_name', (a) => {
       const kit = new VoximplantKitTest(messageContext);
       const isSet = kit.transferToQueue({queue_id: a, queue_name: a});
@@ -649,4 +697,61 @@ describe('version', () => {
   });
 });
 
-// TODO loadDatabases, dbCommit, dbGet, dbGetAll, dbSet
+describe('loadDatabases', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    test('call DB.getAllDB with params', async () => {
+      await kit.loadDatabases();
+      const args = [
+        'function_' + kit.functionId,
+        'accountdb_' + kit.domain,]
+      expect(kit.DB.getAllDB).toHaveBeenCalledWith(args);
+    })
+  });
+
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(messageContext);
+    test('call DB.getAllDB with params', async () => {
+      await kit.loadDatabases();
+      const args = [
+        'function_' + kit.functionId,
+        'accountdb_' + kit.domain,
+        'conversation_' + kit.incomingMessage.conversation.uuid]
+      expect(kit.DB.getAllDB).toHaveBeenCalledWith(args);
+    })
+  });
+});
+
+describe('dbGet',  () => {
+  const kit = new VoximplantKitTest(messageContext);
+
+  test('call DB.getScopeValue with params from a undefined scope', async () => {
+    const test = await kit.dbGet('test');
+    expect(kit.DB.getScopeValue).toHaveBeenCalledWith('test', 'global');
+  });
+
+  describe.each(['global', 'function', 'conversation'])('call DB.getScopeValue  with params from %p scope', (scope) => {
+    test('should passed', async () => {
+      await kit.dbGet('test', scope);
+      expect(kit.DB.getScopeValue).toHaveBeenCalledWith('test', scope);
+    })
+  });
+});
+
+describe('dbSet',  () => {
+  const kit = new VoximplantKitTest(messageContext);
+
+  test('call DB.setScopeValue with params for a undefined scope', async () => {
+    const test = await kit.dbSet('test', 'test_value');
+    expect(kit.DB.setScopeValue).toHaveBeenCalledWith('test', 'test_value', 'global');
+  });
+
+  describe.each(['global', 'function', 'conversation'])('call DB.setScopeValue  with params for %p scope', (scope) => {
+    test('should passed', async () => {
+      await kit.dbSet('test', 'test_value', scope);
+      expect(kit.DB.setScopeValue).toHaveBeenCalledWith('test', 'test_value', scope);
+    })
+  });
+});
+
+// TODO  dbCommit, dbGetAll,

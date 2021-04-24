@@ -60,7 +60,7 @@ class VoximplantKit {
     this.http = axios
 
     if (typeof context === 'undefined') {
-      throw new Error('The context parameter is required');
+      throw new Error('context parameter is required');
     }
 
     if (typeof context.request === "undefined") {
@@ -430,7 +430,7 @@ class VoximplantKit {
     if (typeof name !== 'string' || !Number.isInteger(level)) return false;
 
     if (level < 1 || level > 5) {
-      console.warn('The level property must be a number from 1 to 5');
+      console.warn('level property must be a integer from 1 to 5');
       return false;
     }
 
@@ -490,7 +490,7 @@ class VoximplantKit {
       this.priority = value;
       return true;
     } else {
-      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
+      console.warn(`value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
       return false;
     }
   }

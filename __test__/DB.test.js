@@ -73,6 +73,15 @@ describe('getAllDB', () => {
       }
     ));
   });
+
+  test('call axios all with params', async () => {
+    axios.default.all.mockResolvedValue([funcResponse]);
+    apiMock.mockResolvedValue(funcResponse);
+
+    await db.getAllDB(['function_111', 'accountdb_test']);
+    expect(axios.default.all)
+      .toHaveBeenCalledWith([db.getDB('function_111'), db.getDB('accountdb_test')]);
+  });
 });
 
 describe('putDB', () => {
@@ -108,6 +117,16 @@ describe('putAllDB', () => {
     axios.default.all.mockRejectedValue(new Error());
     const result = await db.putAllDB([]);
     expect(result).toEqual(false);
+  });
+
+  test('call axios all with params', async () => {
+    axios.default.all.mockResolvedValue([funcResponse]);
+    apiMock.mockResolvedValue(funcResponse);
+
+    await db.putAllDB([{name:'function_111', scope:'function'}, {name:'accountdb_test', scope: 'global'}]);
+    const args = [db.putDB('function_111', 'function'), db.putDB('accountdb_test',  'global')]
+
+    expect(axios.default.all).toHaveBeenCalledWith(args);
   });
 });
 
