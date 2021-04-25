@@ -153,7 +153,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  callback(200, kit.getResponseBody());
                 * ```
                 * @param name {string} - Variable name
-                * @param value {string} - Variable value to add or update
+                * @param value {string} - Variable value
                 */
             setVariable(name: string, value: string): boolean;
             /**
@@ -255,7 +255,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             removeSkill(name: string): boolean;
             /**
-                * Sets the call priority. The higher the priority, the less time a client will wait for the operator's answer.
+                * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
                 * ```js
                 *  // Initialize a VoximplantKit instance
                 *  const kit = new VoximplantKit(context);
@@ -330,7 +330,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  // End of function
                 *  callback(200, kit.getResponseBody());
                 * ```
-                * @param queue {QueueInfo} - Queue name or id
+                * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
@@ -395,7 +395,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  callback(200, kit.getResponseBody());
                 * ```
                 * @param key {string} - Key
-                * @param value {any} - Value to add or update
+                * @param value {any} - Value
                 * @param scope {DataBaseType} - Database scope
                 */
             dbSet(key: string, value: any, scope?: DataBaseType): boolean;
@@ -490,16 +490,28 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * Attempt number
                 */
             attempt_num: number;
+            /**
+                * Voximplant session id
+                */
             session_id: string;
+            /**
+             Caller phone number
+             */
             callerid: string;
+            /**
+                * Destination phone number
+                */
             destination: string;
+            /**
+            Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
+             */
             display_name: string;
             /**
-                * Caller phone number
+                * Caller phone number. Equivalent to the <b>callerid</b> value
                 */
             phone_a: string;
             /**
-                * Callee phone number
+                * Destination phone number. Equivalent to the <b>destination</b> value
                 */
             phone_b: string;
             /**
@@ -595,7 +607,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 */
             custom_data: ConversationCustomDataObject;
             /**
-                * Current status of the request: being processed, closed, etc.
+                * Current status of the request: new, unassigned, processed_by_function, waiting_agent, processed_by_agent, done
                 */
             current_status: string;
             /**
@@ -616,21 +628,33 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * Channel id
                 */
             id: number;
+            /**
+                * Channel universally unique identifier (UUID)
+                */
             channel_uuid: string;
             /**
                 * @hidden
                 */
             account: object;
             /**
-                * Channel name
+                * Channel type
                 */
             channel_type: ChannelType;
             /**
                 * @hidden
                 */
             channel_settings: object;
+            /**
+                * Channel processing method (a function or a queue)
+                */
             processing_method: string;
+            /**
+                * Queue that processes the channel if the processing method is a queue
+                */
             processing_queue: object;
+            /**
+                * Function that processes the channel if the processing method is a function
+                */
             processing_function: number;
             /**
                 * @hidden
@@ -691,6 +715,9 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * Conversation is complete
                 */
             completed: boolean;
+            /**
+                * Variables object
+                */
             variables: ObjectType;
     }
     export interface ConversationCustomDataClientDataObject {
@@ -735,11 +762,11 @@ declare module '@voximplant/kit-functions-sdk/types' {
     }
     export interface QueueInfo {
             /**
-                * Queue id. Can be used instead of <b>queue_name</b>
+                * Queue id
                 */
             queue_id: number;
             /**
-                * Queue name. Can be used instead of <b>queue_id</b>
+                * Queue name
                 */
             queue_name: string;
     }
@@ -849,15 +876,15 @@ declare module '@voximplant/kit-functions-sdk/types' {
     }
     export interface DataBase {
             /**
-                * Function scope
+                * Function scope object
                 */
             function: ObjectType;
             /**
-                * Global scope
+                * Global scope object
                 */
             global: ObjectType;
             /**
-                * Conversation scope
+                * Conversation scope object
                 */
             conversation: ObjectType;
     }
