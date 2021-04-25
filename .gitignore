@@ -80,3 +80,6 @@ fabric.properties
 /doc_internal
 /java.json
 /data.js
+/temp.js
+/coverage/
+coverage/

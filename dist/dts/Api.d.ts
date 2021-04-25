@@ -5,7 +5,7 @@ import { ApiInstance } from "./types";
  */
 export default class Api implements ApiInstance {
     private client;
-    constructor(domain: string, token: string, url: string);
+    constructor(domain: string, token: string, baseUrl: string);
     /**
      * Api request
      **/

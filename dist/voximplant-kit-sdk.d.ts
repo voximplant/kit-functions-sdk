@@ -169,7 +169,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 * @param name {string} - Variable name
                 */
-            deleteVariable(name: string): void;
+            deleteVariable(name: string): boolean;
             /**
                 * Gets call headers.
                 * ```js
@@ -888,6 +888,13 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 */
             conversation: ObjectType;
     }
+    /**
+        * @hidden
+        */
+    export type DateBasePutParams = {
+            name: string;
+            scope: DataBaseType;
+    };
     export type DataBaseType = 'function' | 'global' | 'conversation';
     export type ChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
     /**

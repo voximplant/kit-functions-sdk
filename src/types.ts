@@ -428,6 +428,11 @@ export interface DataBase {
   conversation: ObjectType
 }
 
+/**
+ * @hidden
+ */
+export type DateBasePutParams = { name: string, scope: DataBaseType};
+
 export type DataBaseType = 'function' | 'global' | 'conversation';
 
 export type ChannelType =
