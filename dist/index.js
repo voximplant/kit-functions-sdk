@@ -34,8 +34,16 @@ class VoximplantKit {
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.http = axios_1.default;
-        if (typeof context === 'undefined' || typeof context.request === "undefined") {
-            throw new Error('Context parameter is required');
+        if (typeof context === 'undefined') {
+            throw new Error('context parameter is required');
+        }
+        if (typeof context.request === "undefined") {
+            context = {
+                request: {
+                    body: {},
+                    headers: {}
+                }
+            };
         }
         // Store request data
         this.requestData = context.request.body;
@@ -134,12 +142,13 @@ class VoximplantKit {
      * ```
      */
     getResponseBody() {
-        if (this.isCall())
+        if (this.isCall()) {
             return {
                 "VARIABLES": this.variables,
                 "SKILLS": this.skills
             };
-        if (this.isMessage()) {
+        }
+        else if (this.isMessage()) {
             const payloadIndex = this.replyMessage.payload.findIndex(item => {
                 return item.type === "cmd" && item.name === "transfer_to_queue";
             });
@@ -152,8 +161,11 @@ class VoximplantKit {
                 payload: this.replyMessage.payload,
                 variables: this.variables
             }; // To be added in the future
-        } /*else
-          return data*/
+        }
+        else {
+            return;
+            //return data
+        }
     }
     /**
      * Gets an incoming message.
@@ -281,9 +293,11 @@ class VoximplantKit {
      * @param name {string} - Variable name
      */
     deleteVariable(name) {
-        if (typeof name === 'string') {
+        if (typeof name === 'string' && name in this.variables) {
             delete this.variables[name];
+            return true;
         }
+        return false;
     }
     /**
      * Gets call headers.
@@ -366,7 +380,7 @@ class VoximplantKit {
         if (typeof name !== 'string' || !Number.isInteger(level))
             return false;
         if (level < 1 || level > 5) {
-            console.warn('The level property must be a number from 1 to 5');
+            console.warn('level property must be a integer from 1 to 5');
             return false;
         }
         const skillIndex = this.skills.findIndex(skill => {
@@ -424,7 +438,7 @@ class VoximplantKit {
             return true;
         }
         else {
-            console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
+            console.warn(`value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
             return false;
         }
     }
@@ -737,7 +751,7 @@ class VoximplantKit {
      * ```
      */
     version() {
-        return "0.0.41";
+        return "0.0.42";
     }
 }
 /**

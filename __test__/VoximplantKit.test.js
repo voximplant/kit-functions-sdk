@@ -1,8 +1,7 @@
 const VoximplantKitTest = require('../dist/index.js');
-const Api = require('../dist/Api')
-const DB = require('../dist/DB')
-const callContext = require('../context.js').CallContext;
-const messageContext = require('../context.js').MessageContext;
+const Api = require('../dist/Api');
+const callContext = require('./context.js').CallContext;
+const messageContext = require('./context.js').MessageContext;
 const {
   notStringAndNumber,
   notString,
@@ -26,8 +25,6 @@ describe('constructor', () => {
     expect(() => new VoximplantKitTest()).toThrow(Error);
     expect(() => new VoximplantKitTest).toThrow(Error);
     expect(() => new VoximplantKitTest('token').__proto__.constructor()).toThrow(Error);
-    expect(() => new VoximplantKitTest(false)).toThrow(Error);
-    expect(() => new VoximplantKitTest({})).toThrow(Error);
   });
 })
 
@@ -37,8 +34,14 @@ describe('apiProxy', () => {
   test('check api proxy', () => {
     const users = [{name: 'Bob'}];
     mMock.mockResolvedValue({data: users});
-    return kit.apiProxy('/v2/account/getAccountInfo').then(data => expect(data).toEqual(users))
+    return kit.apiProxy('/v2/account/getAccountInfo').then(data => expect(data).toEqual(users));
   });
+
+  test('reject request', async () => {
+    mMock.mockRejectedValue(null);
+    const result = await kit.apiProxy('/v2/account/getAccountInfo');
+    expect(result).toEqual(undefined);
+  })
 })
 
 describe('cancelFinishRequest', () => {
@@ -85,7 +88,7 @@ describe('cancelTransferToQueue', () => {
     const result = kit.cancelTransferToQueue();
 
     test('should return true', () => {
-      expect(result).toBeTruthy()
+      expect(result).toEqual(true);
     });
   });
 
@@ -113,12 +116,18 @@ describe('cancelTransferToQueue', () => {
 describe('deleteVariable', () => {
   describe('with call context', () => {
     const kit = new VoximplantKitTest(callContext);
-    const isSetVar = kit.setVariable('test_var', 'var value');
-    kit.deleteVariable('test_var');
+    kit.setVariable('test_var', 'var value');
+
+    const isDeleted = kit.deleteVariable('test_var');
     const {VARIABLES} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(isSetVar).toBeTruthy()
+      expect(isDeleted).toEqual(true)
+    });
+
+    test('a call with a nonexistent variable name should return false', () => {
+      const isDeleted = kit.deleteVariable(true);
+      expect(isDeleted).toEqual(false);
     });
 
     test('Response body must not contain variable test_var', () => {
@@ -134,7 +143,7 @@ describe('deleteVariable', () => {
     const {variables} = kit.getResponseBody();
 
     test('should return true', () => {
-      expect(isSetVar).toBeTruthy()
+      expect(isSetVar).toEqual(true);
     });
 
     test('Response body must not contain variable test_var', () => {
@@ -150,7 +159,7 @@ describe('finishRequest', () => {
     const isSet = kit.finishRequest();
 
     test('should return false', () => {
-      expect(isSet).toBeFalsy();
+      expect(isSet).toEqual(false);
     });
   });
 
@@ -158,6 +167,16 @@ describe('finishRequest', () => {
     const kit = new VoximplantKitTest(messageContext);
     const isSet = kit.finishRequest();
     const {payload} = kit.getResponseBody();
+
+    test('calling finishRequest again', () => {
+     kit.finishRequest();
+      const {payload} = kit.getResponseBody();
+      const expected = [{
+        type: "cmd",
+        name: "finish_request"
+      }];
+      expect(payload).toEqual(expect.arrayContaining(expected));
+    })
 
     test('should return true', () => {
       expect(isSet).toEqual(true);
@@ -283,6 +302,15 @@ describe('getResponseBody', () => {
       );
     });
   });
+
+  describe('without context', () => {
+    const kit = new VoximplantKitTest({});
+    const body = kit.getResponseBody();
+
+    test('Must contain VARIABLES and SKILLS', () => {
+      expect(body).toEqual(undefined);
+    });
+  });
 })
 
 describe('getSkills', () => {
@@ -307,7 +335,6 @@ describe('getSkills', () => {
 
 describe('getVariable', () => {
 
-
   describe('with callContext', () => {
     const kit = new VoximplantKitTest(callContext);
     kit.setVariable('test_var', 'var value');
@@ -318,9 +345,7 @@ describe('getVariable', () => {
     });
   });
 
-  describe.each([
-    11, Infinity, -Infinity, () => undefined, null, new Error(), () => 11, NaN
-  ])('set %p as parameter', (a) => {
+  describe.each(notString)('set %p as parameter', (a) => {
     const kit = new VoximplantKitTest(callContext);
     const testVar = kit.getVariable(a);
 
@@ -722,11 +747,11 @@ describe('loadDatabases', () => {
   });
 });
 
-describe('dbGet',  () => {
+describe('dbGet', () => {
   const kit = new VoximplantKitTest(messageContext);
 
   test('call DB.getScopeValue with params from a undefined scope', async () => {
-    const test = await kit.dbGet('test');
+    await kit.dbGet('test');
     expect(kit.DB.getScopeValue).toHaveBeenCalledWith('test', 'global');
   });
 
@@ -738,11 +763,11 @@ describe('dbGet',  () => {
   });
 });
 
-describe('dbSet',  () => {
+describe('dbSet', () => {
   const kit = new VoximplantKitTest(messageContext);
 
   test('call DB.setScopeValue with params for a undefined scope', async () => {
-    const test = await kit.dbSet('test', 'test_value');
+    await kit.dbSet('test', 'test_value');
     expect(kit.DB.setScopeValue).toHaveBeenCalledWith('test', 'test_value', 'global');
   });
 
@@ -754,4 +779,81 @@ describe('dbSet',  () => {
   });
 });
 
-// TODO  dbCommit, dbGetAll,
+describe('dbGetAll', () => {
+  const kit = new VoximplantKitTest(messageContext);
+
+  test('call DB.dbGetAll with a undefined scope', async () => {
+    kit.DB.getScopeAllValues.mockReturnValue({test: 'test'});
+    await kit.dbGetAll();
+    expect(kit.DB.getScopeAllValues).toHaveBeenCalledWith('global');
+  });
+
+  test('call DB.dbGetAll with a string param', async () => {
+    kit.DB.getScopeAllValues.mockReturnValue({test: 'test'});
+    await kit.dbGetAll('function');
+    expect(kit.DB.getScopeAllValues).toHaveBeenCalledWith('function');
+  })
+});
+
+describe('dbCommit', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    test('call DB.putAllDB with params', async () => {
+      await kit.dbCommit();
+      const args = [
+        {name: 'function_' + kit.functionId, scope: 'function'},
+        {name: 'accountdb_' + kit.domain, scope: 'global'}
+      ]
+      expect(kit.DB.putAllDB).toHaveBeenCalledWith(args);
+    });
+
+    test('reject  DB.putAllDB', async () => {
+      kit.DB.putAllDB.mockRejectedValue(null);
+      const  isCommit = await kit.dbCommit();
+      expect(isCommit).toEqual(false);
+    })
+  });
+
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(messageContext);
+    test('call DB.putAllDB with params', async () => {
+      await kit.dbCommit();
+      const args = [
+        {name: 'function_' + kit.functionId, scope: 'function'},
+        {name: 'accountdb_' + kit.domain, scope: 'global'},
+        {name: "conversation_" + kit.incomingMessage.conversation.uuid, scope: 'conversation'}
+      ]
+      expect(kit.DB.putAllDB).toHaveBeenCalledWith(args);
+    })
+  });
+})
+
+describe('addPhoto', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    const isAdded = kit.addPhoto('test');
+
+    test('should return true', () => {
+     expect(isAdded).toEqual(true);
+    });
+  });
+
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(messageContext);
+    const isAdded = kit.addPhoto('test');
+    const {payload} = kit.getResponseBody();
+
+    test('should return true', () => {
+      expect(isAdded).toEqual(true);
+    });
+
+    test('payload must contain photo', () => {
+      expect(payload).toEqual(expect.arrayContaining([{
+        type: "photo",
+        url: 'test',
+        file_name: "file",
+        file_size: 123
+      }]))
+    })
+  });
+});

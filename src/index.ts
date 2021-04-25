@@ -182,13 +182,13 @@ class VoximplantKit {
    * ```
    */
   public getResponseBody() {
-    if (this.isCall())
+    if (this.isCall()) {
       return {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
-
-    if (this.isMessage()) {
+    }
+    else if (this.isMessage()) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
       })
@@ -203,8 +203,10 @@ class VoximplantKit {
         payload: this.replyMessage.payload,
         variables: this.variables
       } // To be added in the future
-    } /*else
-      return data*/
+    } else {
+      return;
+      //return data
+    }
   }
 
   /**
@@ -339,10 +341,12 @@ class VoximplantKit {
    * ```
    * @param name {string} - Variable name
    */
-  deleteVariable(name: string) {
-    if (typeof name === 'string') {
+  deleteVariable(name: string): boolean {
+    if (typeof name === 'string' && name in this.variables) {
       delete this.variables[name];
+      return true;
     }
+    return false;
   }
 
   /**
@@ -802,9 +806,9 @@ class VoximplantKit {
       url: url,
       file_name: "file",
       file_size: 123
-    })
+    });
 
-    return true
+    return true;
   }
 
 
@@ -819,7 +823,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.41"
+    return "0.0.42"
   }
 }
 

@@ -169,7 +169,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 * @param name {string} - Variable name
                 */
-            deleteVariable(name: string): void;
+            deleteVariable(name: string): boolean;
             /**
                 * Gets call headers.
                 * ```js
