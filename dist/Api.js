@@ -39,16 +39,11 @@ class Api {
             param.data = qs.stringify(param.data);
             if (typeof param.params === "undefined")
                 param.params = {};
-            checkParameter(domain, dict.domain);
-            checkParameter(token, dict.token);
             param.params.domain = domain;
             param.params.access_token = token;
             return param;
         });
     }
-    /**
-     * Api request
-     **/
     request(requestUrl, data) {
         checkParameter(requestUrl, dict.url);
         return this.client.request({

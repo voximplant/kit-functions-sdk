@@ -59,17 +59,10 @@ class VoximplantKit {
     this.replyMessage = new Message(true);
     this.http = axios
 
-    if (typeof context === 'undefined') {
-      throw new Error('context parameter is required');
-    }
-
-    if (typeof context.request === "undefined") {
-      context = {
-        request: {
-          body: {},
-          headers: {}
-        }
-      }
+    if (typeof context === 'undefined' || !(context?.request && context.request.body && context.request.headers)) {
+      const err =  new TypeError('context parameter is required');
+      err.stack = '';
+      throw err;
     }
 
     // Store request data
@@ -494,7 +487,7 @@ class VoximplantKit {
       this.priority = value;
       return true;
     } else {
-      console.warn(`value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
+      console.warn(`${ value } cannot be set as a priority value. An integer from 0 to 10 is expected`);
       return false;
     }
   }

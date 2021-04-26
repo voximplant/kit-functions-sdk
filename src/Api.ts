@@ -39,11 +39,11 @@ export default class Api implements ApiInstance{
             }
         });
 
+
+
         this.client.interceptors.request.use((param: AxiosRequestConfig) => {
             param.data = qs.stringify(param.data);
             if (typeof param.params === "undefined") param.params = {};
-            checkParameter(domain, dict.domain);
-            checkParameter(token, dict.token);
 
             param.params.domain = domain;
             param.params.access_token = token;
@@ -52,9 +52,6 @@ export default class Api implements ApiInstance{
         });
     }
 
-    /**
-     * Api request
-     **/
     request<T, R = AxiosResponse<T>> (requestUrl: string, data: any):Promise<R> {
         checkParameter(requestUrl, dict.url);
         return this.client.request({

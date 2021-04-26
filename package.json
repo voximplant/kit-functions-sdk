@@ -10,7 +10,7 @@
   "scripts": {
     "test:silent": "jest --silent",
     "test": "jest",
-    "test:cover": "jest --coverage=true --silent",
+    "test:cover": "jest --coverage=true --silent && make-coverage-badge",
     "build": "node clear.js && tsc && node bundle.js && typedoc && node doc/converter/converter.js",
     "doc": "typedoc && node doc/converter/converter.js"
   },
@@ -36,7 +36,15 @@
     "colors": "^1.4.0",
     "dts-bundle": "^0.7.3",
     "jest": "^26.6.3",
+    "make-coverage-badge": "^1.2.0",
     "typedoc": "^0.19.2",
     "typescript": "^3.9.5"
+  },
+  "jest": {
+    "coverageReporters": [
+      "json-summary",
+      "lcov"
+    ],
+    "testRegex": ".test.js$"
   }
 }

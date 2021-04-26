@@ -24,7 +24,18 @@ describe('constructor', () => {
     expect(() => VoximplantKitTest()).toThrow(Error);
     expect(() => new VoximplantKitTest()).toThrow(Error);
     expect(() => new VoximplantKitTest).toThrow(Error);
-    expect(() => new VoximplantKitTest('token').__proto__.constructor()).toThrow(Error);
+    expect(() => new VoximplantKitTest(callContext).__proto__.constructor()).toThrow(Error);
+    expect(() => new VoximplantKitTest({})).toThrow(Error);
+    expect(() => new VoximplantKitTest()).toThrow(Error);
+  });
+
+  describe.each(notStringAndNumber)('set invalid value %p as context', (context) => {
+    expect(() => new VoximplantKitTest(context)).toThrow(Error);
+  });
+
+  describe.each([callContext, messageContext])('set valid value %p as context', (context) => {
+    const instance =  new VoximplantKitTest(context);
+    expect(instance).toBeInstanceOf(VoximplantKitTest);
   });
 })
 
@@ -303,11 +314,17 @@ describe('getResponseBody', () => {
     });
   });
 
-  describe('without context', () => {
-    const kit = new VoximplantKitTest({});
+  describe('with empty context', () => {
+    const context = {
+      request: {
+        body: {},
+        headers: {}
+      }
+    };
+    const kit = new VoximplantKitTest(context);
     const body = kit.getResponseBody();
 
-    test('Must contain VARIABLES and SKILLS', () => {
+    test('Must contain payload and variables', () => {
       expect(body).toEqual(undefined);
     });
   });

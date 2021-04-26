@@ -1,7 +1,10 @@
 # Voximplant Kit functions
 
-Voximplant Kit functions allow you to store code in the Voximplant Kit cloud and run it from your scenarios. 
+Voximplant Kit functions allow you to store code in the Voximplant Kit cloud and run it from your scenarios.
 This can be extremely useful to access other apps' API in your scenario and handle multiple channels in the Contact Center.
+
+## Test coverage
+![Test coverage](./coverage/badge.svg "Test coverage")
 
 ## Requirements
 

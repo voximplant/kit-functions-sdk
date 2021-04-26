@@ -81,5 +81,4 @@ fabric.properties
 /java.json
 /data.js
 /temp.js
-/coverage/
-coverage/
+

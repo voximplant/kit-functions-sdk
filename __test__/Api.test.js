@@ -5,11 +5,12 @@ const axios = require('axios');
 
 jest.mock('axios');
 const mocRequest = jest.fn();
+const useMock = jest.fn();
 axios.create.mockImplementation(() => {
   return {
     interceptors: {
       request: {
-        use: jest.fn()
+        use: useMock
       }
     },
     request: mocRequest
@@ -40,6 +41,23 @@ describe('new Api', () => {
   });
 });
 
+describe('interceptors', () => {
+  const api = new Api('domain', 'token', 'url');
+
+  test('callback check', async () => {
+    await api.request('test_url');
+    const callback = useMock.mock.calls[0][0];
+    const intcResult = callback({});
+
+    expect(intcResult).toEqual(expect.objectContaining({
+        data: '',
+        params: {domain: 'domain', access_token: 'token'}
+      }
+    ));
+    expect(useMock).toHaveBeenCalledWith(expect.any(Function));
+  });
+})
+
 describe('request', () => {
   test('Must return the response', async () => {
     mocRequest.mockResolvedValue({result: true});
@@ -49,7 +67,7 @@ describe('request', () => {
     expect(result).toEqual(expect.objectContaining({result: true}))
   })
 
-  test('Must return the error',  () => {
+  test('Must return the error', () => {
     mocRequest.mockRejectedValue('Error response');
     const api = new Api('domain', 'token', 'url');
     api.request('url').catch(err => {
@@ -57,9 +75,9 @@ describe('request', () => {
     });
   })
 
- test('call without url param throw Error', () => {
-   const api = new Api('domain', 'token', 'url');
-   expect( () =>  api.request()).toThrow(Error);
-   expect( () =>  api.request()).toThrow('url parameter is not passed or is not a string');
- });
+  test('call without url param throw Error', () => {
+    const api = new Api('domain', 'token', 'url');
+    expect(() => api.request()).toThrow(Error);
+    expect(() => api.request()).toThrow('url parameter is not passed or is not a string');
+  });
 });
