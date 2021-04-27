@@ -5,9 +5,6 @@ import { ApiInstance } from "./types";
  */
 export default class Api implements ApiInstance {
     private client;
-    constructor(domain: string, token: string, url: string);
-    /**
-     * Api request
-     **/
+    constructor(domain: string, token: string, baseUrl: string);
     request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
 }

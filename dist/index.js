@@ -34,24 +34,21 @@ class VoximplantKit {
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.http = axios_1.default;
-        if (typeof context === 'undefined' || typeof context.request === "undefined") {
-            context = {
-                request: {
-                    body: {},
-                    headers: {}
-                }
-            };
+        if (typeof context === 'undefined' || !((context === null || context === void 0 ? void 0 : context.request) && context.request.body && context.request.headers)) {
+            const err = new TypeError('context parameter is required');
+            err.stack = '';
+            throw err;
         }
         // Store request data
         this.requestData = context.request.body;
         // Get event type
         this.eventType = utils_1.default.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
         // Get access token
-        this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', '');
+        this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', 'test');
         // Get api url
         this.apiUrl = utils_1.default.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com');
         // Get domain
-        this.domain = utils_1.default.getHeaderValue(context, 'x-kit-domain', '');
+        this.domain = utils_1.default.getHeaderValue(context, 'x-kit-domain', 'test');
         // Get function ID
         this.functionId = utils_1.default.getHeaderValue(context, 'x-kit-function-id', 0);
         // Get session access url
@@ -112,14 +109,14 @@ class VoximplantKit {
      * ```
      */
     async loadDatabases() {
-        const _DBs = [
-            this.DB.getDB("function_" + this.functionId),
-            this.DB.getDB("accountdb_" + this.domain)
+        const names = [
+            'function_' + this.functionId,
+            'accountdb_' + this.domain,
         ];
         if (this.isMessage()) {
-            _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid));
+            names.push('conversation_' + this.incomingMessage.conversation.uuid);
         }
-        return await this.DB.getAllDB(_DBs);
+        return await this.DB.getAllDB(names);
     }
     /**
      * Gets a function response. Needs to be called at the end of each function.
@@ -129,15 +126,15 @@ class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param data
      */
-    getResponseBody(data) {
-        if (this.isCall())
+    getResponseBody() {
+        if (this.isCall()) {
             return {
                 "VARIABLES": this.variables,
                 "SKILLS": this.skills
             };
-        if (this.isMessage()) {
+        }
+        else if (this.isMessage()) {
             const payloadIndex = this.replyMessage.payload.findIndex(item => {
                 return item.type === "cmd" && item.name === "transfer_to_queue";
             });
@@ -149,10 +146,12 @@ class VoximplantKit {
                 text: this.replyMessage.text,
                 payload: this.replyMessage.payload,
                 variables: this.variables
-            };
+            }; // To be added in the future
         }
-        else
-            return data;
+        else {
+            return;
+            //return data
+        }
     }
     /**
      * Gets an incoming message.
@@ -257,7 +256,7 @@ class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param name {string} - Variable name
-     * @param value {string} - Variable value to add or update
+     * @param value {string} - Variable value
      */
     setVariable(name, value) {
         if (typeof name === 'string' && typeof value === 'string') {
@@ -280,9 +279,11 @@ class VoximplantKit {
      * @param name {string} - Variable name
      */
     deleteVariable(name) {
-        if (typeof name === 'string') {
+        if (typeof name === 'string' && name in this.variables) {
             delete this.variables[name];
+            return true;
         }
+        return false;
     }
     /**
      * Gets call headers.
@@ -362,8 +363,12 @@ class VoximplantKit {
      * @param level Proficiency level
      */
     setSkill(name, level) {
-        if (typeof name !== 'string' || typeof level !== 'number')
+        if (typeof name !== 'string' || !Number.isInteger(level))
             return false;
+        if (level < 1 || level > 5) {
+            console.warn('level property must be a integer from 1 to 5');
+            return false;
+        }
         const skillIndex = this.skills.findIndex(skill => {
             return skill.skill_name === name;
         });
@@ -400,7 +405,7 @@ class VoximplantKit {
         return false;
     }
     /**
-     * Sets the call priority. The higher the priority, the less time a client will wait for the operator's answer.
+     * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -419,7 +424,7 @@ class VoximplantKit {
             return true;
         }
         else {
-            console.warn(`The value ${value} cannot be set as a priority. An integer from 0 to 10 is expected`);
+            console.warn(`${value} cannot be set as a priority value. An integer from 0 to 10 is expected`);
             return false;
         }
     }
@@ -507,16 +512,15 @@ class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param queue {QueueInfo} - Queue name or id
+     * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
      */
     transferToQueue(queue) {
         if (!this.isMessage())
             return false;
-        if (typeof queue.queue_id === "undefined")
+        if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id))
             queue.queue_id = null;
-        if (typeof queue.queue_name === "undefined")
+        if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string")
             queue.queue_name = null;
-        // TODO find out if there should be an OR operator
         if (queue.queue_id === null && queue.queue_name === null)
             return false;
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -607,7 +611,7 @@ class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param key {string} - Key
-     * @param value {any} - Value to add or update
+     * @param value {any} - Value
      * @param scope {DataBaseType} - Database scope
      */
     dbSet(key, value, scope = "global") {
@@ -659,15 +663,15 @@ class VoximplantKit {
      * ```
      */
     async dbCommit() {
-        const _DBs = [
-            this.DB.putDB("function_" + this.functionId, 'function'),
-            this.DB.putDB("accountdb_" + this.domain, 'global')
+        const params = [
+            { name: 'function_' + this.functionId, scope: 'function' },
+            { name: 'accountdb_' + this.domain, scope: 'global' },
         ];
         if (this.isMessage()) {
-            _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'));
+            params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' });
         }
         try {
-            return await this.DB.putAllDB(_DBs);
+            return await this.DB.putAllDB(params);
         }
         catch (err) {
             console.log(err);
@@ -733,7 +737,7 @@ class VoximplantKit {
      * ```
      */
     version() {
-        return "0.0.40";
+        return "0.0.42";
     }
 }
 /**

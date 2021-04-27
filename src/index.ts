@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody, ObjectType
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -59,13 +59,10 @@ class VoximplantKit {
     this.replyMessage = new Message(true);
     this.http = axios
 
-    if (typeof context === 'undefined' || typeof context.request === "undefined") {
-      context = {
-        request: {
-          body: {},
-          headers: {}
-        }
-      }
+    if (typeof context === 'undefined' || !(context?.request && context.request.body && context.request.headers)) {
+      const err =  new TypeError('context parameter is required');
+      err.stack = '';
+      throw err;
     }
 
     // Store request data
@@ -73,11 +70,11 @@ class VoximplantKit {
     // Get event type
     this.eventType = utils.getHeaderValue(context, 'x-kit-event-type', EVENT_TYPES.webhook) as EVENT_TYPES;
     // Get access token
-    this.accessToken = utils.getHeaderValue(context, 'x-kit-access-token', '') as string;
+    this.accessToken = utils.getHeaderValue(context, 'x-kit-access-token', 'test') as string;
     // Get api url
     this.apiUrl = utils.getHeaderValue(context, 'x-kit-api-url', 'kitapi-eu.voximplant.com') as string;
     // Get domain
-    this.domain = utils.getHeaderValue(context, 'x-kit-domain', '') as string;
+    this.domain = utils.getHeaderValue(context, 'x-kit-domain', 'test') as string;
     // Get function ID
     this.functionId = utils.getHeaderValue(context, 'x-kit-function-id', 0) as number;
     // Get session access url
@@ -147,16 +144,16 @@ class VoximplantKit {
    * ```
    */
   public async loadDatabases() {
-    const _DBs = [
-      this.DB.getDB("function_" + this.functionId),
-      this.DB.getDB("accountdb_" + this.domain)
-    ];
+    const names = [
+      'function_' + this.functionId,
+      'accountdb_' + this.domain,
+    ]
 
     if (this.isMessage()) {
-      _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
+      names.push('conversation_' + this.incomingMessage.conversation.uuid)
     }
 
-    return await this.DB.getAllDB(_DBs);
+    return await this.DB.getAllDB(names);
   }
 
   /**
@@ -167,16 +164,15 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param data
    */
-  public getResponseBody(data: any) {
-    if (this.isCall())
+  public getResponseBody() {
+    if (this.isCall()) {
       return {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
-
-    if (this.isMessage()) {
+    }
+    else if (this.isMessage()) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
       })
@@ -190,9 +186,11 @@ class VoximplantKit {
         text: this.replyMessage.text,
         payload: this.replyMessage.payload,
         variables: this.variables
-      }
-    } else
-      return data
+      } // To be added in the future
+    } else {
+      return;
+      //return data
+    }
   }
 
   /**
@@ -304,7 +302,7 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    * @param name {string} - Variable name
-   * @param value {string} - Variable value to add or update
+   * @param value {string} - Variable value
    */
   public setVariable(name: string, value: string): boolean {
     if (typeof name === 'string' && typeof value === 'string') {
@@ -327,10 +325,12 @@ class VoximplantKit {
    * ```
    * @param name {string} - Variable name
    */
-  deleteVariable(name: string) {
-    if (typeof name === 'string') {
+  deleteVariable(name: string): boolean {
+    if (typeof name === 'string' && name in this.variables) {
       delete this.variables[name];
+      return true;
     }
+    return false;
   }
 
   /**
@@ -415,11 +415,17 @@ class VoximplantKit {
    * @param level Proficiency level
    */
   public setSkill(name: string, level: number): boolean {
-    if (typeof name !== 'string' || typeof level !== 'number') return false;
+    if (typeof name !== 'string' || !Number.isInteger(level)) return false;
+
+    if (level < 1 || level > 5) {
+      console.warn('level property must be a integer from 1 to 5');
+      return false;
+    }
 
     const skillIndex = this.skills.findIndex(skill => {
       return skill.skill_name === name
-    })
+    });
+
     if (skillIndex === -1) this.skills.push({
       "skill_name": name,
       "level": level
@@ -454,7 +460,7 @@ class VoximplantKit {
   }
 
   /**
-   * Sets the call priority. The higher the priority, the less time a client will wait for the operator's answer.
+   * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
    * ```js
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
@@ -472,7 +478,7 @@ class VoximplantKit {
       this.priority = value;
       return true;
     } else {
-      console.warn(`The value ${ value } cannot be set as a priority. An integer from 0 to 10 is expected`);
+      console.warn(`${ value } cannot be set as a priority value. An integer from 0 to 10 is expected`);
       return false;
     }
   }
@@ -565,15 +571,14 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param queue {QueueInfo} - Queue name or id
+   * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
    */
   public transferToQueue(queue: QueueInfo) {
     if (!this.isMessage()) return false;
 
-    if (typeof queue.queue_id === "undefined") queue.queue_id = null;
-    if (typeof queue.queue_name === "undefined") queue.queue_name = null;
+    if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id)) queue.queue_id = null;
+    if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string") queue.queue_name = null;
 
-    // TODO find out if there should be an OR operator
     if (queue.queue_id === null && queue.queue_name === null) return false
 
     const payloadIndex = this.replyMessage.payload.findIndex(item => {
@@ -639,7 +644,7 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    * @param key {string} - Key
-   * @param scope {DataBaseType} - Database scope 
+   * @param scope {DataBaseType} - Database scope
    */
   public dbGet(key: string, scope: DataBaseType = "global"): string | null {
     return this.DB.getScopeValue(key, scope);
@@ -668,7 +673,7 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    * @param key {string} - Key
-   * @param value {any} - Value to add or update
+   * @param value {any} - Value
    * @param scope {DataBaseType} - Database scope
    */
   public dbSet(key: string, value: any, scope: DataBaseType = "global"): boolean {
@@ -692,7 +697,7 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param scope {DataBaseType} - Database scope 
+   * @param scope {DataBaseType} - Database scope
    */
   public dbGetAll(scope: DataBaseType = "global"): ObjectType | null {
     return utils.clone(this.DB.getScopeAllValues(scope));
@@ -722,17 +727,17 @@ class VoximplantKit {
    * ```
    */
   public async dbCommit() {
-    const _DBs = [
-      this.DB.putDB("function_" + this.functionId, 'function'),
-      this.DB.putDB("accountdb_" + this.domain, 'global')
-    ];
+    const params: DateBasePutParams[] = [
+      { name: 'function_' + this.functionId, scope: 'function' },
+      { name: 'accountdb_' + this.domain, scope: 'global' },
+    ]
 
     if (this.isMessage()) {
-      _DBs.push(this.DB.putDB("conversation_" + this.incomingMessage.conversation.uuid, 'conversation'))
+      params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' })
     }
 
     try {
-      return await this.DB.putAllDB(_DBs);
+      return await this.DB.putAllDB(params);
     } catch (err) {
       console.log(err);
       return false;
@@ -785,9 +790,9 @@ class VoximplantKit {
       url: url,
       file_name: "file",
       file_size: 123
-    })
+    });
 
-    return true
+    return true;
   }
 
 
@@ -802,7 +807,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.40"
+    return "0.0.42"
   }
 }
 

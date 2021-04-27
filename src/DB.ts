@@ -1,4 +1,4 @@
-import { ApiInstance, DataBase, DataBaseType, DbResponse, ObjectType } from "./types";
+import { ApiInstance, DataBase, DataBaseType, DateBasePutParams, DbResponse, ObjectType } from "./types";
 import axios from "axios";
 import utils from './utils';
 
@@ -18,22 +18,41 @@ export default class DB {
     };
   }
 
-  public getDB(db_name: string): Promise<DbResponse> {
+  private getDB(db_name: string): Promise<DbResponse> {
     return this.api.request("/v2/kv/get", {
       key: db_name
     }).then((response) => {
       return response.data as DbResponse;
-    }).catch(() => {
+    }).catch((err) => {
+      console.log(err);
       return { result: null }
     })
   }
 
-  public putDB(db_name: string, type: DataBaseType) {
+  public getAllDB(names: string[] = []) {
+    const _DBs: Promise<DbResponse>[] = [];
+    names.forEach((name) => _DBs.push(this.getDB(name)));
+    //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
+    return axios.all(_DBs).then(([func, acc, conv]) => {
+      const functionDB = (typeof func !== "undefined" && func?.result && typeof func.result === 'string') ? JSON.parse(func.result) : {}
+      const accountDB = (typeof acc !== "undefined" && acc?.result && typeof acc.result === 'string') ? JSON.parse(acc.result) : {}
+      const conversationDB = (typeof conv !== "undefined"  && conv?.result && typeof conv.result === 'string') ? JSON.parse(conv.result) : {}
+
+      this.scope = {
+        function: functionDB,
+        global: accountDB,
+        conversation: conversationDB
+      };
+    }).catch((err) => {
+      console.log(err);
+    })
+  }
+
+  private putDB(db_name: string, type: DataBaseType) {
     const value = this.scope?.[type];
 
     if (!value) {
-      console.log(`DB ${ type } not found`);
-      return;
+      return Promise.reject(`DB ${ type } not found`);
     }
 
     return this.api.request("/v2/kv/put", {
@@ -42,33 +61,20 @@ export default class DB {
       ttl: -1
     }).then((response) => {
       return response.data as DbResponse
-    }).catch(() => {
-      return { result: null }
-    })
-  }
-
-  public getAllDB(_DBs: Promise<DbResponse>[]) {
-    return axios.all(_DBs).then(axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse) => {
-      const functionDB = (typeof func !== "undefined" && func?.result) ? JSON.parse(func.result) : {}
-      const accountDB = (typeof acc !== "undefined" && acc?.result) ? JSON.parse(acc.result) : {}
-      const conversationDB = (typeof conv !== "undefined" && conv?.result) ? JSON.parse(conv.result) : {}
-
-      this.scope = {
-        function: functionDB,
-        global: accountDB,
-        conversation: conversationDB
-      };
-    })).catch((err) => {
+    }).catch((err) => {
       console.log(err);
+      return err;
     })
   }
 
+  public putAllDB(params: DateBasePutParams[]): Promise<boolean> {
+    const _DBs: Promise<DbResponse>[]  = [];
+    params.forEach(item => _DBs.push(this.putDB(item.name, item.scope)));
 
-  public putAllDB(_DBs: Promise<DbResponse>[]): Promise<boolean> {
     return axios.all(_DBs)
-      .then(axios.spread(() => {
-      return true;
-    })).catch((err) => {
+      .then(() => {
+        return true;
+      }).catch((err) => {
       console.log(err);
       return false;
     })

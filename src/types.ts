@@ -10,16 +10,28 @@ export interface CallObject {
    * Attempt number
    */
   attempt_num: number
+  /**
+   * Voximplant session id
+   */
   session_id: string
+  /**
+   Caller phone number
+  */
   callerid: string
+  /**
+   * Destination phone number
+   */
   destination: string
+  /**
+  Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
+  */
   display_name: string
   /**
-   * Caller phone number
+   * Caller phone number. Equivalent to the <b>callerid</b> value
    */
   phone_a: string
   /**
-   * Callee phone number
+   * Destination phone number. Equivalent to the <b>destination</b> value
    */
   phone_b: string
   /**
@@ -122,7 +134,7 @@ export interface MessageConversation {
    */
   custom_data: ConversationCustomDataObject
   /**
-   * Current status of the request: being processed, closed, etc.
+   * Current status of the request: new, unassigned, processed_by_function, waiting_agent, processed_by_agent, done
    */
   current_status: string
   /**
@@ -144,20 +156,41 @@ export interface MessageConversationChannel {
    * Channel id
    */
   id: number
+  /**
+   * Channel universally unique identifier (UUID)
+   */
   channel_uuid: string,
+  /**
+   * @hidden
+   */
   account: object,
   /**
-   * Channel name
+   * Channel type
    */
   channel_type: ChannelType,// 'telegram'
   /**
-   * Channel settings
+   * @hidden
    */
   channel_settings: object,
+  /**
+   * Channel processing method (a function or a queue)
+   */
   processing_method: string,
+  /**
+   * Queue that processes the channel if the processing method is a queue
+   */
   processing_queue: object,
+  /**
+   * Function that processes the channel if the processing method is a function
+   */
   processing_function: number,
+  /**
+   * @hidden
+   */
   partner_id: number,
+  /**
+   * @hidden
+   */
   access_token: string
 }
 
@@ -188,7 +221,13 @@ export interface ConversationCustomDataRequestData {
    * Conversation id (the whole chat in the channel)
    */
   conversation_id: number,
+  /**
+   * @hidden
+   */
   start_sequence: number,
+  /**
+   * @hidden
+   */
   end_sequence: any,
   /**
    * Time when the request was created
@@ -206,6 +245,9 @@ export interface ConversationCustomDataRequestData {
    * Conversation is complete
    */
   completed: boolean,
+  /**
+   * Variables object
+   */
   variables: ObjectType
 }
 
@@ -240,7 +282,7 @@ export interface ConversationCustomDataConversationDataObject {
   /**
    * Channel from which the message was sent
    */
-  channel_type: string
+  channel_type: ChannelType
   /**
    * Sender of the last message
    */
@@ -253,11 +295,11 @@ export interface ConversationCustomDataConversationDataObject {
 
 export interface QueueInfo {
   /**
-   * Queue id. Can be used instead of <b>queue_name</b>
+   * Queue id
    */
   queue_id: number
   /**
-   * Queue name. Can be used instead of <b>queue_id</b>
+   * Queue name
    */
   queue_name: string
 }
@@ -373,18 +415,23 @@ export interface MessagePayloadItem {
 
 export interface DataBase {
   /**
-   * Function scope
+   * Function scope object
    */
   function: ObjectType,
   /**
-   * Global scope
+   * Global scope object
    */
   global: ObjectType,
   /**
-   * Conversation scope
+   * Conversation scope object
    */
   conversation: ObjectType
 }
+
+/**
+ * @hidden
+ */
+export type DateBasePutParams = { name: string, scope: DataBaseType};
 
 export type DataBaseType = 'function' | 'global' | 'conversation';
 

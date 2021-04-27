@@ -1,4 +1,4 @@
-import { ApiInstance, DataBaseType, DbResponse, ObjectType } from "./types";
+import { ApiInstance, DataBaseType, DateBasePutParams, ObjectType } from "./types";
 /**
  * @hidden
  */
@@ -6,12 +6,10 @@ export default class DB {
     private scope;
     private api;
     constructor(api: ApiInstance);
-    getDB(db_name: string): Promise<DbResponse>;
-    putDB(db_name: string, type: DataBaseType): Promise<DbResponse | {
-        result: any;
-    }>;
-    getAllDB(_DBs: Promise<DbResponse>[]): Promise<void>;
-    putAllDB(_DBs: Promise<DbResponse>[]): Promise<boolean>;
+    private getDB;
+    getAllDB(names?: string[]): Promise<void>;
+    private putDB;
+    putAllDB(params: DateBasePutParams[]): Promise<boolean>;
     getScopeValue(key: string, scope?: DataBaseType): string | null;
     setScopeValue(key: string, value: any, scope?: DataBaseType): boolean;
     getScopeAllValues(scope?: DataBaseType): ObjectType | null;

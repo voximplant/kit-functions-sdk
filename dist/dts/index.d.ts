@@ -64,9 +64,20 @@ declare class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param data
      */
-    getResponseBody(data: any): any;
+    getResponseBody(): {
+        VARIABLES: ObjectType;
+        SKILLS: SkillObject[];
+        text?: undefined;
+        payload?: undefined;
+        variables?: undefined;
+    } | {
+        text: string;
+        payload: import("./types").MessagePayloadItem[];
+        variables: ObjectType;
+        VARIABLES?: undefined;
+        SKILLS?: undefined;
+    };
     /**
      * Gets an incoming message.
      * ```js
@@ -156,7 +167,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param name {string} - Variable name
-     * @param value {string} - Variable value to add or update
+     * @param value {string} - Variable value
      */
     setVariable(name: string, value: string): boolean;
     /**
@@ -172,7 +183,7 @@ declare class VoximplantKit {
      * ```
      * @param name {string} - Variable name
      */
-    deleteVariable(name: string): void;
+    deleteVariable(name: string): boolean;
     /**
      * Gets call headers.
      * ```js
@@ -258,7 +269,7 @@ declare class VoximplantKit {
      */
     removeSkill(name: string): boolean;
     /**
-     * Sets the call priority. The higher the priority, the less time a client will wait for the operator's answer.
+     * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -333,7 +344,7 @@ declare class VoximplantKit {
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param queue {QueueInfo} - Queue name or id
+     * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
      */
     transferToQueue(queue: QueueInfo): boolean;
     /**
@@ -398,7 +409,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param key {string} - Key
-     * @param value {any} - Value to add or update
+     * @param value {any} - Value
      * @param scope {DataBaseType} - Database scope
      */
     dbSet(key: string, value: any, scope?: DataBaseType): boolean;
