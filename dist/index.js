@@ -109,14 +109,6 @@ class VoximplantKit {
      * ```
      */
     async loadDatabases() {
-        /*const _DBs = [
-          this.DB.getDB("function_" + this.functionId),
-          this.DB.getDB("accountdb_" + this.domain)
-        ];
-    
-        if (this.isMessage()) {
-          _DBs.push(this.DB.getDB("conversation_" + this.incomingMessage.conversation.uuid))
-        }*/
         const names = [
             'function_' + this.functionId,
             'accountdb_' + this.domain,
