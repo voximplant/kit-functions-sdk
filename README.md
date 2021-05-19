@@ -10,7 +10,6 @@ This can be extremely useful to access other apps' API in your scenario and hand
 
 To use Voximplant Kit functions you need:
 1. A Voximplant Kit account. You can register one [here](https://kit.voximplant.com/registration).
-1. Access to Voximplant Kit functions. Please [contact us](mailto:support@kit.voximplant.com) to request access.
 
 ## How to use
 
