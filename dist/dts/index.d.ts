@@ -37,7 +37,6 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
-    getEnv(): ObjectType | null;
     /**
      * Loads the databases available in the scope.
      * ```js

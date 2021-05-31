@@ -13,8 +13,22 @@ import {
 import Message from "./Message";
 import utils from './utils';
 import * as dotenv from 'dotenv'
-//const dotenv = require('dotenv');
-const path = require('path')
+const path = require('path');
+
+function getEnv(): void {
+  try {
+    const directory = path.resolve(__dirname, '../../../../')
+    const result = dotenv.config({ path: directory  + '/.env' });
+    if (result.error) {
+      throw result.error;
+    }
+
+  }catch (err) {
+    console.log(err);
+  }
+}
+
+getEnv();
 
 
 /**
@@ -127,21 +141,6 @@ class VoximplantKit {
     }
 
     return utils.clone(variables);
-  }
-
-  getEnv(): ObjectType | null {
-    try {
-      const directory = path.resolve(__dirname, '../../../../')
-      const result = dotenv.config({ path: directory  + '/.env' });
-      if (result.error) {
-        throw result.error;
-      }
-      const { parsed: envs } = result;
-      return envs;
-    }catch (err) {
-      console.log(err);
-      return null
-    }
   }
 
   /**

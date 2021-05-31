@@ -23,7 +23,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @hidden
                 */
             static default: typeof VoximplantKit;
-            getEnv(): ObjectType | null;
             /**
                 * Loads the databases available in the scope.
                 * ```js

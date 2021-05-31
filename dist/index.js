@@ -5,8 +5,20 @@ const DB_1 = require("./DB");
 const Message_1 = require("./Message");
 const utils_1 = require("./utils");
 const dotenv = require("dotenv");
-//const dotenv = require('dotenv');
 const path = require('path');
+function getEnv() {
+    try {
+        const directory = path.resolve(__dirname, '../../../../');
+        const result = dotenv.config({ path: directory + '/.env' });
+        if (result.error) {
+            throw result.error;
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+getEnv();
 class VoximplantKit {
     /**
      * Voximplant Kit class, a middleware for working with functions.
@@ -92,21 +104,6 @@ class VoximplantKit {
             variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
         }
         return utils_1.default.clone(variables);
-    }
-    getEnv() {
-        try {
-            const directory = path.resolve(__dirname, '../../../../');
-            const result = dotenv.config({ path: directory + '/.env' });
-            if (result.error) {
-                throw result.error;
-            }
-            const { parsed: envs } = result;
-            return envs;
-        }
-        catch (err) {
-            console.log(err);
-            return null;
-        }
     }
     /**
      * Loads the databases available in the scope.
