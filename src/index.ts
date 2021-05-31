@@ -1,4 +1,3 @@
-import * as dotenv from 'dotenv'
 import axios, { AxiosInstance } from 'axios'
 import Api from "./Api"
 import DB from "./DB"
@@ -14,17 +13,7 @@ import {
 import Message from "./Message";
 import utils from './utils';
 
-/**
- * @hidden
- */
-const result = dotenv.config({path: __dirname + '/.env'});
-if (result.error) {
-  throw result.error;
-}
-/**
- * @hidden
- */
-const { parsed: envs } = result;
+
 
 /**
  * @hidden
@@ -53,7 +42,6 @@ class VoximplantKit {
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
-  private env: ObjectType = envs || {};
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -137,10 +125,6 @@ class VoximplantKit {
     }
 
     return utils.clone(variables);
-  }
-
-  getEnv(): ObjectType {
-    return this.env;
   }
 
   /**
