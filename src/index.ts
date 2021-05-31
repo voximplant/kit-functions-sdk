@@ -14,7 +14,7 @@ import Message from "./Message";
 import utils from './utils';
 import * as dotenv from 'dotenv'
 //const dotenv = require('dotenv');
-
+const path = require('path')
 
 
 /**
@@ -130,7 +130,11 @@ class VoximplantKit {
   }
 
   getEnv(): ObjectType | null {
-    try {
+    console.log(process.cwd());
+    console.log(__dirname);
+    console.log(path.normalize(__dirname + '/,,/../'));
+    return {}
+    /*try {
       console.log(process.cwd());
       console.log(__dirname);
       const result = dotenv.config({ path: process.cwd() + '/.env' });
@@ -142,7 +146,7 @@ class VoximplantKit {
     }catch (err) {
       console.log(err);
       return null
-    }
+    }*/
   }
 
   /**
