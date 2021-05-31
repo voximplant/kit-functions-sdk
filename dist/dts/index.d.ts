@@ -1,4 +1,5 @@
 import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
+import * as dotenv from 'dotenv';
 declare class VoximplantKit {
     private requestData;
     private accessToken;
@@ -37,6 +38,7 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
+    getEnv(): dotenv.DotenvParseOutput;
     /**
      * Loads the databases available in the scope.
      * ```js

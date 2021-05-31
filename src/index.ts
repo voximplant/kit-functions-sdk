@@ -12,6 +12,8 @@ import {
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
+import * as dotenv from 'dotenv'
+//const dotenv = require('dotenv');
 
 
 
@@ -125,6 +127,15 @@ class VoximplantKit {
     }
 
     return utils.clone(variables);
+  }
+
+  getEnv() {
+    const result = dotenv.config({path: process.cwd() + '/.env'});
+    if (result.error) {
+      throw result.error;
+    }
+    const { parsed: envs } = result;
+    return envs;
   }
 
   /**
