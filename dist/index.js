@@ -93,6 +93,8 @@ class VoximplantKit {
     }
     getEnv() {
         try {
+            console.log(process.cwd());
+            console.log(__dirname);
             const result = dotenv.config({ path: process.cwd() + '/.env' });
             if (result.error) {
                 throw result.error;
