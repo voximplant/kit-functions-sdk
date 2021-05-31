@@ -130,15 +130,9 @@ class VoximplantKit {
   }
 
   getEnv(): ObjectType | null {
-    console.log(process.cwd());
-    console.log(__dirname);
-    console.log(path.parse(__dirname));
-    console.log('resolve', path.resolve(__dirname, '../../../../'));
-    return {}
-    /*try {
-      console.log(process.cwd());
-      console.log(__dirname);
-      const result = dotenv.config({ path: process.cwd() + '/.env' });
+    try {
+      const directory = path.resolve(__dirname, '../../../../')
+      const result = dotenv.config({ path: directory  + '/.env' });
       if (result.error) {
         throw result.error;
       }
@@ -147,7 +141,7 @@ class VoximplantKit {
     }catch (err) {
       console.log(err);
       return null
-    }*/
+    }
   }
 
   /**
