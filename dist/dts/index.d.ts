@@ -17,6 +17,7 @@ declare class VoximplantKit {
     private eventType;
     private replyMessage;
     private incomingMessage;
+    private env;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * ```js
@@ -37,6 +38,7 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
+    getEnv(): ObjectType;
     /**
      * Loads the databases available in the scope.
      * ```js

@@ -1,9 +1,21 @@
 "use strict";
+const dotenv = require("dotenv");
 const axios_1 = require("axios");
 const Api_1 = require("./Api");
 const DB_1 = require("./DB");
 const Message_1 = require("./Message");
 const utils_1 = require("./utils");
+/**
+ * @hidden
+ */
+const result = dotenv.config({ path: __dirname + '/.env' });
+if (result.error) {
+    throw result.error;
+}
+/**
+ * @hidden
+ */
+const { parsed: envs } = result;
 class VoximplantKit {
     /**
      * Voximplant Kit class, a middleware for working with functions.
@@ -31,6 +43,7 @@ class VoximplantKit {
         this.call = null;
         this.skills = [];
         this.eventType = "webhook" /* webhook */;
+        this.env = envs || {};
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.http = axios_1.default;
@@ -89,6 +102,9 @@ class VoximplantKit {
             variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
         }
         return utils_1.default.clone(variables);
+    }
+    getEnv() {
+        return this.env;
     }
     /**
      * Loads the databases available in the scope.
