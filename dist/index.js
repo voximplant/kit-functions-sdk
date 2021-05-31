@@ -92,12 +92,18 @@ class VoximplantKit {
         return utils_1.default.clone(variables);
     }
     getEnv() {
-        const result = dotenv.config({ path: process.cwd() + '/.env' });
-        if (result.error) {
-            throw result.error;
+        try {
+            const result = dotenv.config({ path: process.cwd() + '/.env' });
+            if (result.error) {
+                throw result.error;
+            }
+            const { parsed: envs } = result;
+            return envs;
         }
-        const { parsed: envs } = result;
-        return envs;
+        catch (err) {
+            console.log(err);
+            return null;
+        }
     }
     /**
      * Loads the databases available in the scope.
