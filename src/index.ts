@@ -133,6 +133,7 @@ class VoximplantKit {
     console.log(process.cwd());
     console.log(__dirname);
     console.log(path.parse(__dirname));
+    console.log('resolve', path.resolve(__dirname, '../../'));
     return {}
     /*try {
       console.log(process.cwd());
