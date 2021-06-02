@@ -515,26 +515,39 @@ class VoximplantKit {
      * ```
      * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
      */
-    transferToQueue(queue) {
+    async transferToQueue(queue) {
+        var _a;
         if (!this.isMessage())
             return false;
         if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id))
-            queue.queue_id = null;
+            queue.queue_id = undefined;
         if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string")
-            queue.queue_name = null;
-        if (queue.queue_id === null && queue.queue_name === null)
+            queue.queue_name = undefined;
+        if (queue.queue_id === undefined && queue.queue_name === undefined)
             return false;
+        const res = await this.apiProxy('/v3/queues/searchQueues', { acd_queue_title: queue.queue_name, id: queue.queue_id });
+        let queue_id = null;
+        let queue_name = null;
+        if (res.success && res.result.length) {
+            const queueItem = (_a = res.result) === null || _a === void 0 ? void 0 : _a[0];
+            const { acd_queue_id: id, acd_queue_title: name } = queueItem;
+            queue_name = name;
+            queue_id = id;
+        }
+        else {
+            return false;
+        }
         const payloadIndex = this.replyMessage.payload.findIndex(item => {
             return item.type === "cmd" && item.name === "transfer_to_queue";
         });
         if (payloadIndex > -1) {
-            this.replyMessage.payload[payloadIndex].queue = queue;
+            this.replyMessage.payload[payloadIndex].queue = { queue_name, queue_id };
         }
         else {
             this.replyMessage.payload.push({
                 type: "cmd",
                 name: "transfer_to_queue",
-                queue: queue,
+                queue: { queue_name, queue_id },
                 skills: []
             });
         }

@@ -346,7 +346,7 @@ declare class VoximplantKit {
      * ```
      * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
      */
-    transferToQueue(queue: QueueInfo): boolean;
+    transferToQueue(queue: QueueInfo): Promise<boolean>;
     /**
      * Cancels transferring a client to the queue.
      * ```js
