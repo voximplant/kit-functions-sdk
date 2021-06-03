@@ -4,21 +4,7 @@ const Api_1 = require("./Api");
 const DB_1 = require("./DB");
 const Message_1 = require("./Message");
 const utils_1 = require("./utils");
-const dotenv = require("dotenv");
-const path = require('path');
-function getEnv() {
-    try {
-        const directory = path.resolve(__dirname, '../../../../');
-        const result = dotenv.config({ path: directory + '/.env' });
-        if (result.error) {
-            throw result.error;
-        }
-    }
-    catch (err) {
-        console.log(err);
-    }
-}
-getEnv();
+utils_1.default.getEnv();
 class VoximplantKit {
     /**
      * Voximplant Kit class, a middleware for working with functions.

@@ -7,6 +7,7 @@ const {
   notString,
   notNumber
 } = require('./constants');
+const OLD_ENV = process.env;
 
 jest.mock('../dist/DB');
 
@@ -855,7 +856,7 @@ describe('addPhoto', () => {
     });
   });
 
-  describe('with call context', () => {
+  describe('with message context', () => {
     const kit = new VoximplantKitTest(messageContext);
     const isAdded = kit.addPhoto('test');
     const {payload} = kit.getResponseBody();
@@ -872,5 +873,50 @@ describe('addPhoto', () => {
         file_size: 123
       }]))
     })
+  });
+});
+
+describe('getEnvVariable', () => {
+  afterEach(() => {
+    process.env = { ...OLD_ENV };
+  })
+
+  describe('with call context', () => {
+    process.env.test = 'test value'; // mock
+    const kit = new VoximplantKitTest(callContext);
+    const envVar = kit.getEnvVariable('test');
+    const emptyVar = kit.getEnvVariable('testVar');
+    const boolVar = kit.getEnvVariable(true);
+
+    test('should return string', () => {
+      expect(envVar).toEqual('test value');
+    });
+
+    test('should return null', () => {
+      expect(emptyVar).toBeNull();
+    });
+
+    test('should return null', () => {
+      expect(boolVar).toBeNull();
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKitTest(messageContext);
+    const envVar = kit.getEnvVariable('test');
+    const emptyVar = kit.getEnvVariable('testVar');
+    const boolVar = kit.getEnvVariable(true);
+
+    test('should return string', () => {
+      expect(envVar).toEqual('test value');
+    });
+
+    test('should return null', () => {
+      expect(emptyVar).toBeNull();
+    });
+
+    test('should return null', () => {
+      expect(boolVar).toBeNull();
+    });
   });
 });

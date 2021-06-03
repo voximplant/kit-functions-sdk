@@ -12,23 +12,9 @@ import {
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
-import * as dotenv from 'dotenv'
-const path = require('path');
 
-function getEnv(): void {
-  try {
-    const directory = path.resolve(__dirname, '../../../../')
-    const result = dotenv.config({ path: directory  + '/.env' });
-    if (result.error) {
-      throw result.error;
-    }
 
-  }catch (err) {
-    console.log(err);
-  }
-}
-
-getEnv();
+utils.getEnv();
 
 
 /**
