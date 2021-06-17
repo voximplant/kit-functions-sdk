@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = require("dotenv");
-const path = require('path');
+const fs = require('fs');
 /**
  * @hidden
  */
@@ -19,10 +19,15 @@ const getHeaderValue = (context, name, defaultValue) => {
  */
 const getEnv = function getEnv() {
     try {
-        const directory = path.resolve(__dirname, '../../../../');
-        const result = dotenv.config({ path: directory + '/.env' });
-        if (result.error) {
-            throw result.error;
+        const directory = '/userfunc/deployarchive/.env';
+        if (fs.existsSync(directory)) {
+            const result = dotenv.config({ path: directory });
+            if (result.error) {
+                throw result.error;
+            }
+        }
+        else {
+            console.log('The path to the .env file could not be found');
         }
     }
     catch (err) {
