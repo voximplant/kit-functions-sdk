@@ -1,4 +1,6 @@
 import { ContextObject } from "./types";
+import * as dotenv from 'dotenv'
+const path = require('path');
 
 /**
  * @hidden
@@ -17,7 +19,24 @@ const getHeaderValue = (context: ContextObject, name: string, defaultValue: stri
 /**
  * @hidden
  */
+const getEnv = function getEnv(): void {
+  try {
+    const directory = path.resolve(__dirname, '../../../../')
+    const result = dotenv.config({ path: directory  + '/.env' });
+    if (result.error) {
+      throw result.error;
+    }
+
+  }catch (err) {
+    console.log(err);
+  }
+}
+
+/**
+ * @hidden
+ */
 export default {
   clone,
-  getHeaderValue
+  getHeaderValue,
+  getEnv,
 }

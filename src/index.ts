@@ -13,6 +13,10 @@ import {
 import Message from "./Message";
 import utils from './utils';
 
+
+utils.getEnv();
+
+
 /**
  * @hidden
  */
@@ -795,6 +799,27 @@ class VoximplantKit {
     return true;
   }
 
+  /**
+   * Gets an environment variable by name
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  const my_var = kit.getEnvVariable('myEnv');
+   *  if (my_var) {
+   *    console.log(my_var);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param name {string} - Variable name
+   */
+  public getEnvVariable(name: string): string | null {
+    if (typeof name === 'string') {
+      return name in process.env ? process.env[name] : null;
+    } else {
+      return null;
+    }
+  }
 
   /**
    * Gets a client’s SDK version.
@@ -807,7 +832,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.42"
+    return "0.0.43"
   }
 }
 
