@@ -27,7 +27,7 @@ const getEnv = function getEnv() {
             }
         }
         else {
-            // console.log('The path to the .env file could not be found');
+            console.log('The path to the .env file could not be found');
         }
     }
     catch (err) {
