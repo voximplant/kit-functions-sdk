@@ -44,6 +44,7 @@ class VoximplantKit {
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
+  private tags: string[];
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -91,6 +92,7 @@ class VoximplantKit {
     this.variables = this.getRequestDataVariables();
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
+    this.tags = []
 
     this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
@@ -127,6 +129,12 @@ class VoximplantKit {
     }
 
     return utils.clone(variables);
+  }
+
+  private findPayloadIndex(name: string): number {
+    return  this.replyMessage.payload.findIndex(item => {
+      return item.type === "cmd" && item.name === name;
+    })
   }
 
   /**
@@ -173,23 +181,26 @@ class VoximplantKit {
     if (this.isCall()) {
       return {
         "VARIABLES": this.variables,
-        "SKILLS": this.skills
+        "SKILLS": this.skills,
       }
     }
     else if (this.isMessage()) {
-      const payloadIndex = this.replyMessage.payload.findIndex(item => {
-        return item.type === "cmd" && item.name === "transfer_to_queue"
-      })
+      const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue')
+      const tagsPayloadIndex = this.findPayloadIndex('bind_tags')
 
-      if (payloadIndex !== -1) {
-        this.replyMessage.payload[payloadIndex].skills = this.skills;
-        this.replyMessage.payload[payloadIndex].priority = this.priority;
+      if (queuePayloadIndex !== -1) {
+        this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
+        this.replyMessage.payload[queuePayloadIndex].priority = this.priority;
+      }
+
+      if (tagsPayloadIndex !== -1) {
+        this.replyMessage.payload[tagsPayloadIndex].tags = this.tags;
       }
 
       return {
         text: this.replyMessage.text,
         payload: this.replyMessage.payload,
-        variables: this.variables
+        variables: this.variables,
       } // To be added in the future
     } else {
       return;
@@ -818,6 +829,23 @@ class VoximplantKit {
       return name in process.env ? process.env[name] : null;
     } else {
       return null;
+    }
+  }
+
+  bindTags(tags: string | string[]): boolean {
+    if (typeof tags === 'string' || Array.isArray(tags)) {
+      this.tags.concat(tags);
+      const payloadIndex = this.findPayloadIndex('bind_tags');
+
+      if (payloadIndex === -1) {
+        this.replyMessage.payload.push({
+          type: "cmd",
+          name: "bind_tags"
+        })
+      }
+      return true;
+    } else {
+      return false;
     }
   }
 
