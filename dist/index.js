@@ -62,6 +62,7 @@ class VoximplantKit {
         this.variables = this.getRequestDataVariables();
         // Store skills data
         this.skills = this.getRequestDataProperty('SKILLS', []); //this.getSkills()
+        this.tags = this.getRequestDataProperty('TAGS', []);
         this.api = new Api_1.default(this.domain, this.accessToken, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         if (this.isMessage()) {
@@ -90,6 +91,11 @@ class VoximplantKit {
             variables = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.VARIABLES) || {};
         }
         return utils_1.default.clone(variables);
+    }
+    findPayloadIndex(name) {
+        return this.replyMessage.payload.findIndex(item => {
+            return item.type === "cmd" && item.name === name;
+        });
     }
     /**
      * Loads the databases available in the scope.
@@ -132,21 +138,24 @@ class VoximplantKit {
         if (this.isCall()) {
             return {
                 "VARIABLES": this.variables,
-                "SKILLS": this.skills
+                "SKILLS": this.skills,
+                "TAGS": Array.from(new Set(this.tags))
             };
         }
         else if (this.isMessage()) {
-            const payloadIndex = this.replyMessage.payload.findIndex(item => {
-                return item.type === "cmd" && item.name === "transfer_to_queue";
-            });
-            if (payloadIndex !== -1) {
-                this.replyMessage.payload[payloadIndex].skills = this.skills;
-                this.replyMessage.payload[payloadIndex].priority = this.priority;
+            const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
+            const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
+            if (queuePayloadIndex !== -1) {
+                this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
+                this.replyMessage.payload[queuePayloadIndex].priority = this.priority;
+            }
+            if (tagsPayloadIndex !== -1) {
+                this.replyMessage.payload[tagsPayloadIndex].tags = Array.from(new Set(this.tags));
             }
             return {
                 text: this.replyMessage.text,
                 payload: this.replyMessage.payload,
-                variables: this.variables
+                variables: this.variables,
             }; // To be added in the future
         }
         else {
@@ -465,9 +474,7 @@ class VoximplantKit {
     finishRequest() {
         if (!this.isMessage())
             return false;
-        const payloadIndex = this.replyMessage.payload.findIndex(item => {
-            return item.type === "cmd" && item.name === "finish_request";
-        });
+        const payloadIndex = this.findPayloadIndex('finish_request');
         if (payloadIndex === -1) {
             this.replyMessage.payload.push({
                 type: "cmd",
@@ -495,9 +502,7 @@ class VoximplantKit {
      * ```
      */
     cancelFinishRequest() {
-        const payloadIndex = this.replyMessage.payload.findIndex(item => {
-            return item.type === "cmd" && item.name === "finish_request";
-        });
+        const payloadIndex = this.findPayloadIndex('finish_request');
         if (payloadIndex > -1) {
             this.replyMessage.payload.splice(payloadIndex, 1);
         }
@@ -524,9 +529,7 @@ class VoximplantKit {
             queue.queue_name = null;
         if (queue.queue_id === null && queue.queue_name === null)
             return false;
-        const payloadIndex = this.replyMessage.payload.findIndex(item => {
-            return item.type === "cmd" && item.name === "transfer_to_queue";
-        });
+        const payloadIndex = this.findPayloadIndex('transfer_to_queue');
         if (payloadIndex > -1) {
             this.replyMessage.payload[payloadIndex].queue = queue;
         }
@@ -558,9 +561,7 @@ class VoximplantKit {
      * ```
      */
     cancelTransferToQueue() {
-        const payloadIndex = this.replyMessage.payload.findIndex(item => {
-            return item.type === "cmd" && item.name === "transfer_to_queue";
-        });
+        const payloadIndex = this.findPayloadIndex('transfer_to_queue');
         if (payloadIndex > -1) {
             this.replyMessage.payload.splice(payloadIndex, 1);
         }
@@ -748,6 +749,36 @@ class VoximplantKit {
         else {
             return null;
         }
+    }
+    /**
+     * Bind tags.
+     */
+    async bindTags(tags) {
+        if (Array.isArray(tags)) {
+            const payloadIndex = this.findPayloadIndex('bind_tags');
+            const onlyPositiveInt = tags.filter(tag => Number.isInteger(tag) && tag >= 0);
+            if (!onlyPositiveInt.length || !tags.length) {
+                console.warn('The array must contain only integers greater than zero', tags, onlyPositiveInt);
+                return false;
+            }
+            this.tags = this.tags.concat(tags);
+            if (payloadIndex === -1) {
+                this.replyMessage.payload.push({
+                    type: "cmd",
+                    name: "bind_tags"
+                });
+            }
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+    /**
+     * Get tags.
+     */
+    async getTags() {
+        return utils_1.default.clone(this.tags);
     }
     /**
      * Gets a client’s SDK version.

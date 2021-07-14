@@ -44,7 +44,7 @@ class VoximplantKit {
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
-  private tags: string[];
+  private tags: number[];
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -92,7 +92,7 @@ class VoximplantKit {
     this.variables = this.getRequestDataVariables();
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
-    this.tags = []
+    this.tags = this.getRequestDataProperty('TAGS', []);
 
     this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
@@ -182,6 +182,7 @@ class VoximplantKit {
       return {
         "VARIABLES": this.variables,
         "SKILLS": this.skills,
+        "TAGS": Array.from(new Set(this.tags))
       }
     }
     else if (this.isMessage()) {
@@ -194,7 +195,7 @@ class VoximplantKit {
       }
 
       if (tagsPayloadIndex !== -1) {
-        this.replyMessage.payload[tagsPayloadIndex].tags = this.tags;
+        this.replyMessage.payload[tagsPayloadIndex].tags = Array.from(new Set(this.tags));
       }
 
       return {
@@ -534,9 +535,8 @@ class VoximplantKit {
    */
   public finishRequest(): boolean {
     if (!this.isMessage()) return false
-    const payloadIndex = this.replyMessage.payload.findIndex(item => {
-      return item.type === "cmd" && item.name === "finish_request"
-    })
+    const payloadIndex = this.findPayloadIndex('finish_request');
+
     if (payloadIndex === -1) {
       this.replyMessage.payload.push({
         type: "cmd",
@@ -565,9 +565,7 @@ class VoximplantKit {
    * ```
    */
   public cancelFinishRequest() {
-    const payloadIndex = this.replyMessage.payload.findIndex(item => {
-      return item.type === "cmd" && item.name === "finish_request"
-    });
+    const payloadIndex = this.findPayloadIndex('finish_request')
 
     if (payloadIndex > -1) {
       this.replyMessage.payload.splice(payloadIndex, 1)
@@ -596,9 +594,8 @@ class VoximplantKit {
 
     if (queue.queue_id === null && queue.queue_name === null) return false
 
-    const payloadIndex = this.replyMessage.payload.findIndex(item => {
-      return item.type === "cmd" && item.name === "transfer_to_queue"
-    })
+    const payloadIndex = this.findPayloadIndex('transfer_to_queue');
+
     if (payloadIndex > -1) {
       this.replyMessage.payload[payloadIndex].queue = queue
     } else {
@@ -631,9 +628,8 @@ class VoximplantKit {
    * ```
    */
   public cancelTransferToQueue() {
-    const payloadIndex = this.replyMessage.payload.findIndex(item => {
-      return item.type === "cmd" && item.name === "transfer_to_queue"
-    })
+    const payloadIndex = this.findPayloadIndex('transfer_to_queue');
+
     if (payloadIndex > -1) {
       this.replyMessage.payload.splice(payloadIndex, 1)
     }
@@ -832,10 +828,20 @@ class VoximplantKit {
     }
   }
 
-  bindTags(tags: string | string[]): boolean {
-    if (typeof tags === 'string' || Array.isArray(tags)) {
-      this.tags.concat(tags);
+  /**
+   * Bind tags.
+   */
+  async bindTags(tags: number[]): Promise<boolean> {
+    if (Array.isArray(tags)) {
       const payloadIndex = this.findPayloadIndex('bind_tags');
+      const onlyPositiveInt = tags.filter(tag => Number.isInteger(tag) && tag >= 0);
+
+      if (!onlyPositiveInt.length || !tags.length) {
+        console.warn('The array must contain only integers greater than zero', tags, onlyPositiveInt);
+        return false;
+      }
+
+      this.tags = this.tags.concat(tags);
 
       if (payloadIndex === -1) {
         this.replyMessage.payload.push({
@@ -847,6 +853,13 @@ class VoximplantKit {
     } else {
       return false;
     }
+  }
+
+  /**
+   * Get tags.
+   */
+  async getTags(): Promise<number[]> {
+    return utils.clone(this.tags);
   }
 
   /**

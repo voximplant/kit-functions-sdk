@@ -17,6 +17,7 @@ declare class VoximplantKit {
     private eventType;
     private replyMessage;
     private incomingMessage;
+    private tags;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * ```js
@@ -37,6 +38,7 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
+    private findPayloadIndex;
     /**
      * Loads the databases available in the scope.
      * ```js
@@ -68,6 +70,7 @@ declare class VoximplantKit {
     getResponseBody(): {
         VARIABLES: ObjectType;
         SKILLS: SkillObject[];
+        TAGS: number[];
         text?: undefined;
         payload?: undefined;
         variables?: undefined;
@@ -77,6 +80,7 @@ declare class VoximplantKit {
         variables: ObjectType;
         VARIABLES?: undefined;
         SKILLS?: undefined;
+        TAGS?: undefined;
     };
     /**
      * Gets an incoming message.
@@ -506,6 +510,14 @@ declare class VoximplantKit {
      * @param name {string} - Variable name
      */
     getEnvVariable(name: string): string | null;
+    /**
+     * Bind tags.
+     */
+    bindTags(tags: number[]): Promise<boolean>;
+    /**
+     * Get tags.
+     */
+    getTags(): Promise<number[]>;
     /**
      * Gets a client’s SDK version.
      * ```js

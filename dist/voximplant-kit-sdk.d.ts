@@ -54,6 +54,7 @@ declare module '@voximplant/kit-functions-sdk' {
             getResponseBody(): {
                     VARIABLES: ObjectType;
                     SKILLS: SkillObject[];
+                    TAGS: number[];
                     text?: undefined;
                     payload?: undefined;
                     variables?: undefined;
@@ -63,6 +64,7 @@ declare module '@voximplant/kit-functions-sdk' {
                     variables: ObjectType;
                     VARIABLES?: undefined;
                     SKILLS?: undefined;
+                    TAGS?: undefined;
             };
             /**
                 * Gets an incoming message.
@@ -479,6 +481,14 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             getEnvVariable(name: string): string | null;
             /**
+                * Bind tags.
+                */
+            bindTags(tags: number[]): Promise<boolean>;
+            /**
+                * Get tags.
+                */
+            getTags(): Promise<number[]>;
+            /**
                 * Gets a client’s SDK version.
                 * ```js
                 *  const kit = new VoximplantKit(context);
@@ -874,6 +884,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
         * @hidden
         */
     export interface MessagePayloadItem {
+            tags?: number[];
             type: string;
             message_type?: string;
             name?: string;
