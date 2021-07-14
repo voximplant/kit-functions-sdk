@@ -1,6 +1,9 @@
 import { ContextObject } from "./types";
 import * as dotenv from 'dotenv'
 
+/**
+ * @hidden
+ */
 const fs = require('fs');
 
 /**
@@ -21,9 +24,9 @@ const getHeaderValue = (context: ContextObject, name: string, defaultValue: stri
  * @hidden
  */
 const getEnv = function getEnv(): void {
+  /* istanbul ignore next */
   try {
     const directory = '/userfunc/deployarchive/.env';
-
     if (fs.existsSync(directory)) {
       const result = dotenv.config({ path: directory });
       if (result.error) {
