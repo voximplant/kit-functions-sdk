@@ -11,6 +11,9 @@ const dict = {
     baseUrl: 'baseUrl parameter is not passed or is not a string',
     url: 'url parameter is not passed or is not a string',
 };
+/**
+ * @hidden
+ */
 const checkParameter = (param, errorText) => {
     if (!!(param && typeof param === 'string' && param.length)) {
         return true;

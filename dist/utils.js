@@ -1,6 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = require("dotenv");
+/**
+ * @hidden
+ */
 const fs = require('fs');
 /**
  * @hidden
@@ -18,6 +21,7 @@ const getHeaderValue = (context, name, defaultValue) => {
  * @hidden
  */
 const getEnv = function getEnv() {
+    /* istanbul ignore next */
     try {
         const directory = '/userfunc/deployarchive/.env';
         if (fs.existsSync(directory)) {

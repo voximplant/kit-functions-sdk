@@ -920,3 +920,56 @@ describe('getEnvVariable', () => {
     });
   });
 });
+
+describe('bindTags', () => {
+  describe('with call context',  () => {
+    let kit;
+
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('Bind an array without numbers should return false', async () => {
+      const isBind = await kit.bindTags(notNumber);
+      expect(isBind).toEqual(false);
+    });
+
+    test('Binding not an array should return false', async () => {
+      const isBind = await kit.bindTags({0: 'asda', d: 'aaa'});
+      expect(isBind).toEqual(false);
+    })
+
+    test('should return true', async () => {
+      const isBind = await kit.bindTags([15,1,8, 0, -1]);
+      expect(isBind).toEqual(true);
+    });
+
+    test('result must be contain array with positive Int', async () => {
+      const tags = await kit.getTags();
+      const isBind = await kit.bindTags([15,1,8, 0, -1]);
+
+      const expected = [...tags, 15,1,8]
+      const response = kit.getResponseBody();
+      expect(response.TAGS).toEqual(expect.arrayContaining(expected));
+    })
+
+  });
+
+  describe('with message context',  () => {
+    let kit;
+
+    beforeEach(() => kit = new VoximplantKitTest(messageContext));
+
+    test('Payload must be contain bind_tags command', async () => {
+      await kit.bindTags([34]);
+      await kit.bindTags([34, 53]);
+      const {payload} = kit.getResponseBody();
+      const expected = [{
+        type: "cmd",
+        name: "bind_tags",
+        tags: [34, 53]
+      }];
+      expect(payload).toEqual(expect.arrayContaining(expected));
+    });
+
+
+  });
+})

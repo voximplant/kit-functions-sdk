@@ -12,6 +12,9 @@ const dict = {
     url: 'url parameter is not passed or is not a string',
 }
 
+/**
+ * @hidden
+ */
 const checkParameter = (param, errorText: string): true | Error => {
     if(!!(param && typeof param === 'string' && param.length)) {
         return true;
@@ -38,8 +41,6 @@ export default class Api implements ApiInstance{
                 'Content-Type': 'application/x-www-form-urlencoded'
             }
         });
-
-
 
         this.client.interceptors.request.use((param: AxiosRequestConfig) => {
             param.data = qs.stringify(param.data);

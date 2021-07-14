@@ -22,7 +22,8 @@ const callBody = {
     skill_name: 'skill_661606995644'
   }],
   VARIABLES: {UTC: 'UTC', phone: '79030000001', my_var: 'Value for my var'},
-  HEADERS: {}
+  HEADERS: {},
+  TAGS: [22, 55, 78, 93]
 }
 
 const messageHeaders = {

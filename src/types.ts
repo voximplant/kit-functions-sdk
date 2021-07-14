@@ -397,6 +397,7 @@ export interface MessageSender {
  * @hidden
  */
 export interface MessagePayloadItem {
+  tags?: number[];
   type: string
   message_type?: string
   name?: string
