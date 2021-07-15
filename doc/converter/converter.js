@@ -167,8 +167,8 @@ console.log(chalk.cyan('\nDOC BUILD SUMMARY:'));
 Object.entries(statusReport)
   .sort(([e1], [e2]) => e1 > e2 ? 1 : -1)
   .forEach(([entity, num]) => console.log(`${chalk.magenta(entity.toUpperCase())}:`, chalk.cyan(num), 'entities'));
-console.log(chalk.cyan('\nDOC TREE:'));
-console.log(chalk.blue(reshapedDoc.reduce((tree, node) => getNodeNamesTree(tree, node), '')));
+console.log(chalk.cyan('\nDOC TREE: the tree is hidden'));
+//console.log(chalk.blue(reshapedDoc.reduce((tree, node) => getNodeNamesTree(tree, node), '')));
 
 
 //==================================================================================================
@@ -368,8 +368,7 @@ function getAttributes(tags) {
 /**
  * Get entity types
  */
-function getTypes(type, fqdn, isFuncParam = false, node) {
-  console.log(node);
+function getTypes(type, fqdn, isFuncParam = false) {
   /**
    * Exclude generic constant names and usages
    */
@@ -529,9 +528,6 @@ function parseAndGetType(type, fqdn) {
  * Get link to entity in .md format
  */
 function getLinkToDocEntity(entityName, fqdn) {
-  if(entityName === 'QueueInfo') {
-    console.log(fqdn);
-  }
   let shortEntityName = entityName.includes('.')
     ? entityName.split('.').slice(-1)[0]
     : entityName;
@@ -553,15 +549,14 @@ function getLinkToDocEntity(entityName, fqdn) {
       ? fullyNamedEntities[0]
       : getClosestEntity(entityName, fqdn, fullyNamedEntities);
 
-    fullyNamedEntity = fullyNamedEntity.replace(/\s/g, '_')
-    console.log(fullyNamedEntity);
+    fullyNamedEntity = fullyNamedEntity.replace(/\s/g, '_');
+
     let link = `[${entityName}](/kit/docs/${config.baseFqdn.split('.').slice(0, -1).join('/')}/${fullyNamedEntity.toLowerCase().replace(/\./g, '/').replace(/\\s/g, '_')})`;
     /**
      * Links to properties, methods and enum members contain a '.'.
      * As this entities don't have a separate web page, we replace the last '/' with an anchor on the parent entity page.
      */
     if (entityName.includes('.') || docAnchorEntityNames.includes(entityName)) {
-      // console.log(entityName);
       link = link.replace(/\/([\w]+\))$/, (match, anchor) => `#${anchor}`);
     }
 

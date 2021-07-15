@@ -299,7 +299,7 @@ export interface QueueInfo {
    */
   queue_id: number
   /**
-   * Queue name
+   * @hidden
    */
   queue_name: string
 }

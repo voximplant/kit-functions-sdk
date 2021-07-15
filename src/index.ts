@@ -580,11 +580,11 @@ class VoximplantKit {
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
    *  // Transfer a client to the queue
-   *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
+   *  kit.transferToQueue({queue_id: 82});
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
+   * @param queue {QueueInfo} - Queue id
    */
   public transferToQueue(queue: QueueInfo) {
     if (!this.isMessage()) return false;
