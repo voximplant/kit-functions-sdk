@@ -285,7 +285,7 @@ export interface QueueInfo {
      */
     queue_id: number;
     /**
-     * Queue name
+     * @hidden
      */
     queue_name: string;
 }
@@ -374,7 +374,6 @@ export interface MessageSender {
     is_bot: boolean;
 }
 /**
- * TODO add methods to get properties
  * @hidden
  */
 export interface MessagePayloadItem {

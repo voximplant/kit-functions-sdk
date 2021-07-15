@@ -829,7 +829,14 @@ class VoximplantKit {
   }
 
   /**
-   * Bind tags.
+   * Tag binding.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  // requires the use of await
+   *  await kit.bindTags([12, 34]);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
   async bindTags(tags: number[]): Promise<boolean> {
     if (Array.isArray(tags)) {
@@ -856,9 +863,16 @@ class VoximplantKit {
   }
 
   /**
-   * Get tags.
+   * Get tags used in the function.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  // get tags
+   *  kit.getTags();
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
-  async getTags(): Promise<number[]> {
+  getTags(): number[] {
     return utils.clone(this.tags);
   }
 

@@ -393,7 +393,6 @@ export interface MessageSender {
 }
 
 /**
- * TODO add methods to get properties
  * @hidden
  */
 export interface MessagePayloadItem {

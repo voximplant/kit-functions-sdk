@@ -344,11 +344,11 @@ declare class VoximplantKit {
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
      *  // Transfer a client to the queue
-     *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
+     *  kit.transferToQueue({queue_id: 82});
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
-     * @param queue {QueueInfo} - Queue name or id. If both parameters are passed, the queue id has a higher priority
+     * @param queue {QueueInfo} - Queue id
      */
     transferToQueue(queue: QueueInfo): boolean;
     /**
@@ -511,13 +511,27 @@ declare class VoximplantKit {
      */
     getEnvVariable(name: string): string | null;
     /**
-     * Bind tags.
+     * Tag binding.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  // requires the use of await
+     *  await kit.bindTags([12, 34]);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
      */
     bindTags(tags: number[]): Promise<boolean>;
     /**
-     * Get tags.
+     * Get tags used in the function.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  // get tags
+     *  kit.getTags();
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
      */
-    getTags(): Promise<number[]>;
+    getTags(): number[];
     /**
      * Gets a client’s SDK version.
      * ```js
