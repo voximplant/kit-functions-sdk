@@ -511,6 +511,17 @@ declare class VoximplantKit {
      */
     getEnvVariable(name: string): string | null;
     /**
+     * Gets an environment variable by name (Static method).
+     * ```js
+     *  const my_var = VoximplantKit.getEnvironmentVariable('myEnv');
+     *  if (my_var) {
+     *    console.log(my_var);
+     *  }
+     * ```
+     * @static
+     */
+    static getEnvironmentVariable(name: string): string | null;
+    /**
      * Tag binding.
      * ```js
      *  const kit = new VoximplantKit(context);
@@ -522,16 +533,8 @@ declare class VoximplantKit {
      */
     bindTags(tags: number[]): Promise<boolean>;
     /**
-     * Get tags used in the function.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  // get tags
-     *  kit.getTags();
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * Coming soon
      */
-    getTags(): number[];
     /**
      * Gets a client’s SDK version.
      * ```js
