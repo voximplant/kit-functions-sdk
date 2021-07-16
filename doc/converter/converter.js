@@ -34,7 +34,6 @@ let reshapedDoc;
  * Get doc config
  */
 if (!fs.existsSync(configPath)) {
-  console.log(configPath)
   freakOutAndExit('There\'s no \'config.doc.json\' file in the project root. Please add one to convert typedoc to voxdoc format.');
 }
 
@@ -229,6 +228,7 @@ function reshapeNode(node, parentFqdn) {
           : {})
       })
     ));
+  const isStatic = node?.flags?.isStatic;
   const eventParams = node.kind === 16 && docEntityTypedefs[node.defaultValue || node.name] && reshapeNodes(docEntityTypedefs[node.defaultValue || node.name], fqdn);
   const attributes = (node.kind === 2048 || node.kind === 64) && node.signatures && node.signatures.some(s => s.comment && s.comment.tags)
     ? getAttributes(node.signatures.filter(s => s.comment && s.comment.tags).flatMap(s => s.comment.tags)) || {}
@@ -267,6 +267,7 @@ function reshapeNode(node, parentFqdn) {
     ...(methodParams && methodParams.length || eventParams && eventParams.length
       ? {params: methodParams || eventParams}
       : {}),
+    ...isStatic ? {modifiers: {static: true}} : {},
     ...((node.kind === 1024 || node.kind === 262144) && node.flags && node.flags.isOptional
       ? {optional: node.flags.isOptional}
       : {})
