@@ -943,8 +943,9 @@ describe('bindTags', () => {
     });
 
     test('result must be contain array with positive Int', async () => {
-      const tags = await kit.getTags();
-      const isBind = await kit.bindTags([15,1,8, 0, -1]);
+      //const tags = await kit.getTags();
+      const tags =  kit.tags;
+      await kit.bindTags([15,1,8, 0, -1]);
 
       const expected = [...tags, 15,1,8]
       const response = kit.getResponseBody();
@@ -969,7 +970,30 @@ describe('bindTags', () => {
       }];
       expect(payload).toEqual(expect.arrayContaining(expected));
     });
-
-
   });
 })
+
+describe('getEnvironmentVariable', () => {
+  afterEach(() => {
+    process.env = { ...OLD_ENV };
+  })
+
+  describe('without context', () => {
+    process.env.test = 'test value'; // mock
+    const envVar = VoximplantKitTest.getEnvironmentVariable('test');
+    const emptyVar = VoximplantKitTest.getEnvironmentVariable('testVar');
+    const boolVar = VoximplantKitTest.getEnvironmentVariable(true);
+
+    test('should return string', () => {
+      expect(envVar).toEqual('test value');
+    });
+
+    test('should return null', () => {
+      expect(emptyVar).toBeNull();
+    });
+
+    test('should return null', () => {
+      expect(boolVar).toBeNull();
+    });
+  });
+});
