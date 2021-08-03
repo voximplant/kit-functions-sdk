@@ -771,7 +771,7 @@ class VoximplantKit {
     return this.api.request(url, data).then(r => {
       return r.data
     }).catch(err => {
-      console.log(err);
+      return err;
     })
   }
 
