@@ -703,7 +703,11 @@ class VoximplantKit {
         return this.api.request(url, data).then(r => {
             return r.data;
         }).catch(err => {
-            console.log(err);
+            var _a;
+            if (err && 'response' in err) {
+                return Promise.reject((_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
+            }
+            return Promise.reject(err);
         });
     }
     /**
