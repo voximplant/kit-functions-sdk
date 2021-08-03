@@ -64,7 +64,7 @@ class VoximplantKit {
     this.http = axios
 
     if (typeof context === 'undefined' || !(context?.request && context.request.body && context.request.headers)) {
-      const err =  new TypeError('context parameter is required');
+      const err = new TypeError('context parameter is required');
       err.stack = '';
       throw err;
     }
@@ -175,8 +175,7 @@ class VoximplantKit {
         "VARIABLES": this.variables,
         "SKILLS": this.skills
       }
-    }
-    else if (this.isMessage()) {
+    } else if (this.isMessage()) {
       const payloadIndex = this.replyMessage.payload.findIndex(item => {
         return item.type === "cmd" && item.name === "transfer_to_queue"
       })
@@ -771,7 +770,9 @@ class VoximplantKit {
     return this.api.request(url, data).then(r => {
       return r.data
     }).catch(err => {
-      if (err && 'data' in err) return Promise.reject(err.data);
+      if (err && 'response' in err) {
+        return Promise.reject(err.response?.data);
+      }
       return Promise.reject(err);
     })
   }
