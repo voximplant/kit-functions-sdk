@@ -135,9 +135,20 @@ class VoximplantKit {
      * ```
      */
     getResponseBody() {
+        const variables = {};
+        for (let key in this.variables) {
+            if (this.variables.hasOwnProperty(key)) {
+                try {
+                    variables[key] = this.variables[key] + '';
+                }
+                catch (e) {
+                    variables[key] = '';
+                }
+            }
+        }
         if (this.isCall()) {
             return {
-                "VARIABLES": this.variables,
+                "VARIABLES": variables,
                 "SKILLS": this.skills,
                 "TAGS": Array.from(new Set(this.tags))
             };
@@ -155,7 +166,7 @@ class VoximplantKit {
             return {
                 text: this.replyMessage.text,
                 payload: this.replyMessage.payload,
-                variables: this.variables,
+                variables: variables
             }; // To be added in the future
         }
         else {
@@ -266,10 +277,10 @@ class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param name {string} - Variable name
-     * @param value {string} - Variable value
+     * @param value {any} - Variable value
      */
     setVariable(name, value) {
-        if (typeof name === 'string' && typeof value === 'string') {
+        if (typeof name === 'string') {
             this.variables[name] = value;
             return true;
         }

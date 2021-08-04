@@ -171,9 +171,9 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param name {string} - Variable name
-     * @param value {string} - Variable value
+     * @param value {any} - Variable value
      */
-    setVariable(name: string, value: string): boolean;
+    setVariable(name: string, value: any): boolean;
     /**
      * Deletes a variable by name.
      * ```js
