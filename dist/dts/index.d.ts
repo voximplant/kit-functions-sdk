@@ -66,7 +66,7 @@ declare class VoximplantKit {
      * ```
      */
     getResponseBody(): {
-        VARIABLES: ObjectType;
+        VARIABLES: {};
         SKILLS: SkillObject[];
         text?: undefined;
         payload?: undefined;
@@ -74,7 +74,7 @@ declare class VoximplantKit {
     } | {
         text: string;
         payload: import("./types").MessagePayloadItem[];
-        variables: ObjectType;
+        variables: {};
         VARIABLES?: undefined;
         SKILLS?: undefined;
     };
@@ -167,9 +167,9 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      * @param name {string} - Variable name
-     * @param value {string} - Variable value
+     * @param value {any} - Variable value
      */
-    setVariable(name: string, value: string): boolean;
+    setVariable(name: string, value: any): boolean;
     /**
      * Deletes a variable by name.
      * ```js
