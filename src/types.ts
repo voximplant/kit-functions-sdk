@@ -67,7 +67,8 @@ export interface RequestObjectCallBody {
   CALL: CallObject,
   SKILLS: SkillObject[],
   VARIABLES: ObjectType,
-  HEADERS: ObjectType
+  HEADERS: ObjectType,
+  TAGS: number[]
 }
 
 export interface SkillObject {
@@ -248,7 +249,11 @@ export interface ConversationCustomDataRequestData {
   /**
    * Variables object
    */
-  variables: ObjectType
+  variables: ObjectType,
+  /**
+   * Tags
+   */
+  tags: { id: number }[]
 }
 
 export interface ConversationCustomDataClientDataObject {
@@ -411,6 +416,7 @@ export interface MessagePayloadItem {
   keys?: any
   file_name?: string
   file_size?: number
+  replace?: boolean
 }
 
 export interface DataBase {
@@ -459,3 +465,5 @@ export type DbResponse = { result: string };
 export type ObjectType = {
   [key: string]: string
 }
+
+export type GetTagsResult = { id: number, tag_name: string | null }

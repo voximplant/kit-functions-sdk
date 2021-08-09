@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult } from "./types";
 declare class VoximplantKit {
     private requestData;
     private accessToken;
@@ -18,6 +18,7 @@ declare class VoximplantKit {
     private replyMessage;
     private incomingMessage;
     private tags;
+    private isTagsReplace;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * ```js
@@ -38,6 +39,7 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
+    private getRequestDataTags;
     private findPayloadIndex;
     /**
      * Loads the databases available in the scope.
@@ -521,20 +523,39 @@ declare class VoximplantKit {
      * @static
      */
     static getEnvironmentVariable(name: string): string | null;
+    private setTags;
     /**
-     * Tag binding.
+     * Add tags by id.
      * ```js
      *  const kit = new VoximplantKit(context);
-     *  // requires the use of await
-     *  await kit.bindTags([12, 34]);
+     *  kit.addTags([12, 34]);
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
      */
-    bindTags(tags: number[]): Promise<boolean>;
+    addTags(tags: number[]): boolean;
     /**
-     * Coming soon
+     * Replace all tags
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  kit.replaceTags([12, 34]);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
      */
+    replaceTags(tags: number[]): boolean;
+    /**
+     * Get tags
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  await kit.getTags(); // [12, 34]
+     *  await kit.getTags(true); // [{id: 12, tag_name: 'my_tag'}, {id: 34, tag_name: 'my_tag2'}]
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
+     */
+    getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
     /**
      * Gets a client’s SDK version.
      * ```js

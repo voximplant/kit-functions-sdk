@@ -954,61 +954,184 @@ describe('getEnvVariable', () => {
   });
 });
 
-describe('bindTags', () => {
-  describe('with call context',  () => {
+describe('addTags', () => {
+  describe('with call context', () => {
     let kit;
 
     beforeEach(() => kit = new VoximplantKitTest(callContext));
 
     test('Bind an array without numbers should return false', async () => {
-      const isBind = await kit.bindTags(notNumber);
+      const isBind = await kit.addTags(notNumber);
       expect(isBind).toEqual(false);
     });
 
     test('Binding not an array should return false', async () => {
-      const isBind = await kit.bindTags({0: 'asda', d: 'aaa'});
+      const isBind = await kit.addTags({0: 'asda', d: 'aaa'});
       expect(isBind).toEqual(false);
     })
 
     test('should return true', async () => {
-      const isBind = await kit.bindTags([15,1,8, 0, -1]);
+      const isBind = await kit.addTags([15, 1, 8, 0, -1]);
       expect(isBind).toEqual(true);
     });
 
     test('result must be contain array with positive Int', async () => {
       //const tags = await kit.getTags();
-      const tags =  kit.tags;
-      await kit.bindTags([15,1,8, 0, -1]);
+      const tags = kit.tags;
+      await kit.addTags([15, 1, 8, 0, -1]);
 
-      const expected = [...tags, 15,1,8]
+      const expected = [...tags, 15, 1, 8]
       const response = kit.getResponseBody();
       expect(response.TAGS).toEqual(expect.arrayContaining(expected));
     })
 
   });
 
-  describe('with message context',  () => {
+  describe('with message context', () => {
     let kit;
 
     beforeEach(() => kit = new VoximplantKitTest(messageContext));
 
     test('Payload must be contain bind_tags command', async () => {
-      await kit.bindTags([34]);
-      await kit.bindTags([34, 53]);
+      await kit.addTags([34]);
+      await kit.addTags([34, 53]);
       const {payload} = kit.getResponseBody();
       const expected = [{
         type: "cmd",
         name: "bind_tags",
-        tags: [34, 53]
+        tags: [22, 55, 78, 93, 34, 53],
+        replace: false
       }];
       expect(payload).toEqual(expect.arrayContaining(expected));
     });
   });
 })
 
+describe('replaceTags', () => {
+  describe('with call context', () => {
+    let kit;
+
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('an array without numbers should return false', () => {
+      const isBind = kit.replaceTags(notNumber);
+      expect(isBind).toEqual(false);
+    });
+
+    test('not an array should return false', () => {
+      const isBind = kit.replaceTags({0: 'asda', d: 'aaa'});
+      expect(isBind).toEqual(false);
+    })
+
+    test('should return true', () => {
+      const isBind = kit.replaceTags([15, 1, 8, 0, -1]);
+      expect(isBind).toEqual(true);
+    });
+
+    test('result must be contain array with positive Int', async () => {
+      const tags = await kit.getTags();
+      kit.replaceTags([15, 1, 8, 0, -1]);
+      const expected = [15, 1, 8, 0];
+      const response = kit.getResponseBody();
+      expect(response.TAGS).toEqual(expect.arrayContaining(expected));
+    });
+  });
+
+  describe('with message context', () => {
+    let kit;
+
+    beforeEach(() => kit = new VoximplantKitTest(messageContext));
+
+    test('after initialization, tags should contain only positive integers', async () => {
+      const tags = await kit.getTags();
+      expect(tags).toEqual(expect.arrayContaining([22, 55, 78, 93]));
+    })
+
+    test('Payload must be contain bind_tags command', async () => {
+      await kit.replaceTags([34, 53]);
+      const {payload} = kit.getResponseBody();
+      const expected = [{
+        type: "cmd",
+        name: "bind_tags",
+        tags: [34, 53],
+        replace: true
+      }];
+      expect(payload).toEqual(expect.arrayContaining(expected));
+    });
+  });
+})
+
+describe.only('getTags', () => {
+  describe('with call context', () => {
+    let kit;
+
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('should return an array of id tags', async () => {
+      const tags = await kit.getTags();
+      const expected = [...callContext.request.body.TAGS];
+      expect(tags).toEqual(expect.arrayContaining(expected))
+    });
+
+    test('successful request', async () => {
+      expect.assertions(1);
+      mMock.mockResolvedValue({data: {success: true, result: [{id: 22, tag_name: 'my_tag'}]}});
+      const tags = await kit.getTags(true);
+      const expected = [
+        {"id": 22, "tag_name": 'my_tag'},
+        {"id": 55, "tag_name": null},
+        {"id": 78, "tag_name": null},
+        {"id": 93, "tag_name": null}
+      ];
+      expect(tags).toEqual(expect.objectContaining(expected))
+    });
+
+    test('failed request', async () => {
+      expect.assertions(1);
+      mMock.mockRejectedValue(false);
+      await expect(kit.getTags(true)).rejects.toEqual(false);
+    });
+  });
+
+  describe('with message context', () => {
+    let kit;
+
+    beforeEach(() => {
+      const context = JSON.parse(JSON.stringify(messageContext));
+      context.request.body.conversation.custom_data.request_data.tags = [22, 55, 78, 93]
+      kit = new VoximplantKitTest(context);
+    });
+
+    test('should return an array of id tags', async () => {
+      const tags = await kit.getTags();
+      const expected = [...callContext.request.body.TAGS];
+      expect(tags).toEqual(expect.arrayContaining(expected))
+    });
+
+    test('successful request', async () => {
+      expect.assertions(1);
+      mMock.mockResolvedValue({data: {success: true, result: [{id: 22, tag_name: 'my_tag'}]}});
+      const tags = await kit.getTags(true);
+      const expected = [
+        {"id": 22, "tag_name": 'my_tag'},
+        {"id": 55, "tag_name": null},
+        {"id": 78, "tag_name": null},
+        {"id": 93, "tag_name": null}
+      ];
+      expect(tags).toEqual(expect.objectContaining(expected))
+    });
+
+    test('failed request', async () => {
+      expect.assertions(1);
+      mMock.mockRejectedValue(false);
+      await expect(kit.getTags(true)).rejects.toEqual(false);
+    });
+  });
+})
+
 describe('getEnvironmentVariable', () => {
   afterEach(() => {
-    process.env = { ...OLD_ENV };
+    process.env = {...OLD_ENV};
   })
 
   describe('without context', () => {

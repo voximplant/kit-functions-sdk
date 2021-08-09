@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams, GetTagsResult
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -45,6 +45,7 @@ class VoximplantKit {
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
   private tags: number[];
+  private isTagsReplace: boolean;
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -65,7 +66,7 @@ class VoximplantKit {
     this.http = axios
 
     if (typeof context === 'undefined' || !(context?.request && context.request.body && context.request.headers)) {
-      const err =  new TypeError('context parameter is required');
+      const err = new TypeError('context parameter is required');
       err.stack = '';
       throw err;
     }
@@ -92,10 +93,11 @@ class VoximplantKit {
     this.variables = this.getRequestDataVariables();
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
-    this.tags = this.getRequestDataProperty('TAGS', []);
+    this.tags = this.getRequestDataTags();
 
     this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
+    this.isTagsReplace = false;
 
     if (this.isMessage()) {
       this.incomingMessage = utils.clone(this.requestData) as MessageObject;
@@ -131,8 +133,23 @@ class VoximplantKit {
     return utils.clone(variables);
   }
 
+  private getRequestDataTags(): number[] {
+    let tags = [];
+    if (this.isMessage()) {
+      // Conversion to the same type for calls and channels.
+      // See the comments in the issue SC-5833
+      const rawTags = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.tags || [];
+      tags = rawTags.map(tag => {
+        return (typeof tag === 'number') ? tag : tag.id;
+      });
+    } else if (this.isCall()) {
+      tags = (this.requestData as RequestObjectCallBody)?.TAGS || [];
+    }
+    return tags;
+  }
+
   private findPayloadIndex(name: string): number {
-    return  this.replyMessage.payload.findIndex(item => {
+    return this.replyMessage.payload.findIndex(item => {
       return item.type === "cmd" && item.name === name;
     })
   }
@@ -179,11 +196,12 @@ class VoximplantKit {
    */
   public getResponseBody() {
     const variables: ObjectType = {};
+    // Converting the type of variables to a string
     for (let key in this.variables) {
       if (this.variables.hasOwnProperty(key)) {
         try {
           variables[key] = this.variables[key] + '';
-        }catch (e) {
+        } catch (e) {
           variables[key] = '';
         }
       }
@@ -195,8 +213,7 @@ class VoximplantKit {
         "SKILLS": this.skills,
         "TAGS": Array.from(new Set(this.tags))
       }
-    }
-    else if (this.isMessage()) {
+    } else if (this.isMessage()) {
       const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue')
       const tagsPayloadIndex = this.findPayloadIndex('bind_tags')
 
@@ -206,7 +223,9 @@ class VoximplantKit {
       }
 
       if (tagsPayloadIndex !== -1) {
-        this.replyMessage.payload[tagsPayloadIndex].tags = Array.from(new Set(this.tags));
+        const tagsPayload = this.replyMessage.payload[tagsPayloadIndex];
+        tagsPayload.tags = Array.from(new Set(this.tags));
+        tagsPayload.replace = this.isTagsReplace;
       }
 
       return {
@@ -860,46 +879,86 @@ class VoximplantKit {
     }
   }
 
-  /**
-   * Tag binding.
-   * ```js
-   *  const kit = new VoximplantKit(context);
-   *  // requires the use of await
-   *  await kit.bindTags([12, 34]);
-   *  // End of function
-   *  callback(200, kit.getResponseBody());
-   * ```
-   */
-  async bindTags(tags: number[]): Promise<boolean> {
+  private setTags(tags: number[], replace = false): boolean {
     if (Array.isArray(tags)) {
       const payloadIndex = this.findPayloadIndex('bind_tags');
       const onlyPositiveInt = tags.filter(tag => Number.isInteger(tag) && tag >= 0);
 
       if (!onlyPositiveInt.length || !tags.length) {
-        console.warn('The array must contain only integers greater than zero', tags, onlyPositiveInt);
+        console.warn('the tags argument must be an array containing only positive integers');
         return false;
       }
 
-      this.tags = this.tags.concat(tags);
+      this.tags = replace ? onlyPositiveInt : this.tags.concat(onlyPositiveInt);
+      this.tags = Array.from(new Set(this.tags)) // only unique ids;
+      this.isTagsReplace = replace;
 
       if (payloadIndex === -1) {
         this.replyMessage.payload.push({
           type: "cmd",
-          name: "bind_tags"
+          name: "bind_tags",
         })
       }
       return true;
     } else {
+      console.warn('The array must contain only integers greater than zero');
       return false;
     }
   }
 
   /**
-   * Coming soon
+   * Add tags by id.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  kit.addTags([12, 34]);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
    */
-  /*async getTags(): Promise<number[]> {
-    return utils.clone(this.tags);
-  }*/
+  addTags(tags: number[]): boolean {
+    return this.setTags(tags)
+  }
+
+  /**
+   * Replace all tags
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  kit.replaceTags([12, 34]);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  replaceTags(tags: number[]): boolean {
+    return this.setTags(tags, true);
+  }
+
+  /**
+   * Get tags
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  await kit.getTags(); // [12, 34]
+   *  await kit.getTags(true); // [{id: 12, tag_name: 'my_tag'}, {id: 34, tag_name: 'my_tag2'}]
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
+   */
+   getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]> {
+    const tags = utils.clone(this.tags);
+
+    if (!withName) return Promise.resolve(tags);
+
+    return this.apiProxy('/v3/tags/searchTags', { 'per-page': 0 })
+      .then(({ result }) => {
+        return tags.map(tag => {
+          const fullTag = result.find(item => item.id === tag);
+          if (fullTag) return { id: tag, tag_name: fullTag.tag_name };
+          else {
+            return { id: tag, tag_name: null }
+          }
+        })
+      }) as Promise<GetTagsResult[]>;
+  }
 
   /**
    * Gets a client’s SDK version.
@@ -912,7 +971,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.43"
+    return "0.0.44"
   }
 }
 
