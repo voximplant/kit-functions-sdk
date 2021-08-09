@@ -40,7 +40,6 @@ describe('constructor', () => {
   });
 })
 
-// need update
 describe('apiProxy', () => {
   const kit = new VoximplantKitTest(callContext);
   test('check api proxy', () => {
@@ -49,11 +48,23 @@ describe('apiProxy', () => {
     return kit.apiProxy('/v2/account/getAccountInfo').then(data => expect(data).toEqual(users));
   });
 
-/*  test('reject request', async () => {
+  test('reject the request due to a network error', async () => {
+    expect.assertions(1);
     mMock.mockRejectedValue(null);
-    const result = await kit.apiProxy('/v2/account/getAccountInfo');
-    expect(result).toEqual(null);
-  })*/
+    await expect(kit.apiProxy('/v2/account/getAccountInfo')).rejects.toEqual(null);
+  });
+
+  test('reject the request due to a api error', async () => {
+    expect.assertions(1);
+    mMock.mockRejectedValue({response: {data: false}});
+    await expect(kit.apiProxy('/v2/account/getAccountInfo')).rejects.toEqual(false);
+  });
+
+  test('reject the request due to a api error', async () => {
+    expect.assertions(1);
+    mMock.mockRejectedValue({response: undefined});
+    await expect(kit.apiProxy('/v2/account/getAccountInfo')).rejects.toEqual(undefined);
+  });
 })
 
 describe('cancelFinishRequest', () => {
@@ -628,20 +639,25 @@ describe('setVariable', () => {
     });
   });
 
-  //TODO update
-  /*describe.each(notString)('Set not a string %p as variable value', (a) => {
+  describe.each(notString)('Set not a string %p as variable value', (a) => {
     const kit = new VoximplantKitTest(callContext);
     const isSet = kit.setVariable('test_var', a);
     const value = kit.getVariable('test_var');
+    const {VARIABLES} = kit.getResponseBody();
+    const expected = a;
 
     test(`Should return false`, () => {
-      expect(isSet).toEqual(false);
+      expect(isSet).toEqual(true);
     });
 
-    test('The value must be null', () => {
-      expect(value).toBeNull();
+    test('The value must be', () => {
+      expect(value).toEqual(expected);
     });
-  });*/
+
+    test('the variables in the response must be strings', () => {
+      expect(VARIABLES['test_var']).toEqual(expected + '');
+    })
+  });
 });
 
 describe('transferToQueue', () => {
