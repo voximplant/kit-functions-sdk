@@ -53,7 +53,8 @@ export default class Message implements MessageObject {
           handling_start_time: null,
           end_time: null,
           completed: null,
-          variables: null
+          variables: null,
+          tags: null
         }
       },
       current_status: null,

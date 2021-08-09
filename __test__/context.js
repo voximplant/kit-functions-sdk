@@ -68,7 +68,13 @@ const messageBody = {
         handling_start_time: '2021-04-14T12:22:31.819713Z',
         end_time: '2021-04-14T12:22:31.819713Z',
         completed: false,
-        variables: {}
+        variables: {},
+        tags: [
+          {id: 22, tag_name: 'aaaa', domain_id: 31},
+          {id: 55, tag_name: 'aaaa55', domain_id: 31},
+          {id: 78, tag_name: 'aaaa78', domain_id: 31},
+          {id: 93, tag_name: 'aaaa93', domain_id: 31}
+          ]
       }
     },
     current_status: 'processed_by_function',
