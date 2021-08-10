@@ -1061,7 +1061,7 @@ describe('replaceTags', () => {
   });
 })
 
-describe.only('getTags', () => {
+describe('getTags', () => {
   describe('with call context', () => {
     let kit;
 
