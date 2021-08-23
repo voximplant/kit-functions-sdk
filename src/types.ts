@@ -466,4 +466,4 @@ export type ObjectType = {
   [key: string]: string
 }
 
-export type GetTagsResult = { id: number, tag_name: string | null }
+//export type GetTagsResult = { id: number, tag_name: string | null }

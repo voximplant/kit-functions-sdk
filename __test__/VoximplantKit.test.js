@@ -954,7 +954,7 @@ describe('getEnvVariable', () => {
   });
 });
 
-describe('addTags', () => {
+/*describe('addTags', () => {
   describe('with call context', () => {
     let kit;
 
@@ -1127,7 +1127,7 @@ describe('getTags', () => {
       await expect(kit.getTags(true)).rejects.toEqual(false);
     });
   });
-})
+})*/
 
 describe('getEnvironmentVariable', () => {
   afterEach(() => {

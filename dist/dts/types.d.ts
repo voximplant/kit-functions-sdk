@@ -436,7 +436,3 @@ export declare type DbResponse = {
 export declare type ObjectType = {
     [key: string]: string;
 };
-export declare type GetTagsResult = {
-    id: number;
-    tag_name: string | null;
-};
