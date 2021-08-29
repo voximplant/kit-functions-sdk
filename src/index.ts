@@ -782,6 +782,8 @@ class VoximplantKit {
     } catch (err) {
       if (err && 'response' in err) {
         console.log('dbCommit error', err.response?.data);
+      }else {
+        console.log('dbCommit full error', err);
       }
       return false;
     }

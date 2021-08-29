@@ -80,10 +80,12 @@ export default class DB {
     return axios.all(_DBs)
       .then(() => {
         return true;
-      }).catch((err) => {
-      console.log('putAllDB err', err);
-      return false;
-    })
+      })/*.catch((err) => {
+        if (err && 'response' in err) {
+          return err.response?.data
+        }
+      return err;
+    })*/
   }
 
   public getScopeValue(key: string, scope: DataBaseType = "global"): string | null {

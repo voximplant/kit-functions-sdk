@@ -70,10 +70,12 @@ class DB {
         return axios_1.default.all(_DBs)
             .then(() => {
             return true;
-        }).catch((err) => {
-            console.log('putAllDB err', err);
-            return false;
-        });
+        }); /*.catch((err) => {
+          if (err && 'response' in err) {
+            return err.response?.data
+          }
+        return err;
+      })*/
     }
     getScopeValue(key, scope = "global") {
         var _a, _b, _c;
