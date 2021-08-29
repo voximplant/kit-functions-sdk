@@ -695,6 +695,7 @@ class VoximplantKit {
      * ```
      */
     async dbCommit() {
+        var _a;
         const params = [
             { name: 'function_' + this.functionId, scope: 'function' },
             { name: 'accountdb_' + this.domain, scope: 'global' },
@@ -706,7 +707,12 @@ class VoximplantKit {
             return await this.DB.putAllDB(params);
         }
         catch (err) {
-            console.log(err);
+            if (err && 'response' in err) {
+                console.log('dbCommit error', (_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
+            }
+            else {
+                console.log('dbCommit error', err);
+            }
             return false;
         }
     }

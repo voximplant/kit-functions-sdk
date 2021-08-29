@@ -27,7 +27,6 @@ class DB {
     getAllDB(names = []) {
         const _DBs = [];
         names.forEach((name) => _DBs.push(this.getDB(name)));
-        //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
         return axios_1.default.all(_DBs).then(([func, acc, conv]) => {
             const functionDB = (typeof func !== "undefined" && (func === null || func === void 0 ? void 0 : func.result) && typeof func.result === 'string') ? JSON.parse(func.result) : {};
             const accountDB = (typeof acc !== "undefined" && (acc === null || acc === void 0 ? void 0 : acc.result) && typeof acc.result === 'string') ? JSON.parse(acc.result) : {};
@@ -49,13 +48,10 @@ class DB {
         }
         return this.api.request("/v2/kv/put", {
             key: db_name,
-            value: value,
+            value: JSON.stringify(value),
             ttl: -1
         }).then((response) => {
             return response.data;
-        }).catch((err) => {
-            console.log(err);
-            return err;
         });
     }
     putAllDB(params) {
@@ -64,9 +60,6 @@ class DB {
         return axios_1.default.all(_DBs)
             .then(() => {
             return true;
-        }).catch((err) => {
-            console.log(err);
-            return false;
         });
     }
     getScopeValue(key, scope = "global") {

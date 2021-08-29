@@ -32,7 +32,7 @@ export default class DB {
   public getAllDB(names: string[] = []) {
     const _DBs: Promise<DbResponse>[] = [];
     names.forEach((name) => _DBs.push(this.getDB(name)));
-    //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
+
     return axios.all(_DBs).then(([func, acc, conv]) => {
       const functionDB = (typeof func !== "undefined" && func?.result && typeof func.result === 'string') ? JSON.parse(func.result) : {}
       const accountDB = (typeof acc !== "undefined" && acc?.result && typeof acc.result === 'string') ? JSON.parse(acc.result) : {}
@@ -57,14 +57,11 @@ export default class DB {
 
     return this.api.request("/v2/kv/put", {
       key: db_name,
-      value: value,
+      value: JSON.stringify(value),
       ttl: -1
     }).then((response) => {
       return response.data as DbResponse
-    }).catch((err) => {
-      console.log(err);
-      return err;
-    })
+    });
   }
 
   public putAllDB(params: DateBasePutParams[]): Promise<boolean> {
@@ -74,10 +71,7 @@ export default class DB {
     return axios.all(_DBs)
       .then(() => {
         return true;
-      }).catch((err) => {
-      console.log(err);
-      return false;
-    })
+      });
   }
 
   public getScopeValue(key: string, scope: DataBaseType = "global"): string | null {
