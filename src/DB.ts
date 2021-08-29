@@ -57,7 +57,7 @@ export default class DB {
     console.log('putDB', db_name, value);
     console.log('typeof value', typeof value);
 
-    if(!Object.keys(value).length) return Promise.resolve({ result: 'true' });
+    //if(!Object.keys(value).length) return Promise.resolve({ result: 'true' });
 
     return this.api.request("/v2/kv/put", {
       key: db_name,

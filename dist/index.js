@@ -695,6 +695,7 @@ class VoximplantKit {
      * ```
      */
     async dbCommit() {
+        var _a;
         const params = [
             { name: 'function_' + this.functionId, scope: 'function' },
             { name: 'accountdb_' + this.domain, scope: 'global' },
@@ -702,12 +703,13 @@ class VoximplantKit {
         if (this.isMessage()) {
             params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' });
         }
-        console.log('dbCommit', params);
         try {
             return await this.DB.putAllDB(params);
         }
         catch (err) {
-            console.log(err);
+            if (err && 'response' in err) {
+                console.log('dbCommit error', (_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
+            }
             return false;
         }
     }
