@@ -63,7 +63,7 @@ export default class DB {
       return response.data as DbResponse
     }).catch((err) => {
       if (err && 'response' in err) {
-        console.log(err.response?.data);
+        console.log('putDB err', err.response?.data);
       }
       return Promise.reject(err);
     })
@@ -77,7 +77,7 @@ export default class DB {
       .then(() => {
         return true;
       }).catch((err) => {
-      console.log(err);
+      console.log('putAllDB err', err);
       return false;
     })
   }

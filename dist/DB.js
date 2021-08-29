@@ -57,7 +57,7 @@ class DB {
         }).catch((err) => {
             var _a;
             if (err && 'response' in err) {
-                console.log((_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
+                console.log('putDB err', (_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
             }
             return Promise.reject(err);
         });
@@ -69,7 +69,7 @@ class DB {
             .then(() => {
             return true;
         }).catch((err) => {
-            console.log(err);
+            console.log('putAllDB err', err);
             return false;
         });
     }
