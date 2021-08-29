@@ -702,6 +702,7 @@ class VoximplantKit {
         if (this.isMessage()) {
             params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' });
         }
+        console.log('dbCommit', params);
         try {
             return await this.DB.putAllDB(params);
         }

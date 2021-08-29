@@ -47,6 +47,7 @@ class DB {
         if (!value) {
             return Promise.reject(`DB ${type} not found`);
         }
+        console.log('putDB', db_name, value);
         return this.api.request("/v2/kv/put", {
             key: db_name,
             value: value,
@@ -54,8 +55,11 @@ class DB {
         }).then((response) => {
             return response.data;
         }).catch((err) => {
-            console.log(err);
-            return err;
+            var _a;
+            if (err && 'response' in err) {
+                console.log((_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
+            }
+            return Promise.reject(err);
         });
     }
     putAllDB(params) {

@@ -54,7 +54,7 @@ export default class DB {
     if (!value) {
       return Promise.reject(`DB ${ type } not found`);
     }
-
+    console.log('putDB', db_name, value);
     return this.api.request("/v2/kv/put", {
       key: db_name,
       value: value,
@@ -62,8 +62,10 @@ export default class DB {
     }).then((response) => {
       return response.data as DbResponse
     }).catch((err) => {
-      console.log(err);
-      return err;
+      if (err && 'response' in err) {
+        console.log(err.response?.data);
+      }
+      return Promise.reject(err);
     })
   }
 
