@@ -52,7 +52,7 @@ class DB {
         //if(!Object.keys(value).length) return Promise.resolve({ result: 'true' });
         return this.api.request("/v2/kv/put", {
             key: db_name,
-            value: value,
+            value: JSON.stringify(value),
             ttl: -1
         }).then((response) => {
             return response.data;
@@ -70,12 +70,7 @@ class DB {
         return axios_1.default.all(_DBs)
             .then(() => {
             return true;
-        }); /*.catch((err) => {
-          if (err && 'response' in err) {
-            return err.response?.data
-          }
-        return err;
-      })*/
+        });
     }
     getScopeValue(key, scope = "global") {
         var _a, _b, _c;

@@ -61,7 +61,7 @@ export default class DB {
 
     return this.api.request("/v2/kv/put", {
       key: db_name,
-      value: value,
+      value: JSON.stringify(value),
       ttl: -1
     }).then((response) => {
       return response.data as DbResponse
@@ -80,12 +80,7 @@ export default class DB {
     return axios.all(_DBs)
       .then(() => {
         return true;
-      })/*.catch((err) => {
-        if (err && 'response' in err) {
-          return err.response?.data
-        }
-      return err;
-    })*/
+      })
   }
 
   public getScopeValue(key: string, scope: DataBaseType = "global"): string | null {
