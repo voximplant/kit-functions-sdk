@@ -27,7 +27,6 @@ class DB {
     getAllDB(names = []) {
         const _DBs = [];
         names.forEach((name) => _DBs.push(this.getDB(name)));
-        //axios.spread((func: DbResponse, acc: DbResponse, conv?: DbResponse)
         return axios_1.default.all(_DBs).then(([func, acc, conv]) => {
             const functionDB = (typeof func !== "undefined" && (func === null || func === void 0 ? void 0 : func.result) && typeof func.result === 'string') ? JSON.parse(func.result) : {};
             const accountDB = (typeof acc !== "undefined" && (acc === null || acc === void 0 ? void 0 : acc.result) && typeof acc.result === 'string') ? JSON.parse(acc.result) : {};
@@ -47,21 +46,12 @@ class DB {
         if (!value) {
             return Promise.reject(`DB ${type} not found`);
         }
-        console.log('putDB', db_name, value);
-        console.log('typeof value', typeof value);
-        //if(!Object.keys(value).length) return Promise.resolve({ result: 'true' });
         return this.api.request("/v2/kv/put", {
             key: db_name,
             value: JSON.stringify(value),
             ttl: -1
         }).then((response) => {
             return response.data;
-        }).catch((err) => {
-            var _a;
-            if (err && 'response' in err) {
-                console.log('putDB err', (_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
-            }
-            return Promise.reject(err);
         });
     }
     putAllDB(params) {

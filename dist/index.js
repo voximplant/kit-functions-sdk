@@ -711,7 +711,7 @@ class VoximplantKit {
                 console.log('dbCommit error', (_a = err.response) === null || _a === void 0 ? void 0 : _a.data);
             }
             else {
-                console.log('dbCommit full error', err);
+                console.log('dbCommit error', err);
             }
             return false;
         }

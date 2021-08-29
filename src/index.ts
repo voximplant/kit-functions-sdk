@@ -767,7 +767,7 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  public async dbCommit() {
+  public async dbCommit(): Promise<boolean> {
     const params: DateBasePutParams[] = [
       { name: 'function_' + this.functionId, scope: 'function' },
       { name: 'accountdb_' + this.domain, scope: 'global' },
@@ -783,7 +783,7 @@ class VoximplantKit {
       if (err && 'response' in err) {
         console.log('dbCommit error', err.response?.data);
       }else {
-        console.log('dbCommit full error', err);
+        console.log('dbCommit error', err);
       }
       return false;
     }
