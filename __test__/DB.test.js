@@ -97,11 +97,10 @@ describe('putDB', () => {
     })
   });
 
-  test('A failure request will return an object containing the result property with null', () => {
+  test('A failure request will return an Error', async () => {
     apiMock.mockRejectedValue(new Error('failure request'));
     return db.putDB('functions_name', 'function').catch(res => {
-      console.log(res);
-      expect(res).toMatch('failure request');
+      expect(res).toEqual(new Error('failure request'));
     });
   });
 });
@@ -113,10 +112,10 @@ describe('putAllDB', () => {
     expect(result).toEqual(true);
   });
 
-  test('A dropped request will return false', async () => {
+  test('A dropped request will return an Error', async () => {
     axios.default.all.mockRejectedValue(new Error());
-    const result = await db.putAllDB([]);
-    expect(result).toEqual(false);
+
+    await expect(db.putAllDB([])).rejects.toEqual(new Error());
   });
 
   test('call axios all with params', async () => {
