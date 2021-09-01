@@ -8,7 +8,7 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams, /*GetTagsResult*/
+  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams, GetTagsResult, /*GetTagsResult*/
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -44,8 +44,8 @@ class VoximplantKit {
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
   private replyMessage: MessageObject;
   private incomingMessage: MessageObject;
-  //private tags: number[];
-  //private isTagsReplace: boolean;
+  private tags: number[];
+  private isTagsReplace: boolean;
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -93,11 +93,11 @@ class VoximplantKit {
     this.variables = this.getRequestDataVariables();
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
-    //this.tags = this.getRequestDataTags();
+    this.tags = this.getRequestDataTags();
 
     this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
-    //this.isTagsReplace = false;
+    this.isTagsReplace = false;
 
     if (this.isMessage()) {
       this.incomingMessage = utils.clone(this.requestData) as MessageObject;
@@ -116,6 +116,7 @@ class VoximplantKit {
    */
   static default = VoximplantKit;
 
+  // TODO combine methods getRequestDataProperty/getRequestDataVariables/getRequestDataTags
   private getRequestDataProperty(name: string, defaultProp: {} | [] = {}) {
     const prop = (this.requestData as RequestData)?.[name];
     return prop ? utils.clone(prop) : defaultProp;
@@ -133,20 +134,15 @@ class VoximplantKit {
     return utils.clone(variables);
   }
 
-  /*private getRequestDataTags(): number[] {
+  private getRequestDataTags(): number[] {
     let tags = [];
     if (this.isMessage()) {
-      // Conversion to the same type for calls and channels.
-      // See the comments in the issue SC-5833
-      const rawTags = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.tags || [];
-      tags = rawTags.map(tag => {
-        return (typeof tag === 'number') ? tag : tag.id;
-      });
+      tags = (this.requestData as MessageObject)?.conversation?.custom_data?.request_data?.tags || [];
     } else if (this.isCall()) {
       tags = (this.requestData as RequestObjectCallBody)?.TAGS || [];
     }
     return tags;
-  }*/
+  }
 
   private findPayloadIndex(name: string): number {
     return this.replyMessage.payload.findIndex(item => {
@@ -211,22 +207,22 @@ class VoximplantKit {
       return {
         "VARIABLES": variables,
         "SKILLS": this.skills,
-        /*"TAGS": Array.from(new Set(this.tags))*/
+        "TAGS": Array.from(new Set(this.tags))
       }
     } else if (this.isMessage()) {
       const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue')
-      //const tagsPayloadIndex = this.findPayloadIndex('bind_tags')
+      const tagsPayloadIndex = this.findPayloadIndex('bind_tags')
 
       if (queuePayloadIndex !== -1) {
         this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
         this.replyMessage.payload[queuePayloadIndex].priority = this.priority;
       }
 
-      /*if (tagsPayloadIndex !== -1) {
+      if (tagsPayloadIndex !== -1) {
         const tagsPayload = this.replyMessage.payload[tagsPayloadIndex];
         tagsPayload.tags = Array.from(new Set(this.tags));
         tagsPayload.replace = this.isTagsReplace;
-      }*/
+      }
 
       return {
         text: this.replyMessage.text,
@@ -883,14 +879,19 @@ class VoximplantKit {
     }
   }
 
-  /*private setTags(tags: number[], replace = false): boolean {
+  private setTags(tags: number[], replace = false): boolean {
     if (Array.isArray(tags)) {
       const payloadIndex = this.findPayloadIndex('bind_tags');
       const onlyPositiveInt = tags.filter(tag => Number.isInteger(tag) && tag >= 0);
+      const type = replace ? 'replaceTags:' : 'addTags:';
 
-      if (!onlyPositiveInt.length || !tags.length) {
-        console.warn('the tags argument must be an array containing only positive integers');
+      if (!replace && !onlyPositiveInt.length) {
+        console.warn(type, 'the tags argument must be an array containing only positive integers');
         return false;
+      }
+
+      if (replace && tags.length && !onlyPositiveInt.length ) {
+        console.warn(type, 'the tags argument must be an array containing only positive integers');
       }
 
       this.tags = replace ? onlyPositiveInt : this.tags.concat(onlyPositiveInt);
@@ -908,7 +909,7 @@ class VoximplantKit {
       console.warn('The array must contain only integers greater than zero');
       return false;
     }
-  }*/
+  }
 
   /**
    * Add tags by id.
@@ -919,9 +920,9 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  /*addTags(tags: number[]): boolean {
+  addTags(tags: number[]): boolean {
     return this.setTags(tags)
-  }*/
+  }
 
   /**
    * Replace all tags
@@ -932,9 +933,9 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  /*replaceTags(tags: number[]): boolean {
+  replaceTags(tags: number[]): boolean {
     return this.setTags(tags, true);
-  }*/
+  }
 
   /**
    * Get tags
@@ -947,7 +948,7 @@ class VoximplantKit {
    * ```
    * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
    */
-   /*getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]> {
+   getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]> {
     const tags = utils.clone(this.tags);
 
     if (!withName) return Promise.resolve(tags);
@@ -962,7 +963,7 @@ class VoximplantKit {
           }
         })
       }) as Promise<GetTagsResult[]>;
-  }*/
+  }
 
   /**
    * Gets a client’s SDK version.
@@ -975,7 +976,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.43"
+    return "0.0.44"
   }
 }
 
