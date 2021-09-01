@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult } from "@voximplant/kit-functions-sdk/types";
     class VoximplantKit {
             /**
                 * Voximplant Kit class, a middleware for working with functions.
@@ -54,6 +54,7 @@ declare module '@voximplant/kit-functions-sdk' {
             getResponseBody(): {
                     VARIABLES: ObjectType;
                     SKILLS: SkillObject[];
+                    TAGS: number[];
                     text?: undefined;
                     payload?: undefined;
                     variables?: undefined;
@@ -63,6 +64,7 @@ declare module '@voximplant/kit-functions-sdk' {
                     variables: ObjectType;
                     VARIABLES?: undefined;
                     SKILLS?: undefined;
+                    TAGS?: undefined;
             };
             /**
                 * Gets an incoming message.
@@ -489,6 +491,38 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @static
                 */
             static getEnvironmentVariable(name: string): string | null;
+            /**
+                * Add tags by id.
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  kit.addTags([12, 34]);
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            addTags(tags: number[]): boolean;
+            /**
+                * Replace all tags
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  kit.replaceTags([12, 34]);
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            replaceTags(tags: number[]): boolean;
+            /**
+                * Get tags
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  await kit.getTags(); // [12, 34]
+                *  await kit.getTags(true); // [{id: 12, tag_name: 'my_tag'}, {id: 34, tag_name: 'my_tag2'}]
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
+                */
+            getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
             /**
                 * Gets a client’s SDK version.
                 * ```js
@@ -942,6 +976,10 @@ declare module '@voximplant/kit-functions-sdk/types' {
     };
     export type ObjectType = {
             [key: string]: string;
+    };
+    export type GetTagsResult = {
+            id: number;
+            tag_name: string | null;
     };
 }
 

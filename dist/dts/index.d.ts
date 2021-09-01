@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult } from "./types";
 declare class VoximplantKit {
     private requestData;
     private accessToken;
@@ -17,6 +17,8 @@ declare class VoximplantKit {
     private eventType;
     private replyMessage;
     private incomingMessage;
+    private tags;
+    private isTagsReplace;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * ```js
@@ -37,6 +39,7 @@ declare class VoximplantKit {
     static default: typeof VoximplantKit;
     private getRequestDataProperty;
     private getRequestDataVariables;
+    private getRequestDataTags;
     private findPayloadIndex;
     /**
      * Loads the databases available in the scope.
@@ -69,6 +72,7 @@ declare class VoximplantKit {
     getResponseBody(): {
         VARIABLES: ObjectType;
         SKILLS: SkillObject[];
+        TAGS: number[];
         text?: undefined;
         payload?: undefined;
         variables?: undefined;
@@ -78,6 +82,7 @@ declare class VoximplantKit {
         variables: ObjectType;
         VARIABLES?: undefined;
         SKILLS?: undefined;
+        TAGS?: undefined;
     };
     /**
      * Gets an incoming message.
@@ -518,6 +523,7 @@ declare class VoximplantKit {
      * @static
      */
     static getEnvironmentVariable(name: string): string | null;
+    private setTags;
     /**
      * Add tags by id.
      * ```js
@@ -527,6 +533,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      */
+    addTags(tags: number[]): boolean;
     /**
      * Replace all tags
      * ```js
@@ -536,6 +543,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      */
+    replaceTags(tags: number[]): boolean;
     /**
      * Get tags
      * ```js
@@ -547,6 +555,7 @@ declare class VoximplantKit {
      * ```
      * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
      */
+    getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
     /**
      * Gets a client’s SDK version.
      * ```js
