@@ -599,6 +599,7 @@ describe('setVariable', () => {
         return new Error()
       }
     });
+    kit.setVariable('test_var4', [1]);
     const value = kit.getVariable('test_var');
     const {VARIABLES} = kit.getResponseBody();
 
@@ -618,7 +619,8 @@ describe('setVariable', () => {
         "test_var": "var value",
         "test_var1": "undefined",
         "test_var2": "null",
-        "test_var3": ""
+        "test_var3": "{}",
+        "test_var4": "[1]"
       };
 
       expect(VARIABLES).toEqual(expect.objectContaining(expected),);
@@ -655,7 +657,7 @@ describe('setVariable', () => {
     });
 
     test('the variables in the response must be strings', () => {
-      expect(VARIABLES['test_var']).toEqual(expected + '');
+      expect(VARIABLES['test_var']).toEqual(typeof expected === "object" ? JSON.stringify(expected) : expected + '');
     })
   });
 });
@@ -1015,7 +1017,7 @@ describe('replaceTags', () => {
 
     test('an array without numbers should return false', () => {
       const isBind = kit.replaceTags(notNumber);
-      expect(isBind).toEqual(false);
+      expect(isBind).toEqual(true);
     });
 
     test('not an array should return false', () => {

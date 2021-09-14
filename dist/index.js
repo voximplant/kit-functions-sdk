@@ -153,7 +153,7 @@ class VoximplantKit {
         for (let key in this.variables) {
             if (this.variables.hasOwnProperty(key)) {
                 try {
-                    variables[key] = this.variables[key] + '';
+                    variables[key] = typeof this.variables[key] === 'object' ? JSON.stringify(this.variables[key]) : this.variables[key] + '';
                 }
                 catch (e) {
                     variables[key] = '';
