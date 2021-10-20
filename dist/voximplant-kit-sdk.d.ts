@@ -533,7 +533,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  callback(200, kit.getResponseBody());
                 * ```
                 */
-            version(): string;
+            version(): string | void;
     }
     export = VoximplantKit;
 }

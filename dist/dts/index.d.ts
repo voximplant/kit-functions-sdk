@@ -566,6 +566,6 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      */
-    version(): string;
+    version(): string | void;
 }
 export = VoximplantKit;

@@ -895,7 +895,7 @@ class VoximplantKit {
      * ```
      */
     version() {
-        return "0.0.44";
+        return utils_1.default.getVersion();
     }
 }
 /**
