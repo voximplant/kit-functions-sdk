@@ -433,20 +433,22 @@ describe('isMessage', () => {
   });
 });
 
+
+
 describe('removeSkill', () => {
-  describe.each([callContext, messageContext])('with %# context', (a) => {
-    const kit = new VoximplantKitTest(a);
-    kit.setSkill('my_skill', 5);
-    const result = kit.removeSkill('my_skill');
+  describe.each([callContext, messageContext])('with %# context', (context) => {
+    const kit = new VoximplantKitTest(context);
+    kit.setSkill({skill_id: 33, level: 5});
+    const isRemoved = kit.removeSkill(33);
     const localSkills = kit.getSkills();
 
     test('should return true', () => {
-      expect(result).toEqual(true);
+      expect(isRemoved).toEqual(true);
     });
 
     test('skills must not contain my_skill', () => {
       const expected = [{
-        skill_name: 'my_skill',
+        skill_id: 33,
         level: 5
       }];
       expect(localSkills).toEqual(
@@ -454,8 +456,10 @@ describe('removeSkill', () => {
       );
     });
 
-    test('with a nonexistent name', () => {
-      const result = kit.removeSkill('not_skill');
+    test.each([
+      'not_skill', ...notNumber
+    ])('with a nonexistent id', (a) => {
+      const result = kit.removeSkill(a);
       expect(result).toEqual(false);
     })
   });
@@ -513,81 +517,131 @@ describe('setReplyMessageText', () => {
   });
 });
 
+
 describe('setSkill', () => {
-  const kit = new VoximplantKitTest(callContext);
-  const isSet = kit.setSkill('my_skill', 5);
-  const localSkills = kit.getSkills();
-  const {SKILLS} = kit.getResponseBody();
+  let kit, isSet, localSkills;
 
-  test('setSkill should return true', () => {
-    expect(isSet).toEqual(true);
+  beforeEach(() => {
+    kit = new VoximplantKitTest(callContext)
+    isSet = kit.setSkill({skill_id: 36, level: 5});
+    localSkills = kit.getSkills();
   });
 
-  test('getSkills must not contain my_skill', () => {
-    const expected = [{
-      skill_name: 'my_skill',
-      level: 5
-    }];
-    expect(localSkills).toEqual(
-      expect.arrayContaining(expected),
-    );
-  });
-
-  test('update local skill', () => {
-    const kit = new VoximplantKitTest(callContext);
-    kit.setSkill('my_skill1', 3);
-    kit.setSkill('my_skill1', 4);
-    const skills = kit.getSkills();
-
-    const expected = [{
-      skill_name: 'my_skill1',
-      level: 4
-    }];
-    expect(skills).toEqual(
-      expect.arrayContaining(expected),
-    );
-  })
-
-  test('Response body skills must contain my_skill', () => {
-    const expected = [{skill_name: 'my_skill', level: 5}];
-    expect(SKILLS).toEqual(
-      expect.arrayContaining(expected),
-    );
-  });
-
-  describe.each([
-    {name: true, value: undefined},
-    {name: 22, value: false},
-    {name: 22, value: 'ssss'},
-    {name: 'sss', value: NaN},
-  ])('set skill %#', (a) => {
-    const kit = new VoximplantKitTest(callContext);
-    const isSet = kit.setSkill(a.name, a.value);
-    console.log(isSet, a.value)
-    test(`Should return false`, () => {
-      expect(isSet).toEqual(false);
-    });
-  });
-
-  describe.each([1, 2, 3, 4, 5])('set level %p', (a) => {
-    const kit = new VoximplantKitTest(callContext);
-    const isSet = kit.setSkill('my_skill', a);
-    test(`Should return true`, () => {
+  describe('with CallContext', () => {
+    test('should return true', () => {
       expect(isSet).toEqual(true);
     });
-  });
 
-  describe.each([-1, -2, 0, 6, 7, 8])('set level %p', (a) => {
-    const kit = new VoximplantKitTest(callContext);
-    const isSet = kit.setSkill('my_skill', a);
-    console.log(isSet);
-    test(`Should return false`, () => {
+    test('getSkills should contain skill with id 36', () => {
+      isSet = kit.setSkill({skill_id: 36, level: 5});
+      localSkills = kit.getSkills();
+      const expected = [{
+        skill_id: 36,
+        level: 5
+      }];
+      expect(localSkills).toEqual(
+        expect.arrayContaining(expected),
+      );
+    });
+
+    test('update local skill', () => {
+      kit.setSkill({skill_id: 35, level: 3});
+      kit.setSkill({skill_id: 35, level: 4});
+      const skills = kit.getSkills();
+
+      const expected = [{
+        skill_id: 35,
+        level: 4
+      }];
+      expect(skills).toEqual(
+        expect.arrayContaining(expected),
+      );
+    })
+
+    test('setting skills without id should return false', () => {
+      const isSet = kit.setSkill({level: 5});
       expect(isSet).toEqual(false);
+    });
+
+    test('setting skills without level should return false', () => {
+      const isSet = kit.setSkill({skill_id: 5});
+      expect(isSet).toEqual(false);
+    });
+
+    test('Response body skills property must be contain skill with id 36', () => {
+      const res = kit.getResponseBody();
+      const expected = [{skill_id: 36, level: 5}];
+      expect(res.SKILLS).toEqual(
+        expect.arrayContaining(expected),
+      );
+    });
+
+    describe.each([
+      {id: true, value: undefined},
+      {id: 22, value: false},
+      {id: 22, value: 'ssss'},
+      {id: 'sss', value: NaN},
+    ])('set skill by id %#', (a) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setSkill({skill_id: a.id, level: a.value});
+
+      localSkills = kit.getSkills();
+      test(`Should return false`, () => {
+        expect(isSet).toEqual(false);
+      });
+    });
+
+    describe.each([1, 2, 3, 4, 5])('set level %p', (a) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setSkill({skill_id: 37, level: a});
+      test(`Should return true`, () => {
+        expect(isSet).toEqual(true);
+      });
+    });
+
+    describe.each([-1, -2, 0, 6, 7, 8, notNumber])('set level %p', (a) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setSkill({skill_id: 37, level: a});
+      test(`Should return false`, () => {
+        expect(isSet).toEqual(false);
+      });
+    });
+
+    describe.each([1, 2, 3, 4, 5])('set skill_id %p', (a) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setSkill({skill_id: a, level: 5});
+      test(`Should return true`, () => {
+        expect(isSet).toEqual(true);
+      });
+    });
+
+    describe.each([-1, -2, notNumber])('set invalid value to skill_id %p', (a) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setSkill({skill_id: a, level: 5});
+      test(`Should return false`, () => {
+        expect(isSet).toEqual(false);
+      });
+    });
+  })
+
+  describe('with messageContext', () => {
+    test('Response body skills property must be contain skill with id 36', () => {
+      const kit = new VoximplantKitTest(messageContext);
+      kit.setSkill({skill_id: 36, level: 5});
+      kit.transferToQueue({queue_id: 111});
+      const index = kit.findPayloadIndex('transfer_to_queue');
+      const res = kit.getResponseBody();
+      const skills = res.payload[index].skills;
+      const expected = [{skill_id: 36, level: 5}];
+
+      expect(skills).toEqual(
+        expect.arrayContaining(expected),
+      );
     });
   });
 })
 
-// TODO need update
+
 describe('setVariable', () => {
   describe('with call context', () => {
     const kit = new VoximplantKitTest(callContext);

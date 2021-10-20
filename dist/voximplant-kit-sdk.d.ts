@@ -228,34 +228,33 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             getSkills(): SkillObject[];
             /**
-                * Adds a skill or updates it if the skill name already exists.
+                * Adds a skill or updates it if the skill id already exists.
                 * ```js
                 *  // Initialize a VoximplantKit instance
                 *  const kit = new VoximplantKit(context);
-                *  if (this.isCall()) {
-                *    kit.setSkill('some_skill_name', 5);
+                *  if (kit.isCall()) {
+                *    kit.setSkill({skill_id: 234, level: 5});
+                *  } else if (kit.isMessage()) {
+                *    kit.setSkill({skill_id: 35, level: 3});
+                *    kit.transferToQueue({queue_id: 72});
                 *  }
                 *  // End of function
                 *  callback(200, kit.getResponseBody());
                 * ```
-                * @param name Skill name
-                * @param level Proficiency level
                 */
-            setSkill(name: string, level: number): boolean;
+            setSkill(skill: SkillObject): boolean;
             /**
-                * Removes a skill by name.
+                * Removes a skill by id.
                 * ```js
                 *  // Initialize a VoximplantKit instance
                 *  const kit = new VoximplantKit(context);
-                *  if (this.isCall()) {
-                *    kit.removeSkill('some_skill_name');
-                *  }
+                *  kit.removeSkill(234);
                 *  // End of function
                 *  callback(200, kit.getResponseBody());
                 * ```
-                * @param name {string} - Name of the skill to remove
+                * @param id {Number} - Name of the skill to remove
                 */
-            removeSkill(name: string): boolean;
+            removeSkill(id: number): boolean;
             /**
                 * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
                 * ```js
@@ -332,7 +331,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  // End of function
                 *  callback(200, kit.getResponseBody());
                 * ```
-                * @param queue {QueueInfo} - Queue id
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
@@ -556,15 +554,15 @@ declare module '@voximplant/kit-functions-sdk/types' {
             session_id: string;
             /**
              Caller phone number
-             */
+                */
             callerid: string;
             /**
                 * Destination phone number
                 */
             destination: string;
             /**
-            Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
-             */
+             Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
+                */
             display_name: string;
             /**
                 * Caller phone number. Equivalent to the <b>callerid</b> value
@@ -608,13 +606,13 @@ declare module '@voximplant/kit-functions-sdk/types' {
     }
     export interface SkillObject {
             /**
-                * Skill name
-                */
-            skill_name: string;
-            /**
                 * Proficiency level
                 */
             level: number;
+            /**
+                * Skill id
+                */
+            skill_id?: number;
     }
     export interface MessageObject {
             /**
@@ -652,16 +650,16 @@ declare module '@voximplant/kit-functions-sdk/types' {
     }
     export interface MessageConversation {
             /**
-             * Conversation id
-             */
+                * Conversation id
+                */
             id: number;
             /**
                 * @hidden
                 */
             uuid: string;
             /**
-             * Client id in the remote channel, external identifier
-             */
+                * Client id in the remote channel, external identifier
+                */
             client_id: string;
             /**
                 * Custom data object

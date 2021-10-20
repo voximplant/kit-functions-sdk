@@ -16,15 +16,15 @@ export interface CallObject {
   session_id: string
   /**
    Caller phone number
-  */
+   */
   callerid: string
   /**
    * Destination phone number
    */
   destination: string
   /**
-  Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
-  */
+   Name of the caller that is displayed to the called party. Normally it's a human-readable version of CallerID, e.g. a person's name
+   */
   display_name: string
   /**
    * Caller phone number. Equivalent to the <b>callerid</b> value
@@ -73,13 +73,13 @@ export interface RequestObjectCallBody {
 
 export interface SkillObject {
   /**
-   * Skill name
-   */
-  skill_name: string
-  /**
    * Proficiency level
    */
-  level: number
+  level: number,
+  /**
+   * Skill id
+   */
+  skill_id?: number;
 }
 
 export interface MessageObject {
@@ -119,16 +119,16 @@ export interface MessageObject {
 
 export interface MessageConversation {
   /**
-  * Conversation id
-  */
+   * Conversation id
+   */
   id: number
   /**
    * @hidden
    */
   uuid: string
   /**
-  * Client id in the remote channel, external identifier
-  */
+   * Client id in the remote channel, external identifier
+   */
   client_id: string
   /**
    * Custom data object
@@ -437,7 +437,7 @@ export interface DataBase {
 /**
  * @hidden
  */
-export type DateBasePutParams = { name: string, scope: DataBaseType};
+export type DateBasePutParams = { name: string, scope: DataBaseType };
 
 export type DataBaseType = 'function' | 'global' | 'conversation';
 
