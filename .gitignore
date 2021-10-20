@@ -73,7 +73,6 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 
 /node_modules/
-/package-lock.json
 /dist/test.js
 /voximplant-kit-functions-sdk-*.tgz
 /demo.js
