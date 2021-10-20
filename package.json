@@ -12,7 +12,8 @@
     "test": "jest",
     "test:cover": "jest --coverage=true --silent && make-coverage-badge",
     "build": "node clear.js && tsc && node bundle.js && typedoc && node doc/converter/converter.js",
-    "doc": "typedoc && node doc/converter/converter.js"
+    "doc": "typedoc && node doc/converter/converter.js",
+    "release": "standard-version"
   },
   "private": false,
   "repository": {
