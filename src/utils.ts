@@ -1,5 +1,6 @@
 import { ContextObject } from "./types";
 import * as dotenv from 'dotenv'
+import * as path from "path";
 
 /**
  * @hidden
@@ -43,8 +44,28 @@ const getEnv = function getEnv(): void {
 /**
  * @hidden
  */
+const getVersion = function getVersion(): string | void {
+  const packageJson = path.resolve(__dirname, '../package.json');
+
+  try {
+    if (fs.existsSync(packageJson)) {
+      const json = JSON.parse(fs.readFileSync(packageJson, 'utf8'))
+      return json.version;
+    } else {
+      return;
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+
+/**
+ * @hidden
+ */
 export default {
   clone,
   getHeaderValue,
   getEnv,
+  getVersion
 }

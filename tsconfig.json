@@ -11,6 +11,7 @@
     "target": "ES2018",
     "noImplicitAny": false,
     "declaration": true,
-    "declarationDir": "dist/dts/"
+    "declarationDir": "dist/dts/",
+    "resolveJsonModule": true
   }
 }

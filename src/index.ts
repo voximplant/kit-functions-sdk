@@ -13,7 +13,6 @@ import {
 import Message from "./Message";
 import utils from './utils';
 
-
 utils.getEnv();
 
 
@@ -976,7 +975,7 @@ class VoximplantKit {
    * ```
    */
   public version() {
-    return "0.0.44"
+    return utils.getVersion();
   }
 }
 

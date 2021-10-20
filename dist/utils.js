@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv = require("dotenv");
+const path = require("path");
 /**
  * @hidden
  */
@@ -41,8 +42,27 @@ const getEnv = function getEnv() {
 /**
  * @hidden
  */
+const getVersion = function getVersion() {
+    const packageJson = path.resolve(__dirname, '../package.json');
+    try {
+        if (fs.existsSync(packageJson)) {
+            const json = JSON.parse(fs.readFileSync(packageJson, 'utf8'));
+            return json.version;
+        }
+        else {
+            return;
+        }
+    }
+    catch (err) {
+        console.log(err);
+    }
+};
+/**
+ * @hidden
+ */
 exports.default = {
     clone,
     getHeaderValue,
     getEnv,
+    getVersion
 };
