@@ -209,8 +209,8 @@ class VoximplantKit {
         "TAGS": Array.from(new Set(this.tags))
       }
     } else if (this.isMessage()) {
-      const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue')
-      const tagsPayloadIndex = this.findPayloadIndex('bind_tags')
+      const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
+      const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
 
       if (queuePayloadIndex !== -1) {
         this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
@@ -442,56 +442,69 @@ class VoximplantKit {
   }
 
   /**
-   * Adds a skill or updates it if the skill name already exists.
+   * Adds a skill or updates it if the skill id already exists.
    * ```js
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
-   *  if (this.isCall()) {
-   *    kit.setSkill('some_skill_name', 5);
+   *  if (kit.isCall()) {
+   *    kit.setSkill({skill_id: 234, level: 5});
+   *  } else if (kit.isMessage()) {
+   *    kit.setSkill({skill_id: 35, level: 3});
+   *    kit.transferToQueue({queue_id: 72});
    *  }
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param name Skill name
-   * @param level Proficiency level
    */
-  public setSkill(name: string, level: number): boolean {
-    if (typeof name !== 'string' || !Number.isInteger(level)) return false;
-
-    if (level < 1 || level > 5) {
-      console.warn('level property must be a integer from 1 to 5');
+  public setSkill(skill: SkillObject): boolean {
+    if (!('skill_id' in skill)) {
+      console.warn('setSkill: The id parameter is required');
       return false;
     }
 
-    const skillIndex = this.skills.findIndex(skill => {
-      return skill.skill_name === name
+    if (!('level' in skill)) {
+      console.warn('setSkill: The level parameter is required');
+      return false;
+    }
+
+    if (!Number.isInteger(skill.skill_id) || !Number.isInteger(skill.level))  return false;
+
+    if (skill.skill_id < 0) {
+      console.warn('setSkill: The skill_id parameter must be a positive integer');
+      return false;
+    }
+
+    if (skill.level < 1 || skill.level > 5) {
+      console.warn('setSkill: The level parameter must be an integer from 1 to 5');
+      return false;
+    }
+
+    const skillIndex = this.skills.findIndex(item => {
+      return item.skill_id === skill.skill_id
     });
 
     if (skillIndex === -1) this.skills.push({
-      "skill_name": name,
-      "level": level
+      "skill_id": skill.skill_id,
+      "level": skill.level
     })
-    else this.skills[skillIndex].level = level;
-
+    else this.skills[skillIndex].level = skill.level;
     return true;
   }
 
   /**
-   * Removes a skill by name.
+   * Removes a skill by id.
    * ```js
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
-   *  if (this.isCall()) {
-   *    kit.removeSkill('some_skill_name');
-   *  }
+   *  kit.removeSkill(234);
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param name {string} - Name of the skill to remove
+   * @param id {Number} - Name of the skill to remove
    */
-  public removeSkill(name: string): boolean {
+  public removeSkill(id: number): boolean {
     const skillIndex = this.skills.findIndex(skill => {
-      return skill.skill_name === name
+      return skill.skill_id === id
     })
     if (skillIndex > -1) {
       this.skills.splice(skillIndex, 1);
@@ -609,7 +622,6 @@ class VoximplantKit {
    *  // End of function
    *  callback(200, kit.getResponseBody());
    * ```
-   * @param queue {QueueInfo} - Queue id
    */
   public transferToQueue(queue: QueueInfo) {
     if (!this.isMessage()) return false;
