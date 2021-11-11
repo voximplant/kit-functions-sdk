@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.3](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.2...v0.2.3) (2021-11-11)
+
+
+### Features
+
+* Update the setSkill and removeSkill methods ([#34](https://github.com/voximplant/kit-functions-sdk/issues/34)) ([0d90948](https://github.com/voximplant/kit-functions-sdk/commit/0d90948499442920164936f30a63f67f435fade0))
+
 ### 0.2.2 (2021-10-20)
 
 
