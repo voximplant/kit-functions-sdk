@@ -86,6 +86,14 @@ export default class DB {
     return false;
   }
 
+  public deleteScopeValue(key: string, scope: DataBaseType): boolean {
+    if (this.scope?.[scope] && typeof key === 'string' && (key in this.scope[scope])) {
+      delete this.scope[scope][key];
+      return true;
+    }
+    return false;
+  }
+
   public getScopeAllValues(scope: DataBaseType = "global"): ObjectType | null {
     return typeof this.scope[scope] !== "undefined" ? utils.clone(this.scope[scope]) as ObjectType : null;
   }
