@@ -387,7 +387,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *      kit.dbSet('test_key', 'Hello world!!!', 'function');
                 *    }
                 *    // Write changes to the database
-                *    kit.dbCommit()
+                *    await kit.dbCommit();
                 *  } catch(err) {
                 *    console.log(err);
                 *  }
@@ -410,7 +410,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *    // Delete a value from the function scope by key
                 *    kit.dbDelete('test_key', 'function')
                 *    // Write changes to the database
-                *    kit.dbCommit()
+                *   await kit.dbCommit();
                 *  } catch(err) {
                 *    console.log(err);
                 *  }
@@ -456,7 +456,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *      kit.dbSet('test_key', 'Hello world!!!', 'function');
                 *    }
                 *    // Write changes to the database
-                *    kit.dbCommit()
+                *    await kit.dbCommit();
                 *  } catch(err) {
                 *    console.log(err);
                 *  }

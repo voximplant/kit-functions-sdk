@@ -642,7 +642,7 @@ class VoximplantKit {
      *      kit.dbSet('test_key', 'Hello world!!!', 'function');
      *    }
      *    // Write changes to the database
-     *    kit.dbCommit()
+     *    await kit.dbCommit();
      *  } catch(err) {
      *    console.log(err);
      *  }
@@ -667,7 +667,7 @@ class VoximplantKit {
      *    // Delete a value from the function scope by key
      *    kit.dbDelete('test_key', 'function')
      *    // Write changes to the database
-     *    kit.dbCommit()
+     *   await kit.dbCommit();
      *  } catch(err) {
      *    console.log(err);
      *  }
@@ -717,7 +717,7 @@ class VoximplantKit {
      *      kit.dbSet('test_key', 'Hello world!!!', 'function');
      *    }
      *    // Write changes to the database
-     *    kit.dbCommit()
+     *    await kit.dbCommit();
      *  } catch(err) {
      *    console.log(err);
      *  }
