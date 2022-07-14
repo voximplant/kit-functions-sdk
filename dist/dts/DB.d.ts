@@ -12,5 +12,6 @@ export default class DB {
     putAllDB(params: DateBasePutParams[]): Promise<boolean>;
     getScopeValue(key: string, scope?: DataBaseType): string | null;
     setScopeValue(key: string, value: any, scope?: DataBaseType): boolean;
+    deleteScopeValue(key: string, scope: DataBaseType): boolean;
     getScopeAllValues(scope?: DataBaseType): ObjectType | null;
 }

@@ -172,6 +172,59 @@ describe('getScopeValue', () => {
   });
 });
 
+describe('deleteScopeValue', () => {
+  describe.each(['global', 'function', 'conversation'])('With valid scope %p', (scope) => {
+    const api = new Api.default();
+    const db = new DBTest.default(api);
+    db.setScopeValue('key', 'value', scope);
+    const isDeleted = db.deleteScopeValue('key', scope);
+    const value = db.getScopeValue('key', scope);
+
+
+    test('value to be equal null', () => {
+      expect(value).toEqual(null);
+    })
+
+    test('result to be equal true', () => {
+      expect(isDeleted).toEqual(true);
+    })
+  })
+
+  describe.each([ 'global2', 'func', 'conv'])('With invalid scope %p', (scope) => {
+    const api = new Api.default();
+    const db = new DBTest.default(api);
+    db.setScopeValue('key', 'value', scope);
+    const isDeleted = db.deleteScopeValue('key', scope);
+    const value = db.getScopeValue('key', scope);
+
+
+    test('value to be equal null', () => {
+      expect(value).toEqual(null);
+    })
+
+    test('result to be equal false', () => {
+      expect(isDeleted).toEqual(false);
+    })
+  })
+
+  describe.each(['global', 'function', 'conversation'])('With valid scope %p and invalid key', (scope) => {
+    const api = new Api.default();
+    const db = new DBTest.default(api);
+    db.setScopeValue('key', 'value', scope);
+    const isDeleted = db.deleteScopeValue('key2', scope);
+    const value = db.getScopeValue('key', scope);
+
+
+    test('value to be equal \'value\'', () => {
+      expect(value).toEqual('value');
+    })
+
+    test('result to be equal false', () => {
+      expect(isDeleted).toEqual(false);
+    })
+  })
+})
+
 describe('setScopeValue', () => {
   describe.each([undefined, 'global', 'function', 'conversation'])('With valid scope %p', (scope) => {
     const api = new Api.default();

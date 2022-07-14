@@ -729,6 +729,31 @@ class VoximplantKit {
   }
 
   /**
+   * Deletes a value from the database scope, if the key already exists. Available only after laodDatabase(). execution.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  try {
+   *    // Connect available databases
+   *    await kit.loadDatabases();
+   *    // Delete a value from the function scope by key
+   *    kit.dbDelete('test_key', 'function')
+   *    // Write changes to the database
+   *    kit.dbCommit()
+   *  } catch(err) {
+   *    console.log(err);
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   * @param key {string} - Key
+   * @param scope {DataBaseType} - Database scope
+   */
+  public dbDelete(key: string, scope: DataBaseType ): boolean {
+    return this.DB.deleteScopeValue(key, scope);
+  }
+
+  /**
    * Gets the whole database scope by name. Available only after loadDatabases() execution.
    * ```js
    *  // Initialize a VoximplantKit instance

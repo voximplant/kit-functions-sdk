@@ -74,6 +74,14 @@ class DB {
         }
         return false;
     }
+    deleteScopeValue(key, scope) {
+        var _a;
+        if (((_a = this.scope) === null || _a === void 0 ? void 0 : _a[scope]) && typeof key === 'string' && (key in this.scope[scope])) {
+            delete this.scope[scope][key];
+            return true;
+        }
+        return false;
+    }
     getScopeAllValues(scope = "global") {
         return typeof this.scope[scope] !== "undefined" ? utils_1.default.clone(this.scope[scope]) : null;
     }
