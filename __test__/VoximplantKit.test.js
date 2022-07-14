@@ -886,6 +886,24 @@ describe('dbSet', () => {
   });
 });
 
+describe('dbDelete', () => {
+  const kit = new VoximplantKitTest(messageContext);
+
+  describe.each(['global', 'function', 'conversation'])('call deleteScopeValue with params for %p scope', (scope) => {
+    test('should passed', async () => {
+      await kit.dbDelete('test',  scope);
+      expect(kit.DB.deleteScopeValue).toHaveBeenCalledWith('test', scope);
+    })
+  });
+
+  describe.each(['global', 'function', 'conversation'])('call with valid params for %p scope', (scope) => {
+    test('should passed', async () => {
+      await kit.dbDelete('test',  scope);
+      expect(kit.DB.deleteScopeValue).toHaveBeenCalledWith('test', scope);
+    })
+  });
+});
+
 describe('dbGetAll', () => {
   const kit = new VoximplantKitTest(messageContext);
 
