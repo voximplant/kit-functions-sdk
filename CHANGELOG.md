@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.4](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.3...v0.2.4) (2022-07-15)
+
+
+### Features
+
+* **SC-9240:** add new method dbDelete ([d2e4779](https://github.com/voximplant/kit-functions-sdk/commit/d2e47796b9be4f25092daab8023d00bd58ba26a2))
+
 ### [0.2.3](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.2...v0.2.3) (2021-11-11)
 
 
