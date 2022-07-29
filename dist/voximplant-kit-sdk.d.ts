@@ -3,8 +3,10 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, CallDataObject, ChannelDataObject } from "@voximplant/kit-functions-sdk/types";
+    import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
+            avatar: Avatar;
             /**
                 * Voximplant Kit class, a middleware for working with functions.
                 * ```js
@@ -23,6 +25,29 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @hidden
                 */
             static default: typeof VoximplantKit;
+            /**
+                * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    const uuid = kit.getConversationUuid();
+                *    //... do something
+                *  }
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getConversationUuid(): string | null;
+            /**
+                * Get the function URI by its id
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  const uri = kit.getFunctionUriById(31);
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getFunctionUriById(id: number): string | null;
             /**
                 * Loads the databases available in the scope.
                 * ```js
@@ -43,6 +68,19 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             loadDatabases(): Promise<void>;
             /**
+                * Gets a message object.
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    const messageObject = kit.getMessageObject();
+                *    // ...do something
+                *  }
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getMessageObject(): ChannelDataObject | ObjectType;
+            /**
                 * Gets a function response. Needs to be called at the end of each function.
                 * ```js
                 *  // Initialize a VoximplantKit instance
@@ -51,21 +89,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 *  callback(200, kit.getResponseBody());
                 * ```
                 */
-            getResponseBody(): {
-                    VARIABLES: ObjectType;
-                    SKILLS: SkillObject[];
-                    TAGS: number[];
-                    text?: undefined;
-                    payload?: undefined;
-                    variables?: undefined;
-            } | {
-                    text: string;
-                    payload: import("./types").MessagePayloadItem[];
-                    variables: ObjectType;
-                    VARIABLES?: undefined;
-                    SKILLS?: undefined;
-                    TAGS?: undefined;
-            };
+            getResponseBody(): CallDataObject | ChannelDataObject | undefined;
             /**
                 * Gets an incoming message.
                 * ```js
@@ -129,6 +153,19 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             isMessage(): boolean;
+            /**
+                * The function is called by the avatar
+                * ```js
+                *  // Initialize a VoximplantKit instance
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isAvatar()) {
+                *    //...do something
+                *  }
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            isAvatar(): boolean;
             /**
                 * Gets a variable by name
                 * ```js
@@ -615,7 +652,13 @@ declare module '@voximplant/kit-functions-sdk/types' {
     /**
         * @hidden
         */
-    export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
+    export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
+    export interface AvatarMessageObject {
+            is_final: boolean;
+            response: string;
+            custom_data: null | string;
+            conversation_id: string;
+    }
     /**
         * @hidden
         */
@@ -669,6 +712,16 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * @hidden
                 */
             HasMedia: boolean;
+    }
+    export interface CallDataObject {
+            "VARIABLES": ObjectType;
+            "SKILLS": SkillObject[];
+            "TAGS": number[];
+    }
+    export interface ChannelDataObject {
+            text: string;
+            payload: Array<MessagePayloadItem>;
+            variables: ObjectType;
     }
     export interface MessageConversation {
             /**
@@ -1001,5 +1054,81 @@ declare module '@voximplant/kit-functions-sdk/types' {
             id: number;
             tag_name: string | null;
     };
+    export interface AvatarConfig {
+            voxAccountId: string;
+            avatarLogin: string;
+            avatarPass: string;
+            avatarId: string;
+            callbackUri: string;
+            utterance: string;
+            conversationId: string;
+            customData: unknown;
+    }
+}
+
+declare module '@voximplant/kit-functions-sdk/Avatar' {
+    import { AvatarConfig } from "@voximplant/kit-functions-sdk/types";
+    export default class Avatar {
+            /**
+                * @hidden
+                */
+            constructor(avatarApiUrl: string, imApiUrl: string);
+            /**
+                * Send a message to a Voximplant avatar
+                * ```js
+                * const kit = new VoximplantKit(context);
+                *
+                * if (kit.isMessage()) {
+                *   try {
+                *     const conversationId = kit.getConversationUuid();
+                *     const callbackUri = kit.getFunctionUriById(33);
+                *     const {text} = kit.getIncomingMessage();
+                *
+                *     // These variables must be added to the environment variables yourself
+                *     const avatarId = kit.getEnvVariable('avatarId');
+                *     const voxAccountId = kit.getEnvVariable('voxAccountId');
+                *     const avatarLogin = kit.getEnvVariable('avatarLogin');
+                *     const avatarPass = kit.getEnvVariable('avatarPass');
+                *
+                *     await kit.avatar.sendMessageToAvatar({
+                *       callbackUri,
+                *       voxAccountId,
+                *       avatarLogin,
+                *       avatarPass,
+                *       avatarId,
+                *       conversationId,
+                *       utterance: text,
+                *       customData: {}
+                *     })
+                *   } catch (err) {
+                *     console.error(err);
+                *   }
+                * }
+                *
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
+                */
+            sendMessageToAvatar(config: AvatarConfig): Promise<void>;
+            /**
+                * Send the avatar's reply to the conversation
+                *```js
+                * const kit = new VoximplantKit(context);
+                * if (kit.isAvatar()) {
+                *  const conversationUuid = kit.getConversationUuid();
+                *  const message = kit.getMessageObject();
+                *  try {
+                *    await kit.avatar.sendMessageToConversation(conversationUuid, message);
+                *  } catch(err) {
+                *    console.error(err)
+                *  }
+                * }
+                *
+                * // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            sendMessageToConversation(conversationUuid: string, message: unknown): Promise<void>;
+    }
 }
 

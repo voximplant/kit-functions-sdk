@@ -2,6 +2,7 @@ const VoximplantKitTest = require('../dist/index.js');
 const Api = require('../dist/Api');
 const callContext = require('./context.js').CallContext;
 const messageContext = require('./context.js').MessageContext;
+const avatarContext = require('./context.js').AvatarContext;
 const {
   notStringAndNumber,
   notString,
@@ -34,7 +35,7 @@ describe('constructor', () => {
     expect(() => new VoximplantKitTest(context)).toThrow(Error);
   });
 
-  describe.each([callContext, messageContext])('set valid value %p as context', (context) => {
+  describe.each([callContext, messageContext, avatarContext])('set valid value %p as context', (context) => {
     const instance = new VoximplantKitTest(context);
     expect(instance).toBeInstanceOf(VoximplantKitTest);
   });
@@ -212,6 +213,23 @@ describe('finishRequest', () => {
       }];
       expect(payload).toEqual(expect.arrayContaining(expected));
     });
+  })
+
+  describe('with avatar context', () => {
+    const context = JSON.parse(JSON.stringify(avatarContext));
+    context.request.body.is_final = true;
+    const kit = new VoximplantKitTest(context);
+
+    const messageObject = kit.getMessageObject();
+    const {payload} = messageObject;
+
+    test('The message object must contain a payload with the finish_request command', () => {
+      const expected = [{
+        type: "cmd",
+        name: "finish_request"
+      }];
+      expect(payload).toEqual(expect.arrayContaining(expected));
+    })
   })
 });
 
@@ -433,7 +451,34 @@ describe('isMessage', () => {
   });
 });
 
+describe('isAvatar', () => {
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    const isAvatar = kit.isAvatar();
 
+    test('Should return false', () => {
+      expect(isAvatar).toEqual(false);
+    });
+  });
+
+  describe('with message context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    const isAvatar = kit.isAvatar();
+
+    test('Should return false', () => {
+      expect(isAvatar).toEqual(false);
+    });
+  });
+
+  describe('with avatar context', () => {
+    const kit = new VoximplantKitTest(avatarContext);
+    const isAvatar = kit.isAvatar();
+
+    test('Should return true', () => {
+      expect(isAvatar).toEqual(true);
+    });
+  });
+});
 
 describe('removeSkill', () => {
   describe.each([callContext, messageContext])('with %# context', (context) => {
@@ -1227,3 +1272,81 @@ describe('getEnvironmentVariable', () => {
     });
   });
 });
+
+
+
+describe('getConversationUuid', () => {
+  describe('with message context', () => {
+    const kit = new VoximplantKitTest(messageContext);
+    const uuid = kit.getConversationUuid();
+
+    test('uuid should be instance of String', () => {
+      expect(typeof uuid === 'string').toEqual(true);
+    })
+  })
+
+  describe('with avatar context', () => {
+    const kit = new VoximplantKitTest(avatarContext);
+    const uuid = kit.getConversationUuid();
+
+    test('uuid should be instance of String', () => {
+      expect(typeof uuid === 'string').toEqual(true);
+    })
+  })
+
+  describe('with call context', () => {
+    const kit = new VoximplantKitTest(callContext);
+    const uuid = kit.getConversationUuid();
+
+    test('uuid should be equal Null', () => {
+      expect(uuid).toBeNull();
+    })
+  })
+})
+
+describe('getFunctionUriById', () => {
+  afterEach(() => {
+    process.env = {...OLD_ENV};
+  })
+
+  describe('with valid id', () => {
+    process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url'})
+    const kit = new VoximplantKitTest(callContext);
+
+    test('should return string', () => {
+     const uri =  kit.getFunctionUriById(31);
+     expect(uri).toEqual('function_url');
+    })
+  });
+
+  describe('with valid id as string', () => {
+    process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url'})
+    const kit = new VoximplantKitTest(callContext);
+
+    test('should return string', () => {
+      const uri =  kit.getFunctionUriById('31');
+      expect(uri).toEqual('function_url');
+    })
+  });
+
+  describe('with invalid id as number', () => {
+    process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url'})
+    const kit = new VoximplantKitTest(callContext);
+
+    test('should return null', () => {
+      const uri =  kit.getFunctionUriById(33);
+      expect(uri).toBeNull();
+    })
+  })
+
+  describe.each(notStringAndNumber)('set invalid value %p as id', (value) => {
+    process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url'})
+    const kit = new VoximplantKitTest(callContext);
+    test('should return null', () => {
+      const uri =  kit.getFunctionUriById(value);
+      expect(uri).toBeNull();
+    })
+
+  });
+
+})

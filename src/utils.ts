@@ -41,6 +41,14 @@ const getEnv = function getEnv(): void {
   }
 }
 
+const getEnvVariable = function getEnvVariable(name: string): string | null {
+  if (typeof name === 'string') {
+    return name in process.env ? process.env[name] : null;
+  } else {
+    return null;
+  }
+}
+
 /**
  * @hidden
  */
@@ -67,5 +75,6 @@ export default {
   clone,
   getHeaderValue,
   getEnv,
+  getEnvVariable,
   getVersion
 }

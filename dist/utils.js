@@ -39,6 +39,14 @@ const getEnv = function getEnv() {
         console.log(err);
     }
 };
+const getEnvVariable = function getEnvVariable(name) {
+    if (typeof name === 'string') {
+        return name in process.env ? process.env[name] : null;
+    }
+    else {
+        return null;
+    }
+};
 /**
  * @hidden
  */
@@ -64,5 +72,6 @@ exports.default = {
     clone,
     getHeaderValue,
     getEnv,
+    getEnvVariable,
     getVersion
 };

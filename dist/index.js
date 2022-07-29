@@ -4,6 +4,7 @@ const Api_1 = require("./Api");
 const DB_1 = require("./DB");
 const Message_1 = require("./Message");
 const utils_1 = require("./utils");
+const Avatar_1 = require("./Avatar");
 utils_1.default.getEnv();
 class VoximplantKit {
     /**
@@ -71,10 +72,62 @@ class VoximplantKit {
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
             this.replyMessage.conversation = utils_1.default.clone(this.requestData.conversation);
+        }
+        if (this.isAvatar()) {
+            const requestData = this.requestData;
+            this.replyMessage.text = requestData.response;
+            if (requestData.is_final)
+                this.finishRequest();
+        }
+        if (this.isMessage() || this.isAvatar()) {
             this.replyMessage.payload.push({
                 type: "properties",
                 message_type: "text"
             });
+        }
+        this.avatar = new Avatar_1.default(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
+    }
+    /**
+     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    const uuid = kit.getConversationUuid();
+     *    //... do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getConversationUuid() {
+        if (this.isMessage()) {
+            let _messageObject = this.getIncomingMessage();
+            return _messageObject && _messageObject.conversation ? _messageObject.conversation.uuid : null;
+        }
+        if (this.isAvatar()) {
+            return this.getRequestDataProperty('conversation_id', null);
+        }
+        return null;
+    }
+    /**
+     * Get the function URI by its id
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  const uri = kit.getFunctionUriById(31);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getFunctionUriById(id) {
+        try {
+            const urls = JSON.parse(this.getEnvVariable('KIT_FUNC_URLS'));
+            if (id in urls) {
+                return urls[id];
+            }
+            return null;
+        }
+        catch (err) {
+            return null;
         }
     }
     // TODO combine methods getRequestDataProperty/getRequestDataVariables/getRequestDataTags
@@ -138,16 +191,7 @@ class VoximplantKit {
         }
         return await this.DB.getAllDB(names);
     }
-    /**
-     * Gets a function response. Needs to be called at the end of each function.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
-     */
-    getResponseBody() {
+    _getVariables() {
         const variables = {};
         // Converting the type of variables to a string
         for (let key in this.variables) {
@@ -160,14 +204,23 @@ class VoximplantKit {
                 }
             }
         }
-        if (this.isCall()) {
-            return {
-                "VARIABLES": variables,
-                "SKILLS": this.skills,
-                "TAGS": Array.from(new Set(this.tags))
-            };
-        }
-        else if (this.isMessage()) {
+        return variables;
+    }
+    /**
+     * Gets a message object.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    const messageObject = kit.getMessageObject();
+     *    // ...do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getMessageObject() {
+        if (this.isMessage() || this.isAvatar()) {
+            const variables = this._getVariables();
             const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
             const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
             if (queuePayloadIndex !== -1) {
@@ -181,13 +234,37 @@ class VoximplantKit {
             }
             return {
                 text: this.replyMessage.text,
-                payload: this.replyMessage.payload,
+                payload: utils_1.default.clone(this.replyMessage.payload),
                 variables: variables
-            }; // To be added in the future
+            };
+        }
+        else {
+            return {};
+        }
+    }
+    /**
+     * Gets a function response. Needs to be called at the end of each function.
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getResponseBody() {
+        const variables = this._getVariables();
+        if (this.isCall()) {
+            return {
+                "VARIABLES": variables,
+                "SKILLS": this.skills,
+                "TAGS": Array.from(new Set(this.tags))
+            };
+        }
+        else if (this.isMessage()) {
+            return this.getMessageObject();
         }
         else {
             return;
-            //return data
         }
     }
     /**
@@ -264,6 +341,21 @@ class VoximplantKit {
      */
     isMessage() {
         return this.eventType === "incoming_message" /* incoming_message */;
+    }
+    /**
+     * The function is called by the avatar
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isAvatar()) {
+     *    //...do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    isAvatar() {
+        return this.eventType === "avatar_function" /* avatar_function */;
     }
     /**
      * Gets a variable by name
@@ -510,7 +602,7 @@ class VoximplantKit {
      * ```
      */
     finishRequest() {
-        if (!this.isMessage())
+        if (!(this.isMessage() || this.isAvatar()))
             return false;
         const payloadIndex = this.findPayloadIndex('finish_request');
         if (payloadIndex === -1) {
@@ -558,7 +650,7 @@ class VoximplantKit {
      * ```
      */
     transferToQueue(queue) {
-        if (!this.isMessage())
+        if (!(this.isMessage() || this.isAvatar()))
             return false;
         if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id))
             queue.queue_id = null;
@@ -814,12 +906,7 @@ class VoximplantKit {
      * @param name {string} - Variable name
      */
     getEnvVariable(name) {
-        if (typeof name === 'string') {
-            return name in process.env ? process.env[name] : null;
-        }
-        else {
-            return null;
-        }
+        return utils_1.default.getEnvVariable(name);
     }
     /**
      * Gets an environment variable by name (Static method).
