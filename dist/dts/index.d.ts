@@ -1,4 +1,5 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, CallDataObject, ChannelDataObject } from "./types";
+import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
     private accessToken;
@@ -19,6 +20,7 @@ declare class VoximplantKit {
     private incomingMessage;
     private tags;
     private isTagsReplace;
+    avatar: Avatar;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * ```js
@@ -37,6 +39,29 @@ declare class VoximplantKit {
      * @hidden
      */
     static default: typeof VoximplantKit;
+    /**
+     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    const uuid = kit.getConversationUuid();
+     *    //... do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getConversationUuid(): string | null;
+    /**
+     * Get the function URI by its id
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  const uri = kit.getFunctionUriById(31);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getFunctionUriById(id: number): string | null;
     private getRequestDataProperty;
     private getRequestDataVariables;
     private getRequestDataTags;
@@ -60,6 +85,20 @@ declare class VoximplantKit {
      * ```
      */
     loadDatabases(): Promise<void>;
+    private _getVariables;
+    /**
+     * Gets a message object.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    const messageObject = kit.getMessageObject();
+     *    // ...do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getMessageObject(): ChannelDataObject | ObjectType;
     /**
      * Gets a function response. Needs to be called at the end of each function.
      * ```js
@@ -69,21 +108,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      */
-    getResponseBody(): {
-        VARIABLES: ObjectType;
-        SKILLS: SkillObject[];
-        TAGS: number[];
-        text?: undefined;
-        payload?: undefined;
-        variables?: undefined;
-    } | {
-        text: string;
-        payload: import("./types").MessagePayloadItem[];
-        variables: ObjectType;
-        VARIABLES?: undefined;
-        SKILLS?: undefined;
-        TAGS?: undefined;
-    };
+    getResponseBody(): CallDataObject | ChannelDataObject | undefined;
     /**
      * Gets an incoming message.
      * ```js
@@ -147,6 +172,19 @@ declare class VoximplantKit {
      * ```
      */
     isMessage(): boolean;
+    /**
+     * The function is called by the avatar
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isAvatar()) {
+     *    //...do something
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    isAvatar(): boolean;
     /**
      * Gets a variable by name
      * ```js

@@ -132,6 +132,18 @@ const messageBody = {
   HasMedia: false
 }
 
+const avatarHeaders = {
+  'x-kit-event-type': 'avatar_function'
+}
+
+const avatarBody = {
+  conversation_id: "44419364-16af-49dd-a571-ed5d71004acf",
+  response: "Я могу помочь вам записаться к специалисту или на процедуру, по остальным вопросам вам сможет подсказать наш оператор. Так чем могу помочь?",
+  is_final: false,
+  custom_data: "{ }"
+}
+
+
 const CallContext = {
   request: {
     headers: callHeaders,
@@ -145,7 +157,15 @@ const MessageContext = {
   }
 }
 
+const AvatarContext = {
+  request: {
+    headers: avatarHeaders,
+    body: avatarBody
+  }
+}
+
 module.exports = {
   MessageContext,
-  CallContext
+  CallContext,
+  AvatarContext
 }

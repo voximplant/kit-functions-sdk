@@ -8,12 +8,23 @@ import {
   SkillObject,
   MessageObject,
   ApiInstance,
-  DataBaseType, RequestData, RequestObjectCallBody, ObjectType, DateBasePutParams, GetTagsResult, /*GetTagsResult*/
+  AvatarConfig,
+  DataBaseType,
+  RequestData,
+  RequestObjectCallBody,
+  ObjectType,
+  DateBasePutParams,
+  GetTagsResult,
+  AvatarMessageObject,
+  CallDataObject, ChannelDataObject, /*GetTagsResult*/
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
+import Avatar from "./Avatar";
 
 utils.getEnv();
+
+
 
 
 /**
@@ -22,7 +33,8 @@ utils.getEnv();
 const enum EVENT_TYPES {
   in_call_function = "in_call_function",
   incoming_message = "incoming_message",
-  webhook = "webhook"
+  webhook = "webhook",
+  avatar_function = 'avatar_function',
 }
 
 class VoximplantKit {
@@ -45,6 +57,7 @@ class VoximplantKit {
   private incomingMessage: MessageObject;
   private tags: number[];
   private isTagsReplace: boolean;
+  public avatar: Avatar;
 
   /**
    * Voximplant Kit class, a middleware for working with functions.
@@ -103,11 +116,22 @@ class VoximplantKit {
       this.replyMessage.type = (this.requestData as MessageObject).type;
       this.replyMessage.sender.is_bot = true;
       this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation);
+    }
+
+    if (this.isAvatar()) {
+      const requestData = (this.requestData as AvatarMessageObject);
+      this.replyMessage.text = requestData.response;
+      if (requestData.is_final) this.finishRequest();
+    }
+
+    if (this.isMessage() || this.isAvatar()) {
       this.replyMessage.payload.push({
         type: "properties",
         message_type: "text"
       });
     }
+
+    this.avatar = new Avatar(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
   }
 
   /**
@@ -115,8 +139,56 @@ class VoximplantKit {
    */
   static default = VoximplantKit;
 
+
+
+  /**
+   * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isMessage() || kit.isAvatar()) {
+   *    const uuid = kit.getConversationUuid();
+   *    //... do something
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getConversationUuid(): string | null {
+    if (this.isMessage()) {
+      let _messageObject = this.getIncomingMessage();
+      return _messageObject && _messageObject.conversation ?  _messageObject.conversation.uuid : null
+    }
+
+    if (this.isAvatar()) {
+      return this.getRequestDataProperty('conversation_id', null);
+    }
+
+    return null;
+  }
+
+  /**
+   * Get the function URI by its id
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  const uri = kit.getFunctionUriById(31);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  getFunctionUriById(id: number): string | null {
+    try {
+      const urls = JSON.parse(this.getEnvVariable('KIT_FUNC_URLS'));
+      if (id in urls) {
+        return urls[id] as string;
+      }
+      return null;
+    } catch (err) {
+      return null;
+    }
+  }
+
   // TODO combine methods getRequestDataProperty/getRequestDataVariables/getRequestDataTags
-  private getRequestDataProperty(name: string, defaultProp: {} | [] = {}) {
+  private getRequestDataProperty(name: string, defaultProp: unknown = {}) {
     const prop = (this.requestData as RequestData)?.[name];
     return prop ? utils.clone(prop) : defaultProp;
   }
@@ -180,16 +252,7 @@ class VoximplantKit {
     return await this.DB.getAllDB(names);
   }
 
-  /**
-   * Gets a function response. Needs to be called at the end of each function.
-   * ```js
-   *  // Initialize a VoximplantKit instance
-   *  const kit = new VoximplantKit(context);
-   *  // End of function
-   *  callback(200, kit.getResponseBody());
-   * ```
-   */
-  public getResponseBody() {
+  private _getVariables(): ObjectType {
     const variables: ObjectType = {};
     // Converting the type of variables to a string
     for (let key in this.variables) {
@@ -201,14 +264,24 @@ class VoximplantKit {
         }
       }
     }
+    return variables;
+  }
 
-    if (this.isCall()) {
-      return {
-        "VARIABLES": variables,
-        "SKILLS": this.skills,
-        "TAGS": Array.from(new Set(this.tags))
-      }
-    } else if (this.isMessage()) {
+  /**
+   * Gets a message object.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isMessage() || kit.isAvatar()) {
+   *    const messageObject = kit.getMessageObject();
+   *    // ...do something
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getMessageObject(): ChannelDataObject | ObjectType {
+    if (this.isMessage() || this.isAvatar()) {
+      const variables = this._getVariables();
       const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
       const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
 
@@ -225,12 +298,36 @@ class VoximplantKit {
 
       return {
         text: this.replyMessage.text,
-        payload: this.replyMessage.payload,
+        payload: utils.clone(this.replyMessage.payload),
         variables: variables
-      } // To be added in the future
+      }
+    } else {
+      return {}
+    }
+  }
+
+  /**
+   * Gets a function response. Needs to be called at the end of each function.
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getResponseBody(): CallDataObject | ChannelDataObject | undefined {
+    const variables: ObjectType = this._getVariables();
+
+    if (this.isCall()) {
+      return {
+        "VARIABLES": variables,
+        "SKILLS": this.skills,
+        "TAGS": Array.from(new Set(this.tags))
+      }
+    } else if (this.isMessage()) {
+      return this.getMessageObject() as ChannelDataObject;
     } else {
       return;
-      //return data
     }
   }
 
@@ -312,6 +409,23 @@ class VoximplantKit {
    */
   public isMessage(): boolean {
     return this.eventType === EVENT_TYPES.incoming_message;
+  }
+
+
+  /**
+   * The function is called by the avatar
+   * ```js
+   *  // Initialize a VoximplantKit instance
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isAvatar()) {
+   *    //...do something
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public isAvatar(): boolean {
+    return this.eventType === EVENT_TYPES.avatar_function;
   }
 
   /**
@@ -467,7 +581,7 @@ class VoximplantKit {
       return false;
     }
 
-    if (!Number.isInteger(skill.skill_id) || !Number.isInteger(skill.level))  return false;
+    if (!Number.isInteger(skill.skill_id) || !Number.isInteger(skill.level)) return false;
 
     if (skill.skill_id < 0) {
       console.warn('setSkill: The skill_id parameter must be a positive integer');
@@ -572,7 +686,7 @@ class VoximplantKit {
    * ```
    */
   public finishRequest(): boolean {
-    if (!this.isMessage()) return false
+    if (!(this.isMessage() || this.isAvatar())) return false
     const payloadIndex = this.findPayloadIndex('finish_request');
 
     if (payloadIndex === -1) {
@@ -624,7 +738,7 @@ class VoximplantKit {
    * ```
    */
   public transferToQueue(queue: QueueInfo) {
-    if (!this.isMessage()) return false;
+    if (!(this.isMessage() || this.isAvatar())) return false;
 
     if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id)) queue.queue_id = null;
     if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string") queue.queue_name = null;
@@ -749,7 +863,7 @@ class VoximplantKit {
    * @param key {string} - Key
    * @param scope {DataBaseType} - Database scope
    */
-  public dbDelete(key: string, scope: DataBaseType ): boolean {
+  public dbDelete(key: string, scope: DataBaseType): boolean {
     return this.DB.deleteScopeValue(key, scope);
   }
 
@@ -814,7 +928,7 @@ class VoximplantKit {
     } catch (err) {
       if (err && 'response' in err) {
         console.log('dbCommit error', err.response?.data);
-      }else {
+      } else {
         console.log('dbCommit error', err);
       }
       return false;
@@ -890,11 +1004,7 @@ class VoximplantKit {
    * @param name {string} - Variable name
    */
   public getEnvVariable(name: string): string | null {
-    if (typeof name === 'string') {
-      return name in process.env ? process.env[name] : null;
-    } else {
-      return null;
-    }
+    return utils.getEnvVariable(name);
   }
 
   /**
@@ -926,7 +1036,7 @@ class VoximplantKit {
         return false;
       }
 
-      if (replace && tags.length && !onlyPositiveInt.length ) {
+      if (replace && tags.length && !onlyPositiveInt.length) {
         console.warn(type, 'the tags argument must be an array containing only positive integers');
       }
 
@@ -984,7 +1094,7 @@ class VoximplantKit {
    * ```
    * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
    */
-   getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]> {
+  getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]> {
     const tags = utils.clone(this.tags);
 
     if (!withName) return Promise.resolve(tags);

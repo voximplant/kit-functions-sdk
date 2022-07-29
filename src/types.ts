@@ -1,4 +1,5 @@
 import { AxiosResponse } from "axios";
+import utils from "./utils";
 
 export interface CallObject {
   id: number
@@ -58,7 +59,14 @@ export interface RequestObject {
 /**
  * @hidden
  */
-export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
+export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
+
+export interface AvatarMessageObject  {
+  is_final: boolean;
+  response: string;
+  custom_data: null | string;
+  conversation_id: string;
+}
 
 /**
  * @hidden
@@ -115,6 +123,18 @@ export interface MessageObject {
    * @hidden
    */
   HasMedia: boolean
+}
+
+export interface CallDataObject   {
+  "VARIABLES": ObjectType,
+  "SKILLS": SkillObject[],
+  "TAGS": number[]
+}
+
+export interface ChannelDataObject  {
+  text: string,
+  payload: Array<MessagePayloadItem>,
+  variables: ObjectType
 }
 
 export interface MessageConversation {
@@ -467,3 +487,14 @@ export type ObjectType = {
 }
 
 export type GetTagsResult = { id: number, tag_name: string | null }
+
+export interface AvatarConfig {
+  voxAccountId: string;
+  avatarLogin: string;
+  avatarPass: string;
+  avatarId: string;
+  callbackUri: string;
+  utterance: string;
+  conversationId: string;
+  customData: unknown;
+}
