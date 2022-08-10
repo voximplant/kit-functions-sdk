@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.5](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.4...v0.2.5) (2022-08-10)
+
+
+### Features
+
+* Added avatar.getResponseData method ([125333f](https://github.com/voximplant/kit-functions-sdk/commit/125333f21a23470d668731e812a5683f42d8861b))
+* Voximplant Avatar integration ([bebc853](https://github.com/voximplant/kit-functions-sdk/commit/bebc853e6d5c3595aebd0c80a8334b598d44f292))
+
 ### [0.2.4](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.3...v0.2.4) (2022-07-15)
 
 
