@@ -2,6 +2,7 @@ const axios = require('axios');
 const {default: Api} = require("../dist/Api");
 const {notString} = require("./constants");
 const Avatar = require("../dist/Avatar").default;
+const avatarContext = require('./context.js').AvatarContext;
 
 jest.mock('axios');
 const mocRequest = jest.fn();
@@ -110,5 +111,23 @@ describe('sendMessageToConversation', () => {
   test('check promise reject', async () => {
     axios.post.mockRejectedValue(new Error('request filed'))
     await expect(avatar.sendMessageToConversation('my_uuid', {})).rejects.toThrow()
+  })
+})
+
+describe('getResponseData', () => {
+
+  test('should return data', () => {
+    const avatar = new Avatar('avatarApi', 'imApi');
+    avatar.setResponseData(avatarContext.request.body);
+    const data = avatar.getResponseData();
+    const expected = {"conversation_id": "44419364-16af-49dd-a571-ed5d71004acf"}
+    expect(data).toEqual(expect.objectContaining(expected));
+  })
+
+  test('should return null', () => {
+    const avatar = new Avatar('avatarApi', 'imApi');
+    avatar.setResponseData();
+    const data = avatar.getResponseData();
+    expect(data).toBeNull();
   })
 })

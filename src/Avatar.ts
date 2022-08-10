@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ApiInstance, AvatarConfig } from "./types";
+import { ApiInstance, AvatarConfig, AvatarMessageObject } from "./types";
 import utils from "./utils";
 
 type ParsedJwt = {
@@ -33,6 +33,7 @@ function checkParams(config: AvatarConfig) {
 export default class Avatar {
   private avatarApi: AxiosInstance;
   private imApiUrl: string;
+  private responseData: AvatarMessageObject | null = null;
 
   /**
    * @hidden
@@ -48,6 +49,13 @@ export default class Avatar {
   /**
    * @hidden
    */
+  public setResponseData(responseData: AvatarMessageObject) {
+    this.responseData = responseData;
+  }
+
+  /**
+   * @hidden
+   */
   private parseJwt(token: string): ParsedJwt | void {
     try {
       const result = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString());
@@ -56,6 +64,24 @@ export default class Avatar {
       console.error(err.message);
       return null;
     }
+  }
+
+  /**
+   * Get response data from an avatar
+   *```js
+   * const kit = new VoximplantKit(context);
+   * if (kit.isAvatar()) {
+   *   const avatarResponse = kit.avatar.getResponseData();
+   *   console.log(avatarResponse);
+   *   // ... do something
+   * }
+   *
+   * // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  getResponseData(): AvatarMessageObject | null {
+    return this.responseData ? utils.clone(this.responseData) : null;
   }
 
   /**
