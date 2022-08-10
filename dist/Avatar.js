@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
+const utils_1 = require("./utils");
 function checkParams(config) {
     const requiredParams = {
         voxAccountId: false,
@@ -25,11 +26,18 @@ class Avatar {
      * @hidden
      */
     constructor(avatarApiUrl, imApiUrl) {
+        this.responseData = null;
         this.imApiUrl = imApiUrl;
         this.avatarApi = axios_1.default.create({
             baseURL: `${avatarApiUrl}api/v1/chats`,
             timeout: 15000
         });
+    }
+    /**
+     * @hidden
+     */
+    setResponseData(responseData) {
+        this.responseData = responseData;
     }
     /**
      * @hidden
@@ -43,6 +51,23 @@ class Avatar {
             console.error(err.message);
             return null;
         }
+    }
+    /**
+     * Get response data from an avatar
+     *```js
+     * const kit = new VoximplantKit(context);
+     * if (kit.isAvatar()) {
+     *   const avatarResponse = kit.avatar.getResponseData();
+     *   console.log(avatarResponse);
+     *   // ... do something
+     * }
+     *
+     * // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getResponseData() {
+        return this.responseData ? utils_1.default.clone(this.responseData) : null;
     }
     /**
      * Send a message to a Voximplant avatar

@@ -59,6 +59,7 @@ class VoximplantKit {
   private isTagsReplace: boolean;
   public avatar: Avatar;
 
+
   /**
    * Voximplant Kit class, a middleware for working with functions.
    * ```js
@@ -111,6 +112,8 @@ class VoximplantKit {
     this.DB = new DB(this.api);
     this.isTagsReplace = false;
 
+    this.avatar = new Avatar(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
+
     if (this.isMessage()) {
       this.incomingMessage = utils.clone(this.requestData) as MessageObject;
       this.replyMessage.type = (this.requestData as MessageObject).type;
@@ -122,6 +125,7 @@ class VoximplantKit {
       const requestData = (this.requestData as AvatarMessageObject);
       this.replyMessage.text = requestData.response;
       if (requestData.is_final) this.finishRequest();
+      this.avatar.setResponseData(requestData)
     }
 
     if (this.isMessage() || this.isAvatar()) {
@@ -131,7 +135,7 @@ class VoximplantKit {
       });
     }
 
-    this.avatar = new Avatar(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
+
   }
 
   /**

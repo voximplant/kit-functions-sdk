@@ -67,6 +67,7 @@ class VoximplantKit {
         this.api = new Api_1.default(this.domain, this.accessToken, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         this.isTagsReplace = false;
+        this.avatar = new Avatar_1.default(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
         if (this.isMessage()) {
             this.incomingMessage = utils_1.default.clone(this.requestData);
             this.replyMessage.type = this.requestData.type;
@@ -78,6 +79,7 @@ class VoximplantKit {
             this.replyMessage.text = requestData.response;
             if (requestData.is_final)
                 this.finishRequest();
+            this.avatar.setResponseData(requestData);
         }
         if (this.isMessage() || this.isAvatar()) {
             this.replyMessage.payload.push({
@@ -85,7 +87,6 @@ class VoximplantKit {
                 message_type: "text"
             });
         }
-        this.avatar = new Avatar_1.default(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
     }
     /**
      * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method

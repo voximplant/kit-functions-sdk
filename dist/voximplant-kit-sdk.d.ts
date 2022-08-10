@@ -1067,12 +1067,31 @@ declare module '@voximplant/kit-functions-sdk/types' {
 }
 
 declare module '@voximplant/kit-functions-sdk/Avatar' {
-    import { AvatarConfig } from "@voximplant/kit-functions-sdk/types";
+    import { AvatarConfig, AvatarMessageObject } from "@voximplant/kit-functions-sdk/types";
     export default class Avatar {
             /**
                 * @hidden
                 */
             constructor(avatarApiUrl: string, imApiUrl: string);
+            /**
+                * @hidden
+                */
+            setResponseData(responseData: AvatarMessageObject): void;
+            /**
+                * Get response data from an avatar
+                *```js
+                * const kit = new VoximplantKit(context);
+                * if (kit.isAvatar()) {
+                *   const avatarResponse = kit.avatar.getResponseData();
+                *   console.log(avatarResponse);
+                *   // ... do something
+                * }
+                *
+                * // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getResponseData(): AvatarMessageObject | null;
             /**
                 * Send a message to a Voximplant avatar
                 * ```js

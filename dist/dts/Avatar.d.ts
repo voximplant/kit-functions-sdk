@@ -1,7 +1,8 @@
-import { AvatarConfig } from "./types";
+import { AvatarConfig, AvatarMessageObject } from "./types";
 export default class Avatar {
     private avatarApi;
     private imApiUrl;
+    private responseData;
     /**
      * @hidden
      */
@@ -9,7 +10,26 @@ export default class Avatar {
     /**
      * @hidden
      */
+    setResponseData(responseData: AvatarMessageObject): void;
+    /**
+     * @hidden
+     */
     private parseJwt;
+    /**
+     * Get response data from an avatar
+     *```js
+     * const kit = new VoximplantKit(context);
+     * if (kit.isAvatar()) {
+     *   const avatarResponse = kit.avatar.getResponseData();
+     *   console.log(avatarResponse);
+     *   // ... do something
+     * }
+     *
+     * // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getResponseData(): AvatarMessageObject | null;
     /**
      * Send a message to a Voximplant avatar
      * ```js
