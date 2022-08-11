@@ -124,7 +124,6 @@ class VoximplantKit {
     if (this.isAvatar()) {
       const requestData = (this.requestData as AvatarMessageObject);
       this.replyMessage.text = requestData.response;
-      if (requestData.is_final) this.finishRequest();
       this.avatar.setResponseData(requestData)
     }
 
