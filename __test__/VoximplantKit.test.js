@@ -214,23 +214,6 @@ describe('finishRequest', () => {
       expect(payload).toEqual(expect.arrayContaining(expected));
     });
   })
-
-  describe('with avatar context', () => {
-    const context = JSON.parse(JSON.stringify(avatarContext));
-    context.request.body.is_final = true;
-    const kit = new VoximplantKitTest(context);
-
-    const messageObject = kit.getMessageObject();
-    const {payload} = messageObject;
-
-    test('The message object must contain a payload with the finish_request command', () => {
-      const expected = [{
-        type: "cmd",
-        name: "finish_request"
-      }];
-      expect(payload).toEqual(expect.arrayContaining(expected));
-    })
-  })
 });
 
 describe('getCallData', () => {
