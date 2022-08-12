@@ -25,7 +25,7 @@ function checkParams(config: AvatarConfig) {
   }
 
   Object.entries(requiredParams).forEach(item => {
-    if (item[1] === false) throw new Error(`Missing the required parameter "${item[0]}"`)
+    if (item[1] === false) throw new Error(`Missing the required parameter "${ item[0] }"`)
   })
 
 }
@@ -33,6 +33,7 @@ function checkParams(config: AvatarConfig) {
 export default class Avatar {
   private avatarApi: AxiosInstance;
   private imApiUrl: string;
+  private avatarApiUrl: string;
   private responseData: AvatarMessageObject | null = null;
 
   /**
@@ -40,6 +41,8 @@ export default class Avatar {
    */
   constructor(avatarApiUrl: string, imApiUrl: string) {
     this.imApiUrl = imApiUrl;
+    this.avatarApiUrl = avatarApiUrl;
+
     this.avatarApi = axios.create({
       baseURL: `${ avatarApiUrl }api/v1/chats`,
       timeout: 15000
@@ -82,6 +85,15 @@ export default class Avatar {
    */
   getResponseData(): AvatarMessageObject | null {
     return this.responseData ? utils.clone(this.responseData) : null;
+  }
+
+  setAvatarApiUrl(url: string): void {
+    if (typeof url === 'string' && url.length) {
+      this.avatarApi.defaults.baseURL = `${ url }api/v1/chats`;
+      return;
+    }
+
+    this.avatarApi.defaults.baseURL = `${ this.avatarApiUrl }api/v1/chats`;
   }
 
   /**
@@ -176,7 +188,7 @@ export default class Avatar {
    * ```
    */
   public async sendMessageToConversation(conversationUuid: string, message: unknown): Promise<void> {
-    const botUrl = `${this.imApiUrl}/api/v3/botService/sendResponse?conversation_uuid=${ conversationUuid }`;
+    const botUrl = `${ this.imApiUrl }/api/v3/botService/sendResponse?conversation_uuid=${ conversationUuid }`;
     await axios.post(botUrl, message)
   }
 }

@@ -2,6 +2,7 @@ import { AvatarConfig, AvatarMessageObject } from "./types";
 export default class Avatar {
     private avatarApi;
     private imApiUrl;
+    private avatarApiUrl;
     private responseData;
     /**
      * @hidden
@@ -30,6 +31,7 @@ export default class Avatar {
      * ```
      */
     getResponseData(): AvatarMessageObject | null;
+    setAvatarApiUrl(url: string): void;
     /**
      * Send a message to a Voximplant avatar
      * ```js
