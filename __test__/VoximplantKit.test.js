@@ -919,14 +919,14 @@ describe('dbDelete', () => {
 
   describe.each(['global', 'function', 'conversation'])('call deleteScopeValue with params for %p scope', (scope) => {
     test('should passed', async () => {
-      await kit.dbDelete('test',  scope);
+      await kit.dbDelete('test', scope);
       expect(kit.DB.deleteScopeValue).toHaveBeenCalledWith('test', scope);
     })
   });
 
   describe.each(['global', 'function', 'conversation'])('call with valid params for %p scope', (scope) => {
     test('should passed', async () => {
-      await kit.dbDelete('test',  scope);
+      await kit.dbDelete('test', scope);
       expect(kit.DB.deleteScopeValue).toHaveBeenCalledWith('test', scope);
     })
   });
@@ -1257,7 +1257,6 @@ describe('getEnvironmentVariable', () => {
 });
 
 
-
 describe('getConversationUuid', () => {
   describe('with message context', () => {
     const kit = new VoximplantKitTest(messageContext);
@@ -1297,8 +1296,8 @@ describe('getFunctionUriById', () => {
     const kit = new VoximplantKitTest(callContext);
 
     test('should return string', () => {
-     const uri =  kit.getFunctionUriById(31);
-     expect(uri).toEqual('function_url');
+      const uri = kit.getFunctionUriById(31);
+      expect(uri).toEqual('function_url');
     })
   });
 
@@ -1307,7 +1306,7 @@ describe('getFunctionUriById', () => {
     const kit = new VoximplantKitTest(callContext);
 
     test('should return string', () => {
-      const uri =  kit.getFunctionUriById('31');
+      const uri = kit.getFunctionUriById('31');
       expect(uri).toEqual('function_url');
     })
   });
@@ -1317,7 +1316,7 @@ describe('getFunctionUriById', () => {
     const kit = new VoximplantKitTest(callContext);
 
     test('should return null', () => {
-      const uri =  kit.getFunctionUriById(33);
+      const uri = kit.getFunctionUriById(33);
       expect(uri).toBeNull();
     })
   })
@@ -1326,10 +1325,124 @@ describe('getFunctionUriById', () => {
     process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url'})
     const kit = new VoximplantKitTest(callContext);
     test('should return null', () => {
-      const uri =  kit.getFunctionUriById(value);
+      const uri = kit.getFunctionUriById(value);
       expect(uri).toBeNull();
     })
-
   });
+})
+
+describe('setCustomData', () => {
+  let kit, isSet, localSkills;
+
+  beforeEach(() => {
+    kit = new VoximplantKitTest(callContext)
+    isSet = kit.setCustomData('name1', 111);
+    localSkills = kit.messageCustomData;
+  });
+
+  describe('with CallContext', () => {
+    test('should return true', () => {
+      expect(isSet).toEqual(true);
+    });
+
+    test('messageCustomData must contain an element named name1', () => {
+      const expected = [{
+        name: 'name1',
+        data: '111',
+        type: 'custom_data'
+      }];
+      expect(localSkills).toEqual(
+        expect.arrayContaining(expected),
+      );
+    });
+
+    test('update customData', () => {
+      kit.setCustomData('name1', 222);
+      kit.setCustomData('name1', 333);
+      const localData = kit.messageCustomData;
+
+      const expected = [{
+        name: 'name1',
+        data: '333',
+        type: 'custom_data'
+      }];
+      expect(localData).toEqual(
+        expect.arrayContaining(expected),
+      );
+    })
+
+    test('without name will return false', () => {
+      const isSet = kit.setCustomData('');
+      expect(isSet).toEqual(false);
+    });
+
+    test('without data will return false', () => {
+      const isSet = kit.setCustomData('name2');
+      expect(isSet).toEqual(false);
+    });
+
+    test('The response body payload property must contain custom_data named name1', () => {
+      const kit = new VoximplantKitTest(messageContext);
+      kit.setCustomData('name1', 111);
+      const res = kit.getResponseBody();
+      const expected = [{
+        name: 'name1',
+        data: '111',
+        type: 'custom_data'
+      }];
+      expect(res.payload).toEqual(
+        expect.arrayContaining(expected),
+      );
+    });
+
+    test('If a circular structure is set as data, it should return false', () => {
+      const room = {number: 23};
+      const meetup = {title: "Conference", participants: ["john", "ann"]};
+      meetup.place = room;
+      room.occupiedBy = meetup;
+
+      const kit = new VoximplantKitTest(messageContext);
+      const isSet = kit.setCustomData('name1', room);
+
+      expect(isSet).toEqual(false);
+    });
+
+    describe.each(notStringAndNumber)('setting data with invalid name %s should return false', (item) => {
+      const kit = new VoximplantKitTest(callContext);
+      const isSet = kit.setCustomData(item, 111);
+
+      test(`Should return false`, () => {
+        expect(isSet).toEqual(false);
+      });
+    });
+  })
+})
+
+describe('deleteCustomData', () => {
+
+  test('Deleting existing customData should return true', () => {
+    const kit = new VoximplantKitTest(callContext);
+    kit.setCustomData('data1', {a: 111})
+    const isDeleted = kit.deleteCustomData('data1');
+    expect(isDeleted).toEqual(true);
+    expect(kit.messageCustomData).toEqual(expect.arrayContaining([]))
+  })
+
+  test('Deleting non-existing customData should return false', () => {
+    const kit = new VoximplantKitTest(callContext);
+    kit.setCustomData('data1', {a: 111})
+    const isDeleted = kit.deleteCustomData('data2');
+    expect(isDeleted).toEqual(false);
+    expect(kit.messageCustomData).toEqual(expect.arrayContaining([{name: 'data1', data: '{\"a\":111}', type: 'custom_data'}]))
+  })
+
+  test('Deleting customData with invalid name should return false', () => {
+    const kit = new VoximplantKitTest(callContext);
+    kit.setCustomData('data1', {a: 111})
+    const isDeleted = kit.deleteCustomData('');
+    const isDeleted2 = kit.deleteCustomData(null);
+    expect(isDeleted).toEqual(false);
+    expect(isDeleted2).toEqual(false);
+  })
 
 })
