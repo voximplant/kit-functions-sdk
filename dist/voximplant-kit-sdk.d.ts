@@ -581,6 +581,26 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
             /**
+                * Set custom data
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            setCustomData(name: string, data: unknown): boolean;
+            /**
+                * Delete custom data
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  kit.deleteCustomData('my_data');
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            deleteCustomData(name: string): boolean;
+            /**
                 * Gets a client’s SDK version.
                 * ```js
                 *  const kit = new VoximplantKit(context);
@@ -1014,6 +1034,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
             file_name?: string;
             file_size?: number;
             replace?: boolean;
+            data?: string;
     }
     export interface DataBase {
             /**

@@ -33,6 +33,7 @@ class VoximplantKit {
         this.call = null;
         this.skills = [];
         this.eventType = "webhook" /* webhook */;
+        this.messageCustomData = [];
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
         this.http = axios_1.default;
@@ -157,9 +158,9 @@ class VoximplantKit {
         }
         return tags;
     }
-    findPayloadIndex(name) {
+    findPayloadIndex(name, type = 'cmd') {
         return this.replyMessage.payload.findIndex(item => {
-            return item.type === "cmd" && item.name === name;
+            return item.type === type && item.name === name;
         });
     }
     /**
@@ -222,6 +223,9 @@ class VoximplantKit {
             const variables = this._getVariables();
             const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
             const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
+            if (this.messageCustomData.length && (this.isMessage() || this.isAvatar())) {
+                this.replyMessage.payload = [...this.replyMessage.payload, ...this.messageCustomData];
+            }
             if (queuePayloadIndex !== -1) {
                 this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
                 this.replyMessage.payload[queuePayloadIndex].priority = this.priority;
@@ -1003,6 +1007,61 @@ class VoximplantKit {
                 }
             });
         });
+    }
+    /**
+     * Set custom data
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setCustomData(name, data) {
+        if (typeof name !== 'string' || !(name === null || name === void 0 ? void 0 : name.length)) {
+            console.error('The name parameter must be a string');
+            return false;
+        }
+        if (typeof data === 'undefined') {
+            console.error('Missing the required parameter data');
+            return false;
+        }
+        const payloadIndex = this.messageCustomData.findIndex(item => item.name === name);
+        try {
+            const customData = JSON.stringify(data);
+            if (payloadIndex > -1) {
+                this.messageCustomData[payloadIndex] = { type: "custom_data", name, data: customData };
+            }
+            else {
+                this.messageCustomData = this.messageCustomData.concat({ type: "custom_data", name, data: customData });
+            }
+            return true;
+        }
+        catch (err) {
+            console.error('Failed to serialize data passed to the data parameter');
+            return false;
+        }
+    }
+    /**
+     * Delete custom data
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  kit.deleteCustomData('my_data');
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    deleteCustomData(name) {
+        if (typeof name !== 'string' || !(name === null || name === void 0 ? void 0 : name.length)) {
+            console.error('The name parameter must be a string');
+            return false;
+        }
+        const payloadIndex = this.messageCustomData.findIndex(item => item.name === name);
+        if (payloadIndex > -1) {
+            this.messageCustomData.splice(payloadIndex, 1);
+            return true;
+        }
+        return false;
     }
     /**
      * Gets a client’s SDK version.

@@ -20,6 +20,7 @@ declare class VoximplantKit {
     private incomingMessage;
     private tags;
     private isTagsReplace;
+    private messageCustomData;
     avatar: Avatar;
     /**
      * Voximplant Kit class, a middleware for working with functions.
@@ -614,6 +615,26 @@ declare class VoximplantKit {
      * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
      */
     getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
+    /**
+     * Set custom data
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setCustomData(name: string, data: unknown): boolean;
+    /**
+     * Delete custom data
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  kit.deleteCustomData('my_data');
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    deleteCustomData(name: string): boolean;
     /**
      * Gets a client’s SDK version.
      * ```js
