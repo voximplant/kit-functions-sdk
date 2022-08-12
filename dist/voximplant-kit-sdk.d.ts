@@ -1092,6 +1092,7 @@ declare module '@voximplant/kit-functions-sdk/Avatar' {
                 * ```
                 */
             getResponseData(): AvatarMessageObject | null;
+            setAvatarApiUrl(url: string): void;
             /**
                 * Send a message to a Voximplant avatar
                 * ```js

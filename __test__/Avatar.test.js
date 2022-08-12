@@ -18,9 +18,13 @@ const avatarRequestConfig = {
   customData: {}
 }
 
-axios.create.mockImplementation(() => {
+axios.create.mockImplementation((config) => {
+
   return {
     post: mocRequest,
+    defaults: {
+      baseURL: config.baseURL,
+    }
   }
 })
 jest.mock("axios");
@@ -34,7 +38,7 @@ describe('new Avatar', () => {
 });
 
 describe('parseJwt', () => {
-  const avatar = new Avatar('avatarApi', 'imApi');
+  const avatar = new Avatar('avatarApi/', 'imApi');
 
   describe('call with an invalid token', () => {
     const parsedToken = avatar.parseJwt('tttt');
@@ -61,7 +65,7 @@ describe('parseJwt', () => {
 
 
 describe('sendMessageToAvatar', () => {
-  const avatar = new Avatar('avatarApi', 'imApi');
+  const avatar = new Avatar('avatarApi/', 'imApi');
 
   describe('A call with valid parameters', () => {
     test('Api must be called 2 times', async () => {
@@ -99,7 +103,7 @@ describe('sendMessageToAvatar', () => {
 })
 
 describe('sendMessageToConversation', () => {
-  const avatar = new Avatar('avatarApi', 'imApi');
+  const avatar = new Avatar('avatarApi/', 'imApi');
 
   test('Check the bot api url', async () => {
     const url = `imApi/api/v3/botService/sendResponse?conversation_uuid=my_uuid`
@@ -117,7 +121,7 @@ describe('sendMessageToConversation', () => {
 describe('getResponseData', () => {
 
   test('should return data', () => {
-    const avatar = new Avatar('avatarApi', 'imApi');
+    const avatar = new Avatar('avatarApi/', 'imApi');
     avatar.setResponseData(avatarContext.request.body);
     const data = avatar.getResponseData();
     const expected = {"conversation_id": "44419364-16af-49dd-a571-ed5d71004acf"}
@@ -125,9 +129,29 @@ describe('getResponseData', () => {
   })
 
   test('should return null', () => {
-    const avatar = new Avatar('avatarApi', 'imApi');
+    const avatar = new Avatar('avatarApi/', 'imApi');
     avatar.setResponseData();
     const data = avatar.getResponseData();
     expect(data).toBeNull();
+  })
+})
+
+describe('setAvatarApiUrl', () => {
+  const avatar = new Avatar('avatarApi/', 'imApi');
+
+
+  test('should be equal newUrl/api/v1/chats', () => {
+    avatar.setAvatarApiUrl('newUrl/');
+    expect(avatar.avatarApi.defaults.baseURL).toEqual('newUrl/api/v1/chats');
+  })
+
+  test('should be equal avatarApi/api/v1/chats', () => {
+    avatar.setAvatarApiUrl();
+    expect(avatar.avatarApi.defaults.baseURL).toEqual('avatarApi/api/v1/chats');
+  })
+
+  test('should be equal avatarApi/api/v1/chats #2', () => {
+    const avatar = new Avatar('avatarApi/', 'imApi');
+    expect(avatar.avatarApi.defaults.baseURL).toEqual('avatarApi/api/v1/chats');
   })
 })
