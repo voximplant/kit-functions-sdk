@@ -416,6 +416,7 @@ export interface MessagePayloadItem {
     file_name?: string;
     file_size?: number;
     replace?: boolean;
+    data?: string;
 }
 export interface DataBase {
     /**

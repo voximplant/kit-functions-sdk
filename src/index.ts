@@ -25,8 +25,6 @@ import Avatar from "./Avatar";
 utils.getEnv();
 
 
-
-
 /**
  * @hidden
  */
@@ -57,6 +55,7 @@ class VoximplantKit {
   private incomingMessage: MessageObject;
   private tags: number[];
   private isTagsReplace: boolean;
+  private messageCustomData: { type: 'custom_data', name: string, data: string }[];
   public avatar: Avatar;
 
 
@@ -74,6 +73,7 @@ class VoximplantKit {
    * ```
    */
   constructor(context: ContextObject) {
+    this.messageCustomData = [];
     this.incomingMessage = new Message();
     this.replyMessage = new Message(true);
     this.http = axios
@@ -143,7 +143,6 @@ class VoximplantKit {
   static default = VoximplantKit;
 
 
-
   /**
    * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
    * ```js
@@ -159,7 +158,7 @@ class VoximplantKit {
   public getConversationUuid(): string | null {
     if (this.isMessage()) {
       let _messageObject = this.getIncomingMessage();
-      return _messageObject && _messageObject.conversation ?  _messageObject.conversation.uuid : null
+      return _messageObject && _messageObject.conversation ? _messageObject.conversation.uuid : null
     }
 
     if (this.isAvatar()) {
@@ -218,11 +217,12 @@ class VoximplantKit {
     return tags;
   }
 
-  private findPayloadIndex(name: string): number {
+  private findPayloadIndex(name: string, type = 'cmd'): number {
     return this.replyMessage.payload.findIndex(item => {
-      return item.type === "cmd" && item.name === name;
+      return item.type === type && item.name === name;
     })
   }
+
 
   /**
    * Loads the databases available in the scope.
@@ -287,6 +287,10 @@ class VoximplantKit {
       const variables = this._getVariables();
       const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
       const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
+
+      if (this.messageCustomData.length && (this.isMessage() || this.isAvatar())) {
+        this.replyMessage.payload = [...this.replyMessage.payload, ...this.messageCustomData]
+      }
 
       if (queuePayloadIndex !== -1) {
         this.replyMessage.payload[queuePayloadIndex].skills = this.skills;
@@ -1112,6 +1116,65 @@ class VoximplantKit {
           }
         })
       }) as Promise<GetTagsResult[]>;
+  }
+
+  /**
+   * Set custom data
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  setCustomData(name: string, data: unknown): boolean {
+    if (typeof name !== 'string' || !name?.length) {
+      console.error('The name parameter must be a string');
+      return false;
+    }
+
+    if (typeof data === 'undefined') {
+      console.error('Missing the required parameter data');
+      return false;
+    }
+
+    const payloadIndex = this.messageCustomData.findIndex(item => item.name === name);
+    try {
+      const customData = JSON.stringify(data);
+      if (payloadIndex > -1) {
+        this.messageCustomData[payloadIndex] = { type: "custom_data", name, data: customData }
+      } else {
+        this.messageCustomData = this.messageCustomData.concat({ type: "custom_data", name, data: customData });
+      }
+      return true;
+    } catch (err) {
+      console.error('Failed to serialize data passed to the data parameter');
+      return false;
+    }
+  }
+
+  /**
+   * Delete custom data
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  kit.deleteCustomData('my_data');
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  deleteCustomData(name: string): boolean {
+    if (typeof name !== 'string' || !name?.length) {
+      console.error('The name parameter must be a string');
+      return false;
+    }
+    const payloadIndex = this.messageCustomData.findIndex(item => item.name === name);
+
+    if (payloadIndex > -1) {
+      this.messageCustomData.splice(payloadIndex, 1);
+      return true;
+    }
+
+    return false;
   }
 
   /**
