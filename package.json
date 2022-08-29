@@ -1,6 +1,6 @@
 {
   "name": "@voximplant/kit-functions-sdk",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "description": "Voximplant Kit cloud functions client",
   "main": "dist/index.js",
   "typescript": {

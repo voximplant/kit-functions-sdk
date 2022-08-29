@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.8](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.7...v0.2.8) (2022-08-29)
+
+
+### Features
+
+* Added setAvatarApiUrl method ([2a6eb30](https://github.com/voximplant/kit-functions-sdk/commit/2a6eb303b2f4c76280ab3456d3a94339c20d3417))
+* Added setCustomData and deleteCustomData methods ([5c99d38](https://github.com/voximplant/kit-functions-sdk/commit/5c99d389f11730a5718ef87020aafcaf6a30601f))
+
 ### [0.2.7](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.6...v0.2.7) (2022-08-29)
 
 ### [0.2.6](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.5...v0.2.6) (2022-08-11)
