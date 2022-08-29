@@ -2,6 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const utils_1 = require("./utils");
+/**
+ * @hidden
+ */
 function checkParams(config) {
     const requiredParams = {
         voxAccountId: false,

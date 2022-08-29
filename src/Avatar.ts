@@ -2,6 +2,9 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { ApiInstance, AvatarConfig, AvatarMessageObject } from "./types";
 import utils from "./utils";
 
+/**
+ * @hidden
+ */
 type ParsedJwt = {
   aud: string[],
   exp: number,
@@ -9,6 +12,9 @@ type ParsedJwt = {
   sub: string
 }
 
+/**
+ * @hidden
+ */
 function checkParams(config: AvatarConfig) {
   const requiredParams = {
     voxAccountId: false,

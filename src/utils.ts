@@ -40,7 +40,9 @@ const getEnv = function getEnv(): void {
     console.log(err);
   }
 }
-
+/**
+ * @hidden
+ */
 const getEnvVariable = function getEnvVariable(name: string): string | null {
   if (typeof name === 'string') {
     return name in process.env ? process.env[name] : null;
