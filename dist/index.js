@@ -88,7 +88,7 @@ class VoximplantKit {
         }
     }
     /**
-     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  if (kit.isMessage() || kit.isAvatar()) {
@@ -110,7 +110,7 @@ class VoximplantKit {
         return null;
     }
     /**
-     * Get the function URI by its id
+     * Get the function URI by its id.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  const uri = kit.getFunctionUriById(31);
@@ -346,7 +346,7 @@ class VoximplantKit {
         return this.eventType === "incoming_message" /* incoming_message */;
     }
     /**
-     * The function is called by the avatar
+     * The function is called by the avatar.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -361,7 +361,7 @@ class VoximplantKit {
         return this.eventType === "avatar_function" /* avatar_function */;
     }
     /**
-     * Gets a variable by name
+     * Gets a variable by name.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -895,7 +895,7 @@ class VoximplantKit {
         return true;
     }
     /**
-     * Gets an environment variable by name
+     * Gets an environment variable by name.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -958,7 +958,7 @@ class VoximplantKit {
         }
     }
     /**
-     * Add tags by id.
+     * Adds tags by id.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.addTags([12, 34]);
@@ -970,7 +970,7 @@ class VoximplantKit {
         return this.setTags(tags);
     }
     /**
-     * Replace all tags
+     * Replaces all tags.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.replaceTags([12, 34]);
@@ -982,7 +982,7 @@ class VoximplantKit {
         return this.setTags(tags, true);
     }
     /**
-     * Get tags
+     * Gets tags.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  await kit.getTags(); // [12, 34]
@@ -1009,7 +1009,7 @@ class VoximplantKit {
         });
     }
     /**
-     * Set custom data
+     * Set custom data.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
@@ -1043,7 +1043,7 @@ class VoximplantKit {
         }
     }
     /**
-     * Delete custom data
+     * Delete custom data.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.deleteCustomData('my_data');
