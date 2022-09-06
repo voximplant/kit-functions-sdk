@@ -57,7 +57,7 @@ class Avatar {
         }
     }
     /**
-     * Get response data from an avatar
+     * Gets response data from an avatar.
      *```js
      * const kit = new VoximplantKit(context);
      * if (kit.isAvatar()) {
@@ -81,7 +81,7 @@ class Avatar {
         this.avatarApi.defaults.baseURL = `${this.avatarApiUrl}api/v1/chats`;
     }
     /**
-     * Send a message to a Voximplant avatar
+     * Send a message to a Voximplant avatar.
      * ```js
      * const kit = new VoximplantKit(context);
      *
@@ -140,7 +140,7 @@ class Avatar {
         });
     }
     /**
-     * Send the avatar's reply to the conversation
+     * Send the avatar's reply to the conversation.
      *```js
      * const kit = new VoximplantKit(context);
      * if (kit.isAvatar()) {

@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { ApiInstance, AvatarConfig, AvatarMessageObject } from "./types";
+import { AvatarConfig, AvatarMessageObject, ChannelDataObject } from "./types";
 import utils from "./utils";
 
 /**
@@ -76,7 +76,7 @@ export default class Avatar {
   }
 
   /**
-   * Get response data from an avatar
+   * Gets response data from an avatar.
    *```js
    * const kit = new VoximplantKit(context);
    * if (kit.isAvatar()) {
@@ -103,7 +103,7 @@ export default class Avatar {
   }
 
   /**
-   * Send a message to a Voximplant avatar
+   * Send a message to a Voximplant avatar.
    * ```js
    * const kit = new VoximplantKit(context);
    *
@@ -176,7 +176,7 @@ export default class Avatar {
   }
 
   /**
-   * Send the avatar's reply to the conversation
+   * Send the avatar's reply to the conversation.
    *```js
    * const kit = new VoximplantKit(context);
    * if (kit.isAvatar()) {
@@ -193,7 +193,7 @@ export default class Avatar {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  public async sendMessageToConversation(conversationUuid: string, message: unknown): Promise<void> {
+  public async sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<void> {
     const botUrl = `${ this.imApiUrl }/api/v3/botService/sendResponse?conversation_uuid=${ conversationUuid }`;
     await axios.post(botUrl, message)
   }

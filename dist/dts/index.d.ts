@@ -41,7 +41,7 @@ declare class VoximplantKit {
      */
     static default: typeof VoximplantKit;
     /**
-     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method
+     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  if (kit.isMessage() || kit.isAvatar()) {
@@ -54,7 +54,7 @@ declare class VoximplantKit {
      */
     getConversationUuid(): string | null;
     /**
-     * Get the function URI by its id
+     * Get the function URI by its id.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  const uri = kit.getFunctionUriById(31);
@@ -174,7 +174,7 @@ declare class VoximplantKit {
      */
     isMessage(): boolean;
     /**
-     * The function is called by the avatar
+     * The function is called by the avatar.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -187,7 +187,7 @@ declare class VoximplantKit {
      */
     isAvatar(): boolean;
     /**
-     * Gets a variable by name
+     * Gets a variable by name.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -557,7 +557,7 @@ declare class VoximplantKit {
      */
     private addPhoto;
     /**
-     * Gets an environment variable by name
+     * Gets an environment variable by name.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
@@ -584,7 +584,7 @@ declare class VoximplantKit {
     static getEnvironmentVariable(name: string): string | null;
     private setTags;
     /**
-     * Add tags by id.
+     * Adds tags by id.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.addTags([12, 34]);
@@ -594,7 +594,7 @@ declare class VoximplantKit {
      */
     addTags(tags: number[]): boolean;
     /**
-     * Replace all tags
+     * Replaces all tags.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.replaceTags([12, 34]);
@@ -604,7 +604,7 @@ declare class VoximplantKit {
      */
     replaceTags(tags: number[]): boolean;
     /**
-     * Get tags
+     * Gets tags.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  await kit.getTags(); // [12, 34]
@@ -616,7 +616,7 @@ declare class VoximplantKit {
      */
     getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
     /**
-     * Set custom data
+     * Set custom data.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
@@ -626,7 +626,7 @@ declare class VoximplantKit {
      */
     setCustomData(name: string, data: unknown): boolean;
     /**
-     * Delete custom data
+     * Delete custom data.
      * ```js
      *  const kit = new VoximplantKit(context);
      *  kit.deleteCustomData('my_data');

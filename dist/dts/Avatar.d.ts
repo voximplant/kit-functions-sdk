@@ -1,4 +1,4 @@
-import { AvatarConfig, AvatarMessageObject } from "./types";
+import { AvatarConfig, AvatarMessageObject, ChannelDataObject } from "./types";
 export default class Avatar {
     private avatarApi;
     private imApiUrl;
@@ -17,7 +17,7 @@ export default class Avatar {
      */
     private parseJwt;
     /**
-     * Get response data from an avatar
+     * Gets response data from an avatar.
      *```js
      * const kit = new VoximplantKit(context);
      * if (kit.isAvatar()) {
@@ -33,7 +33,7 @@ export default class Avatar {
     getResponseData(): AvatarMessageObject | null;
     setAvatarApiUrl(url: string): void;
     /**
-     * Send a message to a Voximplant avatar
+     * Send a message to a Voximplant avatar.
      * ```js
      * const kit = new VoximplantKit(context);
      *
@@ -70,7 +70,7 @@ export default class Avatar {
      */
     sendMessageToAvatar(config: AvatarConfig): Promise<void>;
     /**
-     * Send the avatar's reply to the conversation
+     * Send the avatar's reply to the conversation.
      *```js
      * const kit = new VoximplantKit(context);
      * if (kit.isAvatar()) {
@@ -87,5 +87,5 @@ export default class Avatar {
      *  callback(200, kit.getResponseBody());
      * ```
      */
-    sendMessageToConversation(conversationUuid: string, message: unknown): Promise<void>;
+    sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<void>;
 }
