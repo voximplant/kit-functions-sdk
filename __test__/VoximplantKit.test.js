@@ -3,14 +3,18 @@ const Api = require('../dist/Api');
 const callContext = require('./context.js').CallContext;
 const messageContext = require('./context.js').MessageContext;
 const avatarContext = require('./context.js').AvatarContext;
+const utils = require('../dist/utils.js');
 const {
   notStringAndNumber,
   notString,
   notNumber
 } = require('./constants');
 const OLD_ENV = process.env;
-
+console.log(utils);
 jest.mock('../dist/DB');
+
+
+
 
 
 jest.mock('../dist/Api');
@@ -1444,5 +1448,42 @@ describe('deleteCustomData', () => {
     expect(isDeleted).toEqual(false);
     expect(isDeleted2).toEqual(false);
   })
+
+})
+
+describe('getDfKey', () => {
+  const kit = new VoximplantKitTest(callContext);
+
+  test('If a valid id is passed, the result must contain an object', () => {
+    const getDfKey = jest.spyOn(utils.default, 'getDfKey')
+    getDfKey.mockReturnValue({key: 123});
+    const key = kit.getDfKey(111);
+    expect(key).toEqual(expect.objectContaining({key: 123}));
+  });
+
+  test('If an invalid id is passed, the result must contain null', () => {
+    const getDfKey = jest.spyOn(utils.default, 'getDfKey')
+    getDfKey.mockReturnValue(null);
+    const key = kit.getDfKey(111);
+    expect(key).toEqual(null);
+  });
+})
+
+describe('getDfKeysList', () => {
+  const kit = new VoximplantKitTest(callContext);
+
+  test('Should return an array of strings', () => {
+    const getDfKey = jest.spyOn(utils.default, 'getDfKeysList')
+    getDfKey.mockReturnValue(['1.json', '2.json']);
+    const list = kit.getDfKeysList();
+    expect(list).toEqual(expect.arrayContaining(['1.json', '2.json']));
+  });
+
+  test('If the directory is empty, it should return an empty array', () => {
+    const getDfKey = jest.spyOn(utils.default, 'getDfKey')
+    getDfKey.mockReturnValue([]);
+    const list = kit.getDfKeysList();
+    expect(list).toEqual(expect.arrayContaining([]));
+  });
 
 })

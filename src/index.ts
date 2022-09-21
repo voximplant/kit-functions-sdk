@@ -1178,6 +1178,39 @@ class VoximplantKit {
   }
 
   /**
+   * Get DialogFlow key by id.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  const dfKey = kit.getDfKey(15);
+   *  if (dfKey) {
+   *    console.log('My DF key:', dfKey);
+   *    //... do something
+   *  }
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getDfKey(id: number): ObjectType | null {
+    return utils.getDfKey(id);
+  }
+
+  /**
+   * Gets a list of available DialogFlow keys
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  const dfKeyList = kit.getDfKeysList();
+   *  console.log('My DF keys:', dfKeyList);
+   *  //... do something
+   *
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getDfKeysList(): string[] {
+    return utils.getDfKeysList();
+  }
+
+  /**
    * Gets a client’s SDK version.
    * ```js
    *  const kit = new VoximplantKit(context);

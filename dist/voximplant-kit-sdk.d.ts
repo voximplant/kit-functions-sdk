@@ -601,6 +601,33 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             deleteCustomData(name: string): boolean;
             /**
+                * Get DialogFlow key by id.
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  const dfKey = kit.getDfKey(15);
+                *  if (dfKey) {
+                *    console.log('My DF key:', dfKey);
+                *    //... do something
+                *  }
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getDfKey(id: number): ObjectType | null;
+            /**
+                * Gets a list of available DialogFlow keys
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  const dfKeyList = kit.getDfKeysList();
+                *  console.log('My DF keys:', dfKeyList);
+                *  //... do something
+                *
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getDfKeysList(): string[];
+            /**
                 * Gets a client’s SDK version.
                 * ```js
                 *  const kit = new VoximplantKit(context);
