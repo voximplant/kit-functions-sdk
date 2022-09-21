@@ -42,6 +42,46 @@ const getEnv = function getEnv() {
 /**
  * @hidden
  */
+const getDfKey = function getDfKey(id) {
+    /* istanbul ignore next */
+    if (typeof id !== 'number') {
+        console.error('The parameter key must be an integer');
+        return null;
+    }
+    try {
+        const directory = '/userfunc/deployarchive/df';
+        const json = `${directory}/${id}.json`;
+        if (fs.existsSync(json)) {
+            const rawData = fs.readFileSync(json);
+            return JSON.parse(rawData);
+        }
+        else {
+            console.error('The df key was not found');
+            return null;
+        }
+    }
+    catch (err) {
+        console.error(err);
+        return null;
+    }
+};
+/**
+ * @hidden
+ */
+const getDfKeysList = function getDfKeysList() {
+    /* istanbul ignore next */
+    try {
+        const directory = '/userfunc/deployarchive/df';
+        return fs.readdirSync(directory);
+    }
+    catch (err) {
+        console.error(err);
+        return [];
+    }
+};
+/**
+ * @hidden
+ */
 const getEnvVariable = function getEnvVariable(name) {
     if (typeof name === 'string') {
         return name in process.env ? process.env[name] : null;
@@ -76,5 +116,7 @@ exports.default = {
     getHeaderValue,
     getEnv,
     getEnvVariable,
-    getVersion
+    getVersion,
+    getDfKey,
+    getDfKeysList
 };
