@@ -1,4 +1,4 @@
-import { ContextObject } from "./types";
+import { ContextObject, ObjectType } from "./types";
 import * as dotenv from 'dotenv'
 import * as path from "path";
 
@@ -40,6 +40,49 @@ const getEnv = function getEnv(): void {
     console.log(err);
   }
 }
+
+/**
+ * @hidden
+ */
+const getDfKey = function getDfKey(id: number): ObjectType | null {
+  /* istanbul ignore next */
+  if (typeof id !== 'number') {
+    console.error('The parameter key must be an integer');
+    return null;
+  }
+
+  try {
+    const directory = '/userfunc/deployarchive/df';
+    const json = `${directory}/${id}.json`;
+
+    if (fs.existsSync(json)) {
+      const rawData = fs.readFileSync(json);
+      return JSON.parse(rawData);
+    } else {
+      console.error('The df key was not found');
+      return null;
+    }
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+}
+
+/**
+ * @hidden
+ */
+const getDfKeysList = function getDfKeysList(): string[] {
+  /* istanbul ignore next */
+  try {
+    const directory = '/userfunc/deployarchive/df';
+    return fs.readdirSync(directory);
+  }catch (err) {
+    console.error(err);
+    return []
+  }
+}
+
+
 /**
  * @hidden
  */
@@ -78,5 +121,7 @@ export default {
   getHeaderValue,
   getEnv,
   getEnvVariable,
-  getVersion
+  getVersion,
+  getDfKey,
+  getDfKeysList
 }
