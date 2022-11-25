@@ -4,10 +4,11 @@ export default class Avatar {
     private imApiUrl;
     private avatarApiUrl;
     private responseData;
+    private kitHeaders;
     /**
      * @hidden
      */
-    constructor(avatarApiUrl: string, imApiUrl: string);
+    constructor(avatarApiUrl: string, imApiUrl: string, headers?: Record<string, string>);
     /**
      * @hidden
      */

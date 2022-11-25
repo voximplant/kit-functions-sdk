@@ -28,10 +28,11 @@ class Avatar {
     /**
      * @hidden
      */
-    constructor(avatarApiUrl, imApiUrl) {
+    constructor(avatarApiUrl, imApiUrl, headers) {
         this.responseData = null;
         this.imApiUrl = imApiUrl;
         this.avatarApiUrl = avatarApiUrl;
+        this.kitHeaders = headers || {};
         this.avatarApi = axios_1.default.create({
             baseURL: `${avatarApiUrl}api/v1/chats`,
             timeout: 15000
@@ -135,7 +136,8 @@ class Avatar {
         }, {
             headers: {
                 'Authorization': `Bearer ${data.jwt}`,
-                'x-kit-event-type': 'avatar_function'
+                'x-kit-event-type': 'avatar_function',
+                ...this.kitHeaders
             }
         });
     }
