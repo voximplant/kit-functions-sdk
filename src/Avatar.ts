@@ -41,14 +41,15 @@ export default class Avatar {
   private imApiUrl: string;
   private avatarApiUrl: string;
   private responseData: AvatarMessageObject | null = null;
+  private kitHeaders: Record<string, string>
 
   /**
    * @hidden
    */
-  constructor(avatarApiUrl: string, imApiUrl: string) {
+  constructor(avatarApiUrl: string, imApiUrl: string, headers?: Record<string, string>) {
     this.imApiUrl = imApiUrl;
     this.avatarApiUrl = avatarApiUrl;
-
+    this.kitHeaders = headers || {};
     this.avatarApi = axios.create({
       baseURL: `${ avatarApiUrl }api/v1/chats`,
       timeout: 15000
@@ -156,21 +157,21 @@ export default class Avatar {
       subuserLogin: avatarLogin,
       subuserPassword: avatarPass
     });
-
     const { jwt } = data || {};
 
     if (!jwt) {
       throw new Error('Failed to log in to the avatar')
     }
 
-    await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
+   await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
       callbackUri: callbackUri,
       utterance: utterance,
       customData: JSON.stringify(customData || {}),
     }, {
       headers: {
         'Authorization': `Bearer ${ data.jwt }`,
-        'x-kit-event-type': 'avatar_function'
+        'x-kit-event-type': 'avatar_function',
+        ...this.kitHeaders
       }
     });
   }
