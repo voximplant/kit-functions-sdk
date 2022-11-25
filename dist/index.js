@@ -68,7 +68,14 @@ class VoximplantKit {
         this.api = new Api_1.default(this.domain, this.accessToken, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         this.isTagsReplace = false;
-        this.avatar = new Avatar_1.default(this.getEnvVariable('KIT_AVATAR_API_DOMAIN'), this.getEnvVariable('KIT_IM_URL'));
+        const avatarHeaders = {
+            'x-kit-access-token': utils_1.default.getHeaderValue(context, 'x-kit-access-token', ''),
+            'x-kit-api-url': utils_1.default.getHeaderValue(context, 'x-kit-api-url', ''),
+            'x-kit-domain': utils_1.default.getHeaderValue(context, 'x-kit-domain', ''),
+        };
+        const avatarApiDomain = this.getEnvVariable('KIT_AVATAR_API_DOMAIN');
+        const kitImUrl = this.getEnvVariable('KIT_IM_URL');
+        this.avatar = new Avatar_1.default(avatarApiDomain, kitImUrl, avatarHeaders);
         if (this.isMessage()) {
             this.incomingMessage = utils_1.default.clone(this.requestData);
             this.replyMessage.type = this.requestData.type;

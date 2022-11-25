@@ -1120,7 +1120,7 @@ declare module '@voximplant/kit-functions-sdk/Avatar' {
             /**
                 * @hidden
                 */
-            constructor(avatarApiUrl: string, imApiUrl: string);
+            constructor(avatarApiUrl: string, imApiUrl: string, headers?: Record<string, string>);
             /**
                 * @hidden
                 */
