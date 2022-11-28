@@ -6,6 +6,7 @@ const utils_1 = require("./utils");
  * @hidden
  */
 function checkParams(config) {
+    var _a;
     const requiredParams = {
         voxAccountId: false,
         avatarLogin: false,
@@ -16,7 +17,7 @@ function checkParams(config) {
         conversationId: false,
     };
     for (let key in config) {
-        if (key in requiredParams && typeof key === 'string' && config[key].length)
+        if (key in requiredParams && typeof key === 'string' && ((_a = config[key]) === null || _a === void 0 ? void 0 : _a.length))
             requiredParams[key] = true;
     }
     Object.entries(requiredParams).forEach(item => {
