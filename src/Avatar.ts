@@ -27,7 +27,7 @@ function checkParams(config: AvatarConfig) {
   }
 
   for (let key in config) {
-    if (key in requiredParams && typeof key === 'string' && config[key].length) requiredParams[key] = true;
+    if (key in requiredParams && typeof key === 'string' && config[key]?.length) requiredParams[key] = true;
   }
 
   Object.entries(requiredParams).forEach(item => {
