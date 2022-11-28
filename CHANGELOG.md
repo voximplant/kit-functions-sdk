@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.11](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.10...v0.2.11) (2022-11-28)
+
+
+### Bug Fixes
+
+* Fixing the checkParams helper function ([e8a0e5c](https://github.com/voximplant/kit-functions-sdk/commit/e8a0e5c9acb4d67a887792956239f7844971ad33))
+
 ### [0.2.10](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.9...v0.2.10) (2022-11-28)
 
 
