@@ -460,10 +460,16 @@ export declare type GetTagsResult = {
     id: number;
     tag_name: string | null;
 };
-export interface AvatarConfig {
+export interface AvatarLoginParams {
     voxAccountId: string;
     avatarLogin: string;
     avatarPass: string;
+}
+export interface AvatarStopSessionConfig extends AvatarLoginParams {
+    avatarId: string;
+    conversationId: string;
+}
+export interface AvatarConfig extends AvatarLoginParams {
     avatarId: string;
     callbackUri: string;
     utterance: string;
