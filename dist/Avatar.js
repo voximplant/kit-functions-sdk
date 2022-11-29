@@ -5,21 +5,32 @@ const utils_1 = require("./utils");
 /**
  * @hidden
  */
-function checkParams(config) {
+const sendMessageConfig = {
+    voxAccountId: false,
+    avatarLogin: false,
+    avatarPass: false,
+    avatarId: false,
+    callbackUri: false,
+    utterance: false,
+    conversationId: false,
+};
+/**
+ * @hidden
+ */
+const stopSessionConfig = {
+    voxAccountId: false,
+    avatarLogin: false,
+    avatarPass: false,
+    avatarId: false,
+    conversationId: false,
+};
+function checkParams(defaultConfig, config) {
     var _a;
-    const requiredParams = {
-        voxAccountId: false,
-        avatarLogin: false,
-        avatarPass: false,
-        avatarId: false,
-        callbackUri: false,
-        conversationId: false,
-    };
     for (let key in config) {
-        if (key in requiredParams && typeof key === 'string' && ((_a = config[key]) === null || _a === void 0 ? void 0 : _a.length))
-            requiredParams[key] = true;
+        if (key in defaultConfig && typeof key === 'string' && ((_a = config[key]) === null || _a === void 0 ? void 0 : _a.length))
+            defaultConfig[key] = true;
     }
-    Object.entries(requiredParams).forEach(item => {
+    Object.entries(defaultConfig).forEach(item => {
         if (item[1] === false)
             throw new Error(`Missing the required parameter "${item[0]}"`);
     });
@@ -30,6 +41,9 @@ class Avatar {
      */
     constructor(avatarApiUrl, imApiUrl, headers) {
         this.responseData = null;
+        this.avatarLogin = '';
+        this.voxAccountId = '';
+        this.jwt = '';
         this.imApiUrl = imApiUrl;
         this.avatarApiUrl = avatarApiUrl;
         this.kitHeaders = headers || {};
@@ -85,19 +99,16 @@ class Avatar {
      * Send a message to a Voximplant avatar.
      * ```js
      * const kit = new VoximplantKit(context);
-     *
      * if (kit.isMessage()) {
      *   try {
      *     const conversationId = kit.getConversationUuid();
      *     const callbackUri = kit.getFunctionUriById(33);
      *     const {text} = kit.getIncomingMessage();
-     *
-     *     // These variables must be added to the environment variables yourself
+     *     // This variable must be added to the environment variables yourself.
      *     const avatarId = kit.getEnvVariable('avatarId');
-     *     const voxAccountId = kit.getEnvVariable('voxAccountId');
-     *     const avatarLogin = kit.getEnvVariable('avatarLogin');
-     *     const avatarPass = kit.getEnvVariable('avatarPass');
-     *
+     *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+     *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+     *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
      *     await kit.avatar.sendMessageToAvatar({
      *       callbackUri,
      *       voxAccountId,
@@ -119,13 +130,8 @@ class Avatar {
      */
     async sendMessageToAvatar(config) {
         const { voxAccountId, avatarLogin, avatarPass, avatarId, callbackUri, utterance, conversationId, customData = {} } = config;
-        checkParams(config);
-        const { data } = await this.avatarApi.post('/login', {
-            accountId: voxAccountId,
-            subuserLogin: avatarLogin,
-            subuserPassword: avatarPass
-        });
-        const { jwt } = data || {};
+        checkParams(sendMessageConfig, config);
+        const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
         if (!jwt) {
             throw new Error('Failed to log in to the avatar');
         }
@@ -135,9 +141,67 @@ class Avatar {
             customData: JSON.stringify(customData || {}),
         }, {
             headers: {
-                'Authorization': `Bearer ${data.jwt}`,
+                'Authorization': `Bearer ${jwt}`,
                 'x-kit-event-type': 'avatar_function',
                 ...this.kitHeaders
+            }
+        });
+    }
+    async loginAvatar(accountId, subuserLogin, subuserPassword) {
+        const { exp = 0 } = this.jwt && this.parseJwt(this.jwt) || {};
+        const isActiveJwt = Date.now() < exp * 1000;
+        console.log('isActiveJwt', isActiveJwt, Date.now(), exp * 1000, exp);
+        if (accountId === this.voxAccountId && subuserLogin === this.avatarLogin && this.jwt && isActiveJwt) {
+            return this.jwt;
+        }
+        const { data } = await this.avatarApi.post('/login', {
+            accountId,
+            subuserLogin,
+            subuserPassword
+        });
+        const { jwt } = data || {};
+        this.avatarLogin = subuserLogin;
+        this.voxAccountId = accountId;
+        this.jwt = jwt !== null && jwt !== void 0 ? jwt : '';
+        return jwt !== null && jwt !== void 0 ? jwt : '';
+    }
+    /**
+     * Terminates an avatar session.
+     *```js
+     * const kit = new VoximplantKit(context);
+     * // This variable must be added to the environment variables yourself.
+     * const avatarId = kit.getEnvVariable('avatarId');
+     * const conversationId = kit.getConversationUuid();
+     * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+     * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+     * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
+     * if (kit.isAvatar()) {
+     *   try {
+     *     await kit.avatar.stopAvatarSession({
+     *       voxAccountId,
+     *       avatarLogin,
+     *       avatarPass,
+     *       avatarId,
+     *       conversationId,
+     *     })
+     *   } catch (err) {
+     *     console.error(err);
+     *   }
+     * }
+     * // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    async stopAvatarSession(config) {
+        const { voxAccountId, avatarLogin, avatarPass, avatarId, conversationId, } = config;
+        checkParams(stopSessionConfig, config);
+        const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
+        if (!jwt) {
+            throw new Error('Failed to log in to the avatar');
+        }
+        return await this.avatarApi.post(`/${avatarId}/${conversationId}/stop`, {}, {
+            headers: {
+                'Authorization': `Bearer ${jwt}`
             }
         });
     }
