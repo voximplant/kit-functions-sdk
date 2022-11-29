@@ -1,5 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import { AvatarConfig, AvatarMessageObject, ChannelDataObject } from "./types";
+import { AvatarConfig, AvatarMessageObject, AvatarStopSessionConfig, ChannelDataObject } from "./types";
 import utils from "./utils";
 
 /**
@@ -15,24 +15,40 @@ type ParsedJwt = {
 /**
  * @hidden
  */
-function checkParams(config: AvatarConfig) {
-  const requiredParams = {
-    voxAccountId: false,
-    avatarLogin: false,
-    avatarPass: false,
-    avatarId: false,
-    callbackUri: false,
-    conversationId: false,
-  }
+const sendMessageConfig = {
+  voxAccountId: false,
+  avatarLogin: false,
+  avatarPass: false,
+  avatarId: false,
+  callbackUri: false,
+  utterance: false,
+  conversationId: false,
+}
+/**
+ * @hidden
+ */
+const stopSessionConfig = {
+  voxAccountId: false,
+  avatarLogin: false,
+  avatarPass: false,
+  avatarId: false,
+  conversationId: false,
+}
 
+/**
+ * @hidden
+ */
+type DefaultConfig = typeof sendMessageConfig | typeof stopSessionConfig;
+
+
+function checkParams(defaultConfig: DefaultConfig, config: AvatarConfig | AvatarStopSessionConfig) {
   for (let key in config) {
-    if (key in requiredParams && typeof key === 'string' && config[key]?.length) requiredParams[key] = true;
+    if (key in defaultConfig && typeof key === 'string' && config[key]?.length) defaultConfig[key] = true;
   }
 
-  Object.entries(requiredParams).forEach(item => {
+  Object.entries(defaultConfig).forEach(item => {
     if (item[1] === false) throw new Error(`Missing the required parameter "${ item[0] }"`)
   })
-
 }
 
 export default class Avatar {
@@ -41,6 +57,9 @@ export default class Avatar {
   private avatarApiUrl: string;
   private responseData: AvatarMessageObject | null = null;
   private kitHeaders: Record<string, string>
+  private avatarLogin = '';
+  private voxAccountId = '';
+  private jwt = '';
 
   /**
    * @hidden
@@ -106,19 +125,16 @@ export default class Avatar {
    * Send a message to a Voximplant avatar.
    * ```js
    * const kit = new VoximplantKit(context);
-   *
    * if (kit.isMessage()) {
    *   try {
    *     const conversationId = kit.getConversationUuid();
    *     const callbackUri = kit.getFunctionUriById(33);
    *     const {text} = kit.getIncomingMessage();
-   *
-   *     // These variables must be added to the environment variables yourself
+   *     // This variable must be added to the environment variables yourself.
    *     const avatarId = kit.getEnvVariable('avatarId');
-   *     const voxAccountId = kit.getEnvVariable('voxAccountId');
-   *     const avatarLogin = kit.getEnvVariable('avatarLogin');
-   *     const avatarPass = kit.getEnvVariable('avatarPass');
-   *
+   *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+   *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+   *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
    *     await kit.avatar.sendMessageToAvatar({
    *       callbackUri,
    *       voxAccountId,
@@ -150,27 +166,96 @@ export default class Avatar {
       customData = {}
     } = config;
 
-    checkParams(config);
-    const { data } = await this.avatarApi.post('/login', {
-      accountId: voxAccountId,
-      subuserLogin: avatarLogin,
-      subuserPassword: avatarPass
-    });
-    const { jwt } = data || {};
+    checkParams(sendMessageConfig, config);
+
+    const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
 
     if (!jwt) {
       throw new Error('Failed to log in to the avatar')
     }
 
-   await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
+    await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
       callbackUri: callbackUri,
       utterance: utterance,
       customData: JSON.stringify(customData || {}),
     }, {
       headers: {
-        'Authorization': `Bearer ${ data.jwt }`,
+        'Authorization': `Bearer ${ jwt }`,
         'x-kit-event-type': 'avatar_function',
         ...this.kitHeaders
+      }
+    });
+  }
+
+  private async loginAvatar(accountId: string, subuserLogin: string, subuserPassword: string): Promise<string> {
+    const { exp = 0 } = this.jwt && this.parseJwt(this.jwt) || {};
+    const isActiveJwt = Date.now() < exp * 1000;
+    console.log('isActiveJwt', isActiveJwt, Date.now(), exp * 1000, exp);
+
+    if (accountId === this.voxAccountId && subuserLogin === this.avatarLogin && this.jwt && isActiveJwt) {
+      return this.jwt;
+    }
+    const { data } = await this.avatarApi.post('/login', {
+      accountId,
+      subuserLogin,
+      subuserPassword
+    });
+    const { jwt } = data || {};
+    this.avatarLogin = subuserLogin;
+    this.voxAccountId = accountId;
+    this.jwt = jwt ?? '';
+
+    return jwt ?? '';
+  }
+
+
+  /**
+   * Terminates an avatar session.
+   *```js
+   * const kit = new VoximplantKit(context);
+   * // This variable must be added to the environment variables yourself.
+   * const avatarId = kit.getEnvVariable('avatarId');
+   * const conversationId = kit.getConversationUuid();
+   * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+   * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+   * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
+   * if (kit.isAvatar()) {
+   *   try {
+   *     await kit.avatar.stopAvatarSession({
+   *       voxAccountId,
+   *       avatarLogin,
+   *       avatarPass,
+   *       avatarId,
+   *       conversationId,
+   *     })
+   *   } catch (err) {
+   *     console.error(err);
+   *   }
+   * }
+   * // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  async stopAvatarSession(config: AvatarStopSessionConfig): Promise<void> {
+    const {
+      voxAccountId,
+      avatarLogin,
+      avatarPass,
+      avatarId,
+      conversationId,
+    } = config;
+
+    checkParams(stopSessionConfig, config);
+
+    const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
+
+    if (!jwt) {
+      throw new Error('Failed to log in to the avatar')
+    }
+
+    return await this.avatarApi.post(`/${ avatarId }/${ conversationId }/stop`, {}, {
+      headers: {
+        'Authorization': `Bearer ${ jwt }`
       }
     });
   }
