@@ -13,7 +13,6 @@ function checkParams(config) {
         avatarPass: false,
         avatarId: false,
         callbackUri: false,
-        utterance: false,
         conversationId: false,
     };
     for (let key in config) {
