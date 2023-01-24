@@ -22,7 +22,6 @@ function checkParams(config: AvatarConfig) {
     avatarPass: false,
     avatarId: false,
     callbackUri: false,
-    utterance: false,
     conversationId: false,
   }
 
