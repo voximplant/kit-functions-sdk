@@ -572,7 +572,7 @@ declare class VoximplantKit {
      */
     getEnvVariable(name: string): string | null;
     /**
-     * Gets an environment variable by name (Static method).
+     * A static method used outside the function body that gets environment variables.
      * ```js
      *  const my_var = VoximplantKit.getEnvironmentVariable('myEnv');
      *  if (my_var) {
