@@ -524,6 +524,7 @@ declare module '@voximplant/kit-functions-sdk' {
             apiProxy(url: string, data: any): Promise<unknown>;
             /**
                 * Gets an environment variable by name.
+                * [More details here.](https://voximplant.com/kit/docs/functions/envvariables)
                 * ```js
                 *  // Initialize a VoximplantKit instance
                 *  const kit = new VoximplantKit(context);

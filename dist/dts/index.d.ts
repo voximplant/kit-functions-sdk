@@ -558,6 +558,7 @@ declare class VoximplantKit {
     private addPhoto;
     /**
      * Gets an environment variable by name.
+     * [More details here.](https://voximplant.com/kit/docs/functions/envvariables)
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
