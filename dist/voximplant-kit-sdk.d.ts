@@ -706,6 +706,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
             response: string;
             custom_data: null | string;
             conversation_id: string;
+            chat_id: string;
     }
     /**
         * @hidden
