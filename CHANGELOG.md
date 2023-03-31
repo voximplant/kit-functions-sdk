@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.12](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.11...v0.2.12) (2023-03-31)
+
+
+### Bug Fixes
+
+* Removed the utterance parameter check ([02b7ebf](https://github.com/voximplant/kit-functions-sdk/commit/02b7ebf48dc5533117ef4d5dcfd15798c7811209))
+
 ### [0.2.11](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.10...v0.2.11) (2022-11-28)
 
 
