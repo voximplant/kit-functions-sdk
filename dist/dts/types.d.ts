@@ -60,6 +60,7 @@ export interface AvatarMessageObject {
     response: string;
     custom_data: null | string;
     conversation_id: string;
+    chat_id: string;
 }
 /**
  * @hidden
