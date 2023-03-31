@@ -170,7 +170,7 @@ class VoximplantKit {
     }
 
     if (this.isAvatar()) {
-      return this.getRequestDataProperty('conversation_id', null);
+      return this.getRequestDataProperty('chat_id', null) || this.getRequestDataProperty('conversation_id', null);
     }
 
     return null;
