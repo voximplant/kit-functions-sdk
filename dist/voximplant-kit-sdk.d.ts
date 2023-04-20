@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, CallDataObject, ChannelDataObject } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -628,6 +628,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             getDfKeysList(): string[];
+            getAvatarReply(): AvatarMessageObject | null;
             /**
                 * Gets a client’s SDK version.
                 * ```js
@@ -705,8 +706,10 @@ declare module '@voximplant/kit-functions-sdk/types' {
             is_final: boolean;
             response: string;
             custom_data: null | string;
-            conversation_id: string;
-            chat_id: string;
+            conversation_id?: string;
+            chat_id?: string;
+            current_state?: string | null;
+            next_state?: string | null;
     }
     /**
         * @hidden

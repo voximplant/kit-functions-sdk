@@ -59,8 +59,10 @@ export interface AvatarMessageObject {
     is_final: boolean;
     response: string;
     custom_data: null | string;
-    conversation_id: string;
-    chat_id: string;
+    conversation_id?: string;
+    chat_id?: string;
+    current_state?: string | null;
+    next_state?: string | null;
 }
 /**
  * @hidden

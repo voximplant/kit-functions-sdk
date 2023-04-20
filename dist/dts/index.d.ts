@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, CallDataObject, ChannelDataObject } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -21,6 +21,7 @@ declare class VoximplantKit {
     private tags;
     private isTagsReplace;
     private messageCustomData;
+    private avatarReply;
     avatar: Avatar;
     /**
      * Voximplant Kit class, a middleware for working with functions.
@@ -66,6 +67,7 @@ declare class VoximplantKit {
     private getRequestDataProperty;
     private getRequestDataVariables;
     private getRequestDataTags;
+    private getRequestDataAvatar;
     private findPayloadIndex;
     /**
      * Loads the databases available in the scope.
@@ -663,6 +665,7 @@ declare class VoximplantKit {
      * ```
      */
     getDfKeysList(): string[];
+    getAvatarReply(): AvatarMessageObject | null;
     /**
      * Gets a client’s SDK version.
      * ```js
