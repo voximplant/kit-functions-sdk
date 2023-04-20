@@ -65,6 +65,7 @@ class VoximplantKit {
         // Store skills data
         this.skills = this.getRequestDataProperty('SKILLS', []); //this.getSkills()
         this.tags = this.getRequestDataTags();
+        this.avatarReply = this.getRequestDataAvatar();
         this.api = new Api_1.default(this.domain, this.accessToken, this.apiUrl);
         this.DB = new DB_1.default(this.api);
         this.isTagsReplace = false;
@@ -164,6 +165,20 @@ class VoximplantKit {
             tags = ((_e = this.requestData) === null || _e === void 0 ? void 0 : _e.TAGS) || [];
         }
         return tags;
+    }
+    getRequestDataAvatar() {
+        var _a, _b, _c;
+        const data = this.getRequestDataProperty('VOICE_AVATAR_REPLY', null);
+        if (this.isCall() && data) {
+            return {
+                is_final: data.isFinal,
+                response: data.utterance,
+                custom_data: (_a = data.customData) !== null && _a !== void 0 ? _a : null,
+                current_state: (_b = data.currentState) !== null && _b !== void 0 ? _b : null,
+                next_state: (_c = data.nextState) !== null && _c !== void 0 ? _c : null
+            };
+        }
+        return null;
     }
     findPayloadIndex(name, type = 'cmd') {
         return this.replyMessage.payload.findIndex(item => {
@@ -1101,6 +1116,22 @@ class VoximplantKit {
      */
     getDfKeysList() {
         return utils_1.default.getDfKeysList();
+    }
+    /**
+     * Gets an avatar reply
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isCall()) {
+     *   const reply = kit.getAvatarReply();
+     *   console.log('Reply: ', reply);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getAvatarReply() {
+        return utils_1.default.clone(this.avatarReply) || null;
     }
     /**
      * Gets a client’s SDK version.

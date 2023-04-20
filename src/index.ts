@@ -56,6 +56,7 @@ class VoximplantKit {
   private tags: number[];
   private isTagsReplace: boolean;
   private messageCustomData: { type: 'custom_data', name: string, data: string }[];
+  private avatarReply!: AvatarMessageObject | null;
   public avatar: Avatar;
 
 
@@ -107,6 +108,7 @@ class VoximplantKit {
     // Store skills data
     this.skills = this.getRequestDataProperty('SKILLS', []) as SkillObject[]//this.getSkills()
     this.tags = this.getRequestDataTags();
+    this.avatarReply = this.getRequestDataAvatar()
 
     this.api = new Api(this.domain, this.accessToken, this.apiUrl);
     this.DB = new DB(this.api);
@@ -223,6 +225,20 @@ class VoximplantKit {
       tags = (this.requestData as RequestObjectCallBody)?.TAGS || [];
     }
     return tags;
+  }
+
+  private getRequestDataAvatar(): AvatarMessageObject | null {
+    const data = this.getRequestDataProperty('VOICE_AVATAR_REPLY', null);
+    if (this.isCall() && data) {
+      return {
+        is_final: data.isFinal,
+        response: data.utterance,
+        custom_data: data.customData ?? null,
+        current_state: data.currentState ?? null,
+        next_state: data.nextState ?? null
+      }
+    }
+    return null;
   }
 
   private findPayloadIndex(name: string, type = 'cmd'): number {
@@ -1217,6 +1233,23 @@ class VoximplantKit {
    */
   public getDfKeysList(): string[] {
     return utils.getDfKeysList();
+  }
+
+  /**
+   * Gets an avatar reply
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isCall()) {
+   *   const reply = kit.getAvatarReply();
+   *   console.log('Reply: ', reply);
+   *  }
+   *
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public getAvatarReply(): AvatarMessageObject | null {
+    return utils.clone(this.avatarReply) || null;
   }
 
   /**
