@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.14](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.13...v0.2.14) (2023-04-27)
+
+
+### Features
+
+* Added support for voice avatar ([91a6cb4](https://github.com/voximplant/kit-functions-sdk/commit/91a6cb48c38caa4c2dfec00a8adc0507736acceb))
+
 ### [0.2.13](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.12...v0.2.13) (2023-03-31)
 
 ### [0.2.12](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.11...v0.2.12) (2023-03-31)
