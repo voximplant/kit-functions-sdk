@@ -150,7 +150,6 @@ class Avatar {
     async loginAvatar(accountId, subuserLogin, subuserPassword) {
         const { exp = 0 } = this.jwt && this.parseJwt(this.jwt) || {};
         const isActiveJwt = Date.now() < exp * 1000;
-        console.log('isActiveJwt', isActiveJwt, Date.now(), exp * 1000, exp);
         if (accountId === this.voxAccountId && subuserLogin === this.avatarLogin && this.jwt && isActiveJwt) {
             return this.jwt;
         }
