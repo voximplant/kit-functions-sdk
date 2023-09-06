@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -371,6 +371,18 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
+                * Transfers a client to the user.
+                * ```js
+                *  // Initialize a VoximplantKit instance
+                *  const kit = new VoximplantKit(context);
+                *  // Transfer a client to the queue
+                *  kit.transferToUser({user_id: 12});
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            transferToUser(user: UserInfo): boolean;
+            /**
                 * Cancels transferring a client to the queue.
                 * ```js
                 *  // Initialize a VoximplantKit instance
@@ -388,6 +400,24 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             cancelTransferToQueue(): boolean;
+            /**
+                * Cancels transferring a client to the user.
+                * ```js
+                *  // Initialize a VoximplantKit instance
+                *  const kit = new VoximplantKit(context);
+                *  // Transfer a client to the queue
+                *  kit.transferToUser({user_id: 12});
+                *  //...
+                *  // Condition for canceling the transfer to the queue
+                *  const shouldCancel = true;
+                *  if (shouldCancel) {
+                *    kit.cancelTransferToUser();
+                *  }
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            cancelTransferToUser(): boolean;
             /**
                 * Gets a value from the database scope by key. Available only after loadDatabases() execution.
                 * ```js
@@ -1080,6 +1110,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
             file_size?: number;
             replace?: boolean;
             data?: string;
+            user?: UserInfo;
     }
     export interface DataBase {
             /**
@@ -1135,6 +1166,11 @@ declare module '@voximplant/kit-functions-sdk/types' {
             utterance: string;
             conversationId: string;
             customData: unknown;
+    }
+    export interface UserInfo {
+            user_id: number;
+            user_name?: string;
+            user_email: string;
     }
 }
 

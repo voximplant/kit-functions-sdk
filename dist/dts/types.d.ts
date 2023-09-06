@@ -420,6 +420,7 @@ export interface MessagePayloadItem {
     file_size?: number;
     replace?: boolean;
     data?: string;
+    user?: UserInfo;
 }
 export interface DataBase {
     /**
@@ -475,4 +476,9 @@ export interface AvatarConfig extends AvatarLoginParams {
     utterance: string;
     conversationId: string;
     customData: unknown;
+}
+export interface UserInfo {
+    user_id: number;
+    user_name?: string;
+    user_email: string;
 }
