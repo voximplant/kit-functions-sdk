@@ -74,7 +74,7 @@ class VoximplantKit {
             'x-kit-api-url': utils_1.default.getHeaderValue(context, 'x-kit-api-url', ''),
             'x-kit-domain': utils_1.default.getHeaderValue(context, 'x-kit-domain', ''),
         };
-        const avatarApiDomain = this.getEnvVariable('KIT_AVATAR_API_DOMAIN');
+        const avatarApiDomain = this.getEnvVariable('CUSTOM_AVATAR_API_DOMAIN') || this.getEnvVariable('KIT_AVATAR_API_DOMAIN');
         const kitImUrl = this.getEnvVariable('KIT_IM_URL');
         this.avatar = new Avatar_1.default(avatarApiDomain, kitImUrl, avatarHeaders);
         if (this.isMessage()) {
@@ -677,6 +677,7 @@ class VoximplantKit {
     transferToQueue(queue) {
         if (!(this.isMessage() || this.isAvatar()))
             return false;
+        this.cancelTransferToUser();
         if (typeof queue.queue_id === "undefined" || !Number.isInteger(queue.queue_id))
             queue.queue_id = null;
         if (typeof queue.queue_name === "undefined" || typeof queue.queue_name !== "string")
@@ -693,6 +694,42 @@ class VoximplantKit {
                 name: "transfer_to_queue",
                 queue: queue,
                 skills: []
+            });
+        }
+        return true;
+    }
+    /**
+     * Transfers a client to the user.
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Transfer a client to the queue
+     *  kit.transferToUser({user_id: 12});
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    transferToUser(user) {
+        if (!(this.isMessage() || this.isAvatar()))
+            return false;
+        this.cancelTransferToQueue();
+        if (typeof user.user_id === "undefined" || !Number.isInteger(user.user_id))
+            user.user_id = null;
+        if (typeof user.user_name === "undefined" || typeof user.user_name !== "string")
+            user.user_name = null;
+        if (typeof user.user_email === "undefined" || typeof user.user_email !== "string")
+            user.user_email = null;
+        if (user.user_id === null && user.user_email === null)
+            return false;
+        const payloadIndex = this.findPayloadIndex('transfer_to_user');
+        if (payloadIndex > -1) {
+            this.replyMessage.payload[payloadIndex].user = user;
+        }
+        else {
+            this.replyMessage.payload.push({
+                type: "cmd",
+                name: "transfer_to_user",
+                user: user
             });
         }
         return true;
@@ -716,6 +753,30 @@ class VoximplantKit {
      */
     cancelTransferToQueue() {
         const payloadIndex = this.findPayloadIndex('transfer_to_queue');
+        if (payloadIndex > -1) {
+            this.replyMessage.payload.splice(payloadIndex, 1);
+        }
+        return true;
+    }
+    /**
+     * Cancels transferring a client to the user.
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Transfer a client to the queue
+     *  kit.transferToUser({user_id: 12});
+     *  //...
+     *  // Condition for canceling the transfer to the queue
+     *  const shouldCancel = true;
+     *  if (shouldCancel) {
+     *    kit.cancelTransferToUser();
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    cancelTransferToUser() {
+        const payloadIndex = this.findPayloadIndex('transfer_to_user');
         if (payloadIndex > -1) {
             this.replyMessage.payload.splice(payloadIndex, 1);
         }

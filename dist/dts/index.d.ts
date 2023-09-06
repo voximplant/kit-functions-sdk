@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -393,6 +393,18 @@ declare class VoximplantKit {
      */
     transferToQueue(queue: QueueInfo): boolean;
     /**
+     * Transfers a client to the user.
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Transfer a client to the queue
+     *  kit.transferToUser({user_id: 12});
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    transferToUser(user: UserInfo): boolean;
+    /**
      * Cancels transferring a client to the queue.
      * ```js
      *  // Initialize a VoximplantKit instance
@@ -410,6 +422,24 @@ declare class VoximplantKit {
      * ```
      */
     cancelTransferToQueue(): boolean;
+    /**
+     * Cancels transferring a client to the user.
+     * ```js
+     *  // Initialize a VoximplantKit instance
+     *  const kit = new VoximplantKit(context);
+     *  // Transfer a client to the queue
+     *  kit.transferToUser({user_id: 12});
+     *  //...
+     *  // Condition for canceling the transfer to the queue
+     *  const shouldCancel = true;
+     *  if (shouldCancel) {
+     *    kit.cancelTransferToUser();
+     *  }
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    cancelTransferToUser(): boolean;
     /**
      * Gets a value from the database scope by key. Available only after loadDatabases() execution.
      * ```js
