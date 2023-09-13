@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.16](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.14...v0.2.16) (2023-09-13)
+
+
+### Features
+
+* Added stopAvatarSession method ([d5040c5](https://github.com/voximplant/kit-functions-sdk/commit/d5040c5bf33d35994af3115284130c496c7afb96))
+* Added stopAvatarSession method ([d0cd95a](https://github.com/voximplant/kit-functions-sdk/commit/d0cd95a32cbe04357f4dfe9b60ff0f57b087e8b5))
+* Added the transferToUser method ([184d358](https://github.com/voximplant/kit-functions-sdk/commit/184d358dd9052c362d5242a93a4e773ae295d2ec))
+
 ### [0.2.15](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.14...v0.2.15) (2023-07-19)
 
 
