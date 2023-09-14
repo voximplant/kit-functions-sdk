@@ -699,12 +699,14 @@ class VoximplantKit {
         return true;
     }
     /**
-     * Transfers a client to the user.
+     * Transfers a client to the user. Only for text channels and Avatar.
      * ```js
      *  // Initialize a VoximplantKit instance
      *  const kit = new VoximplantKit(context);
-     *  // Transfer a client to the queue. Use user_id or user_email
-     *  kit.transferToUser({user_id: 12});
+     *  if (this.isMessage() || this.isAvatar()) {
+     *    // Use user_id or user_email.
+     *    kit.transferToUser({user_id: 12});
+     *  }
      *  // End of function
      *  callback(200, kit.getResponseBody());
      * ```
