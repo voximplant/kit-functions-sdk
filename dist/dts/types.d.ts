@@ -479,6 +479,5 @@ export interface AvatarConfig extends AvatarLoginParams {
 }
 export interface UserInfo {
     user_id: number;
-    user_name?: string;
     user_email: string;
 }
