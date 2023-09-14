@@ -799,7 +799,7 @@ class VoximplantKit {
    * ```js
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
-   *  // Transfer a client to the queue
+   *  // Transfer a client to the queue. Use user_id or user_email
    *  kit.transferToUser({user_id: 12});
    *  // End of function
    *  callback(200, kit.getResponseBody());
@@ -811,7 +811,6 @@ class VoximplantKit {
     this.cancelTransferToQueue();
 
     if (typeof user.user_id === "undefined" || !Number.isInteger(user.user_id)) user.user_id = null;
-    if (typeof user.user_name === "undefined" || typeof user.user_name !== "string") user.user_name = null;
     if (typeof user.user_email === "undefined" || typeof user.user_email !== "string") user.user_email = null;
 
     if (user.user_id === null && user.user_email === null) return false
