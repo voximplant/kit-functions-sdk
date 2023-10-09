@@ -74,7 +74,7 @@ class VoximplantKit {
             'x-kit-api-url': utils_1.default.getHeaderValue(context, 'x-kit-api-url', ''),
             'x-kit-domain': utils_1.default.getHeaderValue(context, 'x-kit-domain', ''),
         };
-        const avatarApiDomain = this.getEnvVariable('KIT_AVATAR_API_DOMAIN');
+        const avatarApiDomain = this.getEnvVariable('CUSTOM_AVATAR_API_DOMAIN') || this.getEnvVariable('KIT_AVATAR_API_DOMAIN');
         const kitImUrl = this.getEnvVariable('KIT_IM_URL');
         this.avatar = new Avatar_1.default(avatarApiDomain, kitImUrl, avatarHeaders);
         if (this.isMessage()) {
