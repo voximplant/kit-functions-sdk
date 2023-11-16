@@ -185,7 +185,7 @@ export default class Avatar {
         ...this.kitHeaders
       }
     });
-    console.log(response);
+
     return response?.data;
   }
 
