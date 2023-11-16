@@ -146,7 +146,6 @@ class Avatar {
                 ...this.kitHeaders
             }
         });
-        console.log(response);
         return response === null || response === void 0 ? void 0 : response.data;
     }
     async loginAvatar(accountId, subuserLogin, subuserPassword) {
