@@ -279,8 +279,9 @@ export default class Avatar {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  public async sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<void> {
+  public async sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<unknown> {
     const botUrl = `${ this.imApiUrl }/api/v3/botService/sendResponse?conversation_uuid=${ conversationUuid }`;
-    await axios.post(botUrl, message)
+    const {data} = await axios.post(botUrl, message)
+    return data;
   }
 }

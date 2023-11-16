@@ -225,7 +225,8 @@ class Avatar {
      */
     async sendMessageToConversation(conversationUuid, message) {
         const botUrl = `${this.imApiUrl}/api/v3/botService/sendResponse?conversation_uuid=${conversationUuid}`;
-        await axios_1.default.post(botUrl, message);
+        const { data } = await axios_1.default.post(botUrl, message);
+        return data;
     }
 }
 exports.default = Avatar;
