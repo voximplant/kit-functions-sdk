@@ -174,7 +174,7 @@ export default class Avatar {
       throw new Error('Failed to log in to the avatar')
     }
 
-    const {data} = await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
+    const response = await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
       callbackUri: callbackUri,
       utterance: utterance,
       customData: JSON.stringify(customData || {}),
@@ -185,8 +185,8 @@ export default class Avatar {
         ...this.kitHeaders
       }
     });
-
-    return data;
+    console.log(response);
+    return response?.data;
   }
 
   private async loginAvatar(accountId: string, subuserLogin: string, subuserPassword: string): Promise<string> {
