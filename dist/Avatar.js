@@ -132,11 +132,10 @@ class Avatar {
         const { voxAccountId, avatarLogin, avatarPass, avatarId, callbackUri, utterance, conversationId, customData = {} } = config;
         checkParams(sendMessageConfig, config);
         const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
-        console.log('jwt:', jwt);
         if (!jwt) {
             throw new Error('Failed to log in to the avatar');
         }
-        const res = await this.avatarApi.post(`/${avatarId}/${conversationId}`, {
+        const { data } = await this.avatarApi.post(`/${avatarId}/${conversationId}`, {
             callbackUri: callbackUri,
             utterance: utterance,
             customData: JSON.stringify(customData || {}),
@@ -147,7 +146,7 @@ class Avatar {
                 ...this.kitHeaders
             }
         });
-        console.log('sendMessage res:', res);
+        return data;
     }
     async loginAvatar(accountId, subuserLogin, subuserPassword) {
         const { exp = 0 } = this.jwt && this.parseJwt(this.jwt) || {};

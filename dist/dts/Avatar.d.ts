@@ -69,7 +69,7 @@ export default class Avatar {
      * callback(200, kit.getResponseBody());
      * ```
      */
-    sendMessageToAvatar(config: AvatarConfig): Promise<void>;
+    sendMessageToAvatar(config: AvatarConfig): Promise<unknown>;
     private loginAvatar;
     /**
      * Terminates an avatar session.

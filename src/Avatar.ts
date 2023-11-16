@@ -154,7 +154,7 @@ export default class Avatar {
    * callback(200, kit.getResponseBody());
    * ```
    */
-  public async sendMessageToAvatar(config: AvatarConfig): Promise<void> {
+  public async sendMessageToAvatar(config: AvatarConfig): Promise<unknown> {
     const {
       voxAccountId,
       avatarLogin,
@@ -169,12 +169,12 @@ export default class Avatar {
     checkParams(sendMessageConfig, config);
 
     const jwt = await this.loginAvatar(voxAccountId, avatarLogin, avatarPass);
-    console.log('jwt:', jwt)
+
     if (!jwt) {
       throw new Error('Failed to log in to the avatar')
     }
 
-    const res = await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
+    const {data} = await this.avatarApi.post(`/${ avatarId }/${ conversationId }`, {
       callbackUri: callbackUri,
       utterance: utterance,
       customData: JSON.stringify(customData || {}),
@@ -185,7 +185,8 @@ export default class Avatar {
         ...this.kitHeaders
       }
     });
-    console.log('sendMessage res:', res);
+
+    return data;
   }
 
   private async loginAvatar(accountId: string, subuserLogin: string, subuserPassword: string): Promise<string> {

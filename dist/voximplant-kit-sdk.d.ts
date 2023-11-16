@@ -1235,7 +1235,7 @@ declare module '@voximplant/kit-functions-sdk/Avatar' {
                 * callback(200, kit.getResponseBody());
                 * ```
                 */
-            sendMessageToAvatar(config: AvatarConfig): Promise<void>;
+            sendMessageToAvatar(config: AvatarConfig): Promise<unknown>;
             /**
                 * Terminates an avatar session.
                 *```js
