@@ -1282,7 +1282,7 @@ declare module '@voximplant/kit-functions-sdk/Avatar' {
                 *  callback(200, kit.getResponseBody());
                 * ```
                 */
-            sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<void>;
+            sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<unknown>;
     }
 }
 
