@@ -135,7 +135,7 @@ class Avatar {
         if (!jwt) {
             throw new Error('Failed to log in to the avatar');
         }
-        const { data } = await this.avatarApi.post(`/${avatarId}/${conversationId}`, {
+        const response = await this.avatarApi.post(`/${avatarId}/${conversationId}`, {
             callbackUri: callbackUri,
             utterance: utterance,
             customData: JSON.stringify(customData || {}),
@@ -146,7 +146,8 @@ class Avatar {
                 ...this.kitHeaders
             }
         });
-        return data;
+        console.log(response);
+        return response === null || response === void 0 ? void 0 : response.data;
     }
     async loginAvatar(accountId, subuserLogin, subuserPassword) {
         const { exp = 0 } = this.jwt && this.parseJwt(this.jwt) || {};
