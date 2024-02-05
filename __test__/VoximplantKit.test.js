@@ -14,9 +14,6 @@ console.log(utils);
 jest.mock('../dist/DB');
 
 
-
-
-
 jest.mock('../dist/Api');
 const mMock = jest.fn();
 Api.default.mockImplementation(() => {
@@ -1060,6 +1057,93 @@ describe('getEnvVariable', () => {
   });
 });
 
+describe('setReplyWebChatInlineButtons', () => {
+  describe.each([messageContext, avatarContext])('With message or avatar context', (context) => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(context));
+
+    test('Setting valid buttons will return true', async () => {
+      const buttons = [
+        {type: 'text', text: 'text'},
+        {type: 'text', text: 'text2'},
+      ]
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      const expected = [
+        {
+          type: 'webchat_inline_buttons',
+          buttons
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting an empty array will return true', async () => {
+      const isSet = await kit.setReplyWebChatInlineButtons([]);
+      const expected = [];
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting a button with an invalid type will return false', async () => {
+      const buttons = [
+        {type: 11, text: 'text'},
+        {type: 'text', text: 'text2'},
+      ]
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting a button with invalid text will return false', async () => {
+      const buttons = [
+        {type: 'text', text: true},
+        {type: 'text', text: 'text2'},
+      ]
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting a button with an invalid data field will return false', async () => {
+      const buttons = [
+        {type: 'text', text: 'true', data: 1},
+        {type: 'text', text: 'text2'},
+      ]
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting a button with text longer than 40 characters will return false', async () => {
+      const buttons = [
+        {type: 'text', text: 'SDFSDFSDdfsdfsdklfnsdlkflskdsjlkdjffflskd'},
+        {type: 'text', text: 'text2'},
+      ]
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting more than 13 buttons will return false', async () => {
+      const buttons = new Array(14).fill({type: 'text', text: 'text2'})
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+  });
+
+  describe('with call context', () => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('Setting the buttons when calling a function from a call will return false', async () => {
+      const buttons = [{type: 'text', text: 'text2'}];
+      const isSet = await kit.setReplyWebChatInlineButtons(buttons);
+      expect(isSet).toEqual(false);
+    });
+
+  })
+})
+
 describe('addTags', () => {
   describe('with call context', () => {
     let kit;
@@ -1437,7 +1521,11 @@ describe('deleteCustomData', () => {
     kit.setCustomData('data1', {a: 111})
     const isDeleted = kit.deleteCustomData('data2');
     expect(isDeleted).toEqual(false);
-    expect(kit.messageCustomData).toEqual(expect.arrayContaining([{name: 'data1', data: '{\"a\":111}', type: 'custom_data'}]))
+    expect(kit.messageCustomData).toEqual(expect.arrayContaining([{
+      name: 'data1',
+      data: '{\"a\":111}',
+      type: 'custom_data'
+    }]))
   })
 
   test('Deleting customData with invalid name should return false', () => {
