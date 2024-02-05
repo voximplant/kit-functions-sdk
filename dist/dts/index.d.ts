@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -617,6 +617,26 @@ declare class VoximplantKit {
      * @static
      */
     static getEnvironmentVariable(name: string): string | null;
+    validateWebChatInlineButton(button: WebChatInlineButton): boolean;
+    /**
+     * Adds buttons for the web chat channel
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    // Text is required for each button and must not be greater than 40 char.
+     *    // The max number of buttons is 13.
+     *    const buttons = [
+     *      {type: 'text', text: 'Some btn text', data: 'Some btn data'}
+     *      {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
+     *    ]
+     *    kit.setReplyWebChatInlineButtons(buttons);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
     private setTags;
     /**
      * Adds tags by id.

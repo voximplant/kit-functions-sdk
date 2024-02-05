@@ -1,4 +1,4 @@
-import { AxiosResponse } from "axios";
+import {AxiosResponse} from "axios";
 import utils from "./utils";
 
 export interface CallObject {
@@ -61,7 +61,7 @@ export interface RequestObject {
  */
 export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
 
-export interface AvatarMessageObject  {
+export interface AvatarMessageObject {
   is_final: boolean;
   response: string;
   custom_data: null | string;
@@ -128,13 +128,13 @@ export interface MessageObject {
   HasMedia: boolean
 }
 
-export interface CallDataObject   {
+export interface CallDataObject {
   "VARIABLES": ObjectType,
   "SKILLS": SkillObject[],
   "TAGS": number[]
 }
 
-export interface ChannelDataObject  {
+export interface ChannelDataObject {
   text: string,
   payload: Array<MessagePayloadItem>,
   variables: ObjectType
@@ -442,6 +442,7 @@ export interface MessagePayloadItem {
   replace?: boolean
   data?: string
   user?: UserInfo
+  buttons?: WebChatInlineButton[]
 }
 
 export interface DataBase {
@@ -504,7 +505,7 @@ export interface AvatarStopSessionConfig extends AvatarLoginParams {
   conversationId: string;
 }
 
-export interface AvatarConfig extends AvatarLoginParams{
+export interface AvatarConfig extends AvatarLoginParams {
   avatarId: string;
   callbackUri: string;
   utterance: string;
@@ -515,4 +516,14 @@ export interface AvatarConfig extends AvatarLoginParams{
 export interface UserInfo {
   user_id: number
   user_email: string
+}
+
+export enum WebChatInlineButtonType {
+  Text= 'text'
+}
+
+export interface WebChatInlineButton {
+  type: WebChatInlineButtonType
+  text: string
+  data: string
 }

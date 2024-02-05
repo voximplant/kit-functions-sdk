@@ -421,6 +421,7 @@ export interface MessagePayloadItem {
     replace?: boolean;
     data?: string;
     user?: UserInfo;
+    buttons?: WebChatInlineButton[];
 }
 export interface DataBase {
     /**
@@ -480,4 +481,12 @@ export interface AvatarConfig extends AvatarLoginParams {
 export interface UserInfo {
     user_id: number;
     user_email: string;
+}
+export declare enum WebChatInlineButtonType {
+    Text = "text"
+}
+export interface WebChatInlineButton {
+    type: WebChatInlineButtonType;
+    text: string;
+    data: string;
 }

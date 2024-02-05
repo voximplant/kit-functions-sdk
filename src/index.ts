@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from 'axios'
+import axios, {AxiosInstance} from 'axios'
 import Api from "./Api"
 import DB from "./DB"
 import {
@@ -16,7 +16,7 @@ import {
   DateBasePutParams,
   GetTagsResult,
   AvatarMessageObject,
-  CallDataObject, ChannelDataObject, UserInfo, /*GetTagsResult*/
+  CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WebChatInlineButtonType, /*GetTagsResult*/
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -312,7 +312,7 @@ class VoximplantKit {
       const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
       const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
 
-      if (this.messageCustomData.length && (this.isMessage() || this.isAvatar())) {
+      if (this.messageCustomData.length) {
         this.replyMessage.payload = [...this.replyMessage.payload, ...this.messageCustomData]
       }
 
@@ -677,7 +677,7 @@ class VoximplantKit {
       this.priority = value;
       return true;
     } else {
-      console.warn(`${ value } cannot be set as a priority value. An integer from 0 to 10 is expected`);
+      console.warn(`${value} cannot be set as a priority value. An integer from 0 to 10 is expected`);
       return false;
     }
   }
@@ -1013,12 +1013,12 @@ class VoximplantKit {
    */
   public async dbCommit(): Promise<boolean> {
     const params: DateBasePutParams[] = [
-      { name: 'function_' + this.functionId, scope: 'function' },
-      { name: 'accountdb_' + this.domain, scope: 'global' },
+      {name: 'function_' + this.functionId, scope: 'function'},
+      {name: 'accountdb_' + this.domain, scope: 'global'},
     ]
 
     if (this.isMessage()) {
-      params.push({ name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation' })
+      params.push({name: "conversation_" + this.incomingMessage.conversation.uuid, scope: 'conversation'})
     }
 
     try {
@@ -1124,6 +1124,84 @@ class VoximplantKit {
     }
   }
 
+  validateWebChatInlineButton(button: WebChatInlineButton): boolean {
+    const supportTypes = ['text']
+    if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {
+      console.error('Invalid field type:', button)
+      return false
+    }
+
+    if (!button.text || typeof button.text !== 'string' || button.text.length > 40) {
+      console.error('Invalid field text:', button)
+      return false
+    }
+
+    if (button.data && typeof button.data !== 'string') {
+      console.error('Invalid field data:', button)
+      return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Adds buttons for the web chat channel
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  if (kit.isMessage() || kit.isAvatar()) {
+   *    // Text is required for each button and must not be greater than 40 char.
+   *    // The max number of buttons is 13.
+   *    const buttons = [
+   *      {type: 'text', text: 'Some btn text', data: 'Some btn data'}
+   *      {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
+   *    ]
+   *    kit.setReplyWebChatInlineButtons(buttons);
+   *  }
+   *
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  public setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean {
+    if (!(this.isAvatar() || this.isMessage())) {
+      console.error('The setReplyWebChatInlineButtons method is only available for channels and Avatar response');
+      return false;
+    }
+
+    if (!Array.isArray(buttons)) {
+      console.error('The buttons argument must be an array');
+      return false;
+    }
+
+    if (buttons.length > 13) {
+      console.error('The number of buttons should not be greater than 13');
+      return false;
+    }
+    const payloadIndex = this.findPayloadIndex(undefined, 'webchat_inline_buttons');
+    const isValid = buttons.every(button => this.validateWebChatInlineButton(button))
+    if (!isValid) return false;
+
+    const needClearPayload = buttons.length === 0;
+    if (needClearPayload) {
+      console.log('needClearPayload', needClearPayload, payloadIndex)
+      payloadIndex !== -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+      return true;
+    }
+
+    const payload = {
+      type: "webchat_inline_buttons",
+      buttons
+    }
+
+    if (payloadIndex !== -1) {
+      this.replyMessage.payload[payloadIndex] = payload
+    } else {
+      this.replyMessage.payload.push(payload)
+    }
+
+    return true;
+  }
+
   private setTags(tags: number[], replace = false): boolean {
     if (Array.isArray(tags)) {
       const payloadIndex = this.findPayloadIndex('bind_tags');
@@ -1131,12 +1209,12 @@ class VoximplantKit {
       const type = replace ? 'replaceTags:' : 'addTags:';
 
       if (!replace && !onlyPositiveInt.length) {
-        console.warn(type, 'the tags argument must be an array containing only positive integers');
+        console.warn(type, 'The tags argument must be an array containing only positive integers');
         return false;
       }
 
       if (replace && tags.length && !onlyPositiveInt.length) {
-        console.warn(type, 'the tags argument must be an array containing only positive integers');
+        console.warn(type, 'The tags argument must be an array containing only positive integers');
       }
 
       this.tags = replace ? onlyPositiveInt : this.tags.concat(onlyPositiveInt);
@@ -1198,13 +1276,13 @@ class VoximplantKit {
 
     if (!withName) return Promise.resolve(tags);
 
-    return this.apiProxy('/v3/tags/searchTags', { 'per-page': 0 })
-      .then(({ result }) => {
+    return this.apiProxy('/v3/tags/searchTags', {'per-page': 0})
+      .then(({result}) => {
         return tags.map(tag => {
           const fullTag = result.find(item => item.id === tag);
-          if (fullTag) return { id: tag, tag_name: fullTag.tag_name };
+          if (fullTag) return {id: tag, tag_name: fullTag.tag_name};
           else {
-            return { id: tag, tag_name: null }
+            return {id: tag, tag_name: null}
           }
         })
       }) as Promise<GetTagsResult[]>;
@@ -1234,9 +1312,9 @@ class VoximplantKit {
     try {
       const customData = JSON.stringify(data);
       if (payloadIndex > -1) {
-        this.messageCustomData[payloadIndex] = { type: "custom_data", name, data: customData }
+        this.messageCustomData[payloadIndex] = {type: "custom_data", name, data: customData}
       } else {
-        this.messageCustomData = this.messageCustomData.concat({ type: "custom_data", name, data: customData });
+        this.messageCustomData = this.messageCustomData.concat({type: "custom_data", name, data: customData});
       }
       return true;
     } catch (err) {

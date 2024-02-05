@@ -245,7 +245,7 @@ class VoximplantKit {
             const variables = this._getVariables();
             const queuePayloadIndex = this.findPayloadIndex('transfer_to_queue');
             const tagsPayloadIndex = this.findPayloadIndex('bind_tags');
-            if (this.messageCustomData.length && (this.isMessage() || this.isAvatar())) {
+            if (this.messageCustomData.length) {
                 this.replyMessage.payload = [...this.replyMessage.payload, ...this.messageCustomData];
             }
             if (queuePayloadIndex !== -1) {
@@ -1013,17 +1013,86 @@ class VoximplantKit {
             return null;
         }
     }
+    validateWebChatInlineButton(button) {
+        const supportTypes = ['text'];
+        if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {
+            console.error('Invalid field type:', button);
+            return false;
+        }
+        if (!button.text || typeof button.text !== 'string' || button.text.length > 40) {
+            console.error('Invalid field text:', button);
+            return false;
+        }
+        if (button.data && typeof button.data !== 'string') {
+            console.error('Invalid field data:', button);
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Adds buttons for the web chat channel
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    // Text is required for each button and must not be greater than 40 char.
+     *    // The max number of buttons is 13.
+     *    const buttons = [
+     *      {type: 'text', text: 'Some btn text', data: 'Some btn data'}
+     *      {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
+     *    ]
+     *    kit.setReplyWebChatInlineButtons(buttons);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setReplyWebChatInlineButtons(buttons) {
+        if (!(this.isAvatar() || this.isMessage())) {
+            console.error('The setReplyWebChatInlineButtons method is only available for channels and Avatar response');
+            return false;
+        }
+        if (!Array.isArray(buttons)) {
+            console.error('The buttons argument must be an array');
+            return false;
+        }
+        if (buttons.length > 13) {
+            console.error('The number of buttons should not be greater than 13');
+            return false;
+        }
+        const payloadIndex = this.findPayloadIndex(undefined, 'webchat_inline_buttons');
+        const isValid = buttons.every(button => this.validateWebChatInlineButton(button));
+        if (!isValid)
+            return false;
+        const needClearPayload = buttons.length === 0;
+        if (needClearPayload) {
+            console.log('needClearPayload', needClearPayload, payloadIndex);
+            payloadIndex !== -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+            return true;
+        }
+        const payload = {
+            type: "webchat_inline_buttons",
+            buttons
+        };
+        if (payloadIndex !== -1) {
+            this.replyMessage.payload[payloadIndex] = payload;
+        }
+        else {
+            this.replyMessage.payload.push(payload);
+        }
+        return true;
+    }
     setTags(tags, replace = false) {
         if (Array.isArray(tags)) {
             const payloadIndex = this.findPayloadIndex('bind_tags');
             const onlyPositiveInt = tags.filter(tag => Number.isInteger(tag) && tag >= 0);
             const type = replace ? 'replaceTags:' : 'addTags:';
             if (!replace && !onlyPositiveInt.length) {
-                console.warn(type, 'the tags argument must be an array containing only positive integers');
+                console.warn(type, 'The tags argument must be an array containing only positive integers');
                 return false;
             }
             if (replace && tags.length && !onlyPositiveInt.length) {
-                console.warn(type, 'the tags argument must be an array containing only positive integers');
+                console.warn(type, 'The tags argument must be an array containing only positive integers');
             }
             this.tags = replace ? onlyPositiveInt : this.tags.concat(onlyPositiveInt);
             this.tags = Array.from(new Set(this.tags)); // only unique ids;

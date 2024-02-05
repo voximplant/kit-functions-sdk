@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -581,6 +581,26 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @static
                 */
             static getEnvironmentVariable(name: string): string | null;
+            validateWebChatInlineButton(button: WebChatInlineButton): boolean;
+            /**
+                * Adds buttons for the web chat channel
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    // Text is required for each button and must not be greater than 40 char.
+                *    // The max number of buttons is 13.
+                *    const buttons = [
+                *      {type: 'text', text: 'Some btn text', data: 'Some btn data'}
+                *      {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
+                *    ]
+                *    kit.setReplyWebChatInlineButtons(buttons);
+                *  }
+                *
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
             /**
                 * Adds tags by id.
                 * ```js
@@ -1113,6 +1133,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
             replace?: boolean;
             data?: string;
             user?: UserInfo;
+            buttons?: WebChatInlineButton[];
     }
     export interface DataBase {
             /**
@@ -1172,6 +1193,14 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export interface UserInfo {
             user_id: number;
             user_email: string;
+    }
+    export enum WebChatInlineButtonType {
+            Text = "text"
+    }
+    export interface WebChatInlineButton {
+            type: WebChatInlineButtonType;
+            text: string;
+            data: string;
     }
 }
 
