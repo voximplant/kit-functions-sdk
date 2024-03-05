@@ -1124,6 +1124,9 @@ class VoximplantKit {
     }
   }
 
+  /**
+   * @hidden
+   */
   validateWebChatInlineButton(button: WebChatInlineButton): boolean {
     const supportTypes = ['text']
     if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {

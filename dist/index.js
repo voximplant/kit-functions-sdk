@@ -1013,6 +1013,9 @@ class VoximplantKit {
             return null;
         }
     }
+    /**
+     * @hidden
+     */
     validateWebChatInlineButton(button) {
         const supportTypes = ['text'];
         if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {

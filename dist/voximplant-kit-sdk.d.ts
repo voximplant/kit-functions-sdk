@@ -581,6 +581,9 @@ declare module '@voximplant/kit-functions-sdk' {
                 * @static
                 */
             static getEnvironmentVariable(name: string): string | null;
+            /**
+                * @hidden
+                */
             validateWebChatInlineButton(button: WebChatInlineButton): boolean;
             /**
                 * Adds buttons for the web chat channel
