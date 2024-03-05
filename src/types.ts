@@ -522,7 +522,7 @@ export enum WebChatInlineButtonType {
   Text= 'text'
 }
 
-export interface WebChatInlineButton {
+export type WebChatInlineButton = {
   type: WebChatInlineButtonType
   text: string
   data: string

@@ -16,7 +16,7 @@ import {
   DateBasePutParams,
   GetTagsResult,
   AvatarMessageObject,
-  CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WebChatInlineButtonType, /*GetTagsResult*/
+  CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton,
 } from "./types";
 import Message from "./Message";
 import utils from './utils';

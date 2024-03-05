@@ -1200,11 +1200,11 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export enum WebChatInlineButtonType {
             Text = "text"
     }
-    export interface WebChatInlineButton {
+    export type WebChatInlineButton = {
             type: WebChatInlineButtonType;
             text: string;
             data: string;
-    }
+    };
 }
 
 declare module '@voximplant/kit-functions-sdk/Avatar' {

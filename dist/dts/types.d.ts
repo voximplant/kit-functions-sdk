@@ -485,8 +485,8 @@ export interface UserInfo {
 export declare enum WebChatInlineButtonType {
     Text = "text"
 }
-export interface WebChatInlineButton {
+export declare type WebChatInlineButton = {
     type: WebChatInlineButtonType;
     text: string;
     data: string;
-}
+};
