@@ -18,6 +18,7 @@ export default class Message implements MessageObject {
   payload: Array<MessagePayloadItem>;
   customer: MessageCustomer;
   HasMedia: boolean;
+  button_data: string | null;
 
   constructor(isBot = false) {
     this.id = null;
@@ -69,7 +70,7 @@ export default class Message implements MessageObject {
         conversation_id: null
       },
       channel: null,
-      customer_id: null
+      customer_id: null,
     };
     this.customer = {
       id: null,
@@ -83,5 +84,6 @@ export default class Message implements MessageObject {
     };
     this.payload = [];
     this.HasMedia = null;
+    this.button_data = null
   }
 }
