@@ -282,6 +282,12 @@ describe('getIncomingMessage', () => {
         type: expect.any(String),
       }),);
     });
+
+    test('Should contain button_data', () => {
+      expect(result).toEqual(expect.objectContaining({
+        button_data: expect.any(String),
+      }),);
+    });
   });
 });
 

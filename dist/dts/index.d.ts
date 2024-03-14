@@ -42,6 +42,10 @@ declare class VoximplantKit {
      */
     static default: typeof VoximplantKit;
     /**
+     * @hidden
+     */
+    private getIncomingMessageButtonData;
+    /**
      * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
      * ```js
      *  const kit = new VoximplantKit(context);

@@ -54,7 +54,7 @@ class Message {
                 conversation_id: null
             },
             channel: null,
-            customer_id: null
+            customer_id: null,
         };
         this.customer = {
             id: null,
@@ -68,6 +68,7 @@ class Message {
         };
         this.payload = [];
         this.HasMedia = null;
+        this.button_data = null;
     }
 }
 exports.default = Message;

@@ -117,6 +117,10 @@ export interface MessageObject {
      * @hidden
      */
     HasMedia: boolean;
+    /**
+     * The data of the pressed inline button from the web chat channel
+     */
+    button_data: string | null;
 }
 export interface CallDataObject {
     "VARIABLES": ObjectType;
@@ -422,6 +426,7 @@ export interface MessagePayloadItem {
     data?: string;
     user?: UserInfo;
     buttons?: WebChatInlineButton[];
+    button_data?: string;
 }
 export interface DataBase {
     /**
