@@ -11,5 +11,6 @@ export default class Message implements MessageObject {
     payload: Array<MessagePayloadItem>;
     customer: MessageCustomer;
     HasMedia: boolean;
+    button_data: string | null;
     constructor(isBot?: boolean);
 }

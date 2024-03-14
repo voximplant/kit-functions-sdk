@@ -832,6 +832,10 @@ declare module '@voximplant/kit-functions-sdk/types' {
                 * @hidden
                 */
             HasMedia: boolean;
+            /**
+                * The data of the pressed inline button from the web chat channel
+                */
+            button_data: string | null;
     }
     export interface CallDataObject {
             "VARIABLES": ObjectType;
@@ -1137,6 +1141,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
             data?: string;
             user?: UserInfo;
             buttons?: WebChatInlineButton[];
+            button_data?: string;
     }
     export interface DataBase {
             /**

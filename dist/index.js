@@ -79,6 +79,7 @@ class VoximplantKit {
         this.avatar = new Avatar_1.default(avatarApiDomain, kitImUrl, avatarHeaders);
         if (this.isMessage()) {
             this.incomingMessage = utils_1.default.clone(this.requestData);
+            this.incomingMessage.button_data = this.getIncomingMessageButtonData();
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
             this.replyMessage.conversation = utils_1.default.clone(this.requestData.conversation);
@@ -94,6 +95,21 @@ class VoximplantKit {
                 message_type: "text"
             });
         }
+    }
+    /**
+     * @hidden
+     */
+    getIncomingMessageButtonData() {
+        var _a, _b;
+        if (this.isMessage()) {
+            const payload = this.requestData.payload;
+            const payloadIdx = payload.findIndex(item => item.type === 'button_data');
+            if (payloadIdx !== -1) {
+                return (_b = (_a = payload[payloadIdx]) === null || _a === void 0 ? void 0 : _a.button_data) !== null && _b !== void 0 ? _b : null;
+            }
+            return null;
+        }
+        return null;
     }
     /**
      * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
