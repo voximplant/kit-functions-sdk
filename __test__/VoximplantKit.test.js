@@ -283,10 +283,19 @@ describe('getIncomingMessage', () => {
       }),);
     });
 
-    test('Should contain button_data', () => {
+    test('Should contain button_data with string', () => {
       expect(result).toEqual(expect.objectContaining({
         button_data: expect.any(String),
       }),);
+    });
+
+    test('Should contain button_data with null', () => {
+      const context = JSON.parse(JSON.stringify(messageContext))
+      context.request.body.payload = [{type: 'properties', sender_type: 'client'}]
+      const kit = new VoximplantKitTest(context)
+      const result = kit.getIncomingMessage();
+
+      expect(result.button_data).toBeNull();
     });
   });
 });
