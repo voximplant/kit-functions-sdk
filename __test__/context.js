@@ -118,7 +118,7 @@ const messageBody = {
     },
     customer_id: 2
   },
-  payload: [{type: 'properties', sender_type: 'client'}],
+  payload: [{type: 'properties', sender_type: 'client'}, {type: 'button_data', button_data: 'Some data'}],
   customer: {
     id: 2,
     customer_display_name: '\u0414\u043c\u0438\u0442\u0440\u0438\u0439 (customer)',
