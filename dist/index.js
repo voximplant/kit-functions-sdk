@@ -105,7 +105,7 @@ class VoximplantKit {
             const payload = this.requestData.payload;
             const payloadIdx = payload.findIndex(item => item.type === 'button_data');
             if (payloadIdx !== -1) {
-                return (_b = (_a = payload[payloadIdx]) === null || _a === void 0 ? void 0 : _a.button_data) !== null && _b !== void 0 ? _b : null;
+                return (_b = (_a = payload[payloadIdx]) === null || _a === void 0 ? void 0 : _a.data) !== null && _b !== void 0 ? _b : null;
             }
             return null;
         }
