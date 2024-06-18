@@ -557,3 +557,28 @@ export type WebChatInlineButton = {
   text: string
   data: string
 }
+
+export type TelegramInlineKeyboardButton = {
+  text: string;
+  url?: string;
+  callback_data?: string;
+}
+
+export type TelegramReplyKeyboardButton = {
+  text: string;
+  request_contact?: boolean;
+  request_location?: boolean;
+}
+
+export type TelegramReplyKeyboardParams = {
+  is_persistent?: boolean;
+  resize_keyboard?: boolean;
+  one_time_keyboard?: boolean;
+  input_field_placeholder?: string;
+  selective?: boolean;
+}
+
+export type TelegramReplyKeyboardRemove = {
+  remove_keyboard:  boolean;
+  selective?:  boolean;
+}

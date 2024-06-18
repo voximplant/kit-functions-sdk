@@ -1042,32 +1042,47 @@ class VoximplantKit {
             console.error('Invalid field text:', button);
             return false;
         }
-        if (button.data && typeof button.data !== 'string') {
+        if ('data' in button && typeof button.data !== 'string') {
             console.error('Invalid field data:', button);
             return false;
         }
         return true;
     }
-    validateObject(object, schema) {
+    validateObject(object, schema, label = '') {
         for (const key in schema) {
             const rule = schema[key];
             const value = object[key];
+            const errorLabel = label ? `${label}: ` : '';
             if (rule.required && value === undefined) {
-                console.error(`Field '${key}' is required but missing.`);
+                console.error(`${errorLabel}Field '${key}' is required but missing.`);
                 return false;
             }
             if (value !== undefined) {
                 if (typeof value !== rule.type) {
-                    console.error(`Field '${key}' should be of type '${rule.type}' but got '${typeof value}'.`);
+                    console.error(`${errorLabel}Field '${key}' should be of type '${rule.type}' but got '${typeof value}'.`);
                     return false;
                 }
                 if (rule.value && !rule.value.includes(value)) {
-                    console.error(`Field '${key}' has an invalid value '${value}'. Expected one of ${JSON.stringify(rule.value)}.`);
+                    console.error(`${errorLabel}Field '${key}' has an invalid value '${value}'. Expected one of ${JSON.stringify(rule.value)}.`);
                     return false;
                 }
             }
         }
         return true;
+    }
+    validateTelegramReplyKeyboardParams(params) {
+        if (!utils_1.default.isObject(params)) {
+            console.error('The keyboard_params argument must be an object');
+            return false;
+        }
+        const telegramReplyKeyboardParamsSchema = {
+            is_persistent: { required: false, type: 'boolean' },
+            resize_keyboard: { required: false, type: 'boolean' },
+            one_time_keyboard: { required: false, type: 'boolean' },
+            input_field_placeholder: { required: false, type: 'string' },
+            selective: { required: false, type: 'boolean' },
+        };
+        return this.validateObject(params, telegramReplyKeyboardParamsSchema, 'telegramReplyKeyboardParams');
     }
     /**
      * Adds buttons for the web chat channel
@@ -1106,7 +1121,6 @@ class VoximplantKit {
             return false;
         const needClearPayload = buttons.length === 0;
         if (needClearPayload) {
-            console.log('needClearPayload', needClearPayload, payloadIndex);
             payloadIndex !== -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
             return true;
         }
@@ -1114,8 +1128,196 @@ class VoximplantKit {
             type: "webchat_inline_buttons",
             buttons
         };
-        if (payloadIndex !== -1) {
-            this.replyMessage.payload[payloadIndex] = payload;
+        this.setPayloadByIndex(payloadIndex, payload);
+        return true;
+    }
+    /**
+     * Adds inline keyboard for the telegram channel
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    // Text is required for each keyboard.
+     *    const inline_keyboard_markup = [
+     *       // Row one
+     *      [
+     *         {text: 'text', url: 'url', callback_data: '1'},
+     *         {text: 'text 2', url: 'url'},
+     *       ],
+     *       // Row two
+     *       [
+     *         {text: 'text', url: 'url', callback_data: '1'},
+     *       ]
+     *    ]
+     *    kit.setTelegramInlineKeyboard(buttons);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setTelegramInlineKeyboard(keyboard_markup) {
+        if (!(this.isAvatar() || this.isMessage())) {
+            console.error('The setTelegramInlineKeyboard method is only available for channels and Avatar response');
+            return false;
+        }
+        if (!Array.isArray(keyboard_markup)) {
+            console.error('The keyboard_markup argument must be an array');
+            return false;
+        }
+        const isValid = keyboard_markup.every((keyboard, idx) => {
+            if (!Array.isArray(keyboard)) {
+                console.error(`The keyboard at the ${idx} index must be an array`);
+                return false;
+            }
+            return keyboard.every(button => this.validateTelegramInlineKeyboardButton(button));
+        });
+        if (!isValid)
+            return false;
+        const payloadIndex = this.findPayloadIndex(undefined, 'telegram_inline_keyboard_markup');
+        const needClearPayload = keyboard_markup.length === 0;
+        if (needClearPayload) {
+            payloadIndex > -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+            return true;
+        }
+        const payload = {
+            type: "telegram_inline_keyboard_markup",
+            inline_keyboard_markup: keyboard_markup
+        };
+        this.setPayloadByIndex(payloadIndex, payload);
+        return true;
+    }
+    validateTelegramInlineKeyboardButton(button) {
+        const telegramInlineKeyboardSchema = {
+            text: { required: true, type: 'string' },
+            url: { required: false, type: 'string' },
+            callback_data: { required: false, type: 'string' },
+        };
+        const isValid = this.validateObject(button, telegramInlineKeyboardSchema);
+        const hasOneOfOptionalField = button.url || button.callback_data;
+        if (!hasOneOfOptionalField) {
+            console.error('For the InlineKeyboardButton, you must use one of the optional url or callback_data fields');
+            return false;
+        }
+        return !!(isValid && hasOneOfOptionalField);
+    }
+    /**
+     * Adds reply keyboard for the telegram channel
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    // Text is required for each keyboard.
+     *    const reply_keyboard_markup = [
+     *       // Row one
+     *      [
+     *         {text: 'button 1', request_contact: true},
+     *         {text: 'button 2'},
+     *       ],
+     *       // Row two
+     *       [
+     *         {text: 'button 3', request_location: true},
+     *       ]
+     *    ]
+     *    // Optional params
+     *    const params = {
+     *      is_persistent : false,
+       *    resize_keyboard: false,
+       *    one_time_keyboard: false,
+       *    input_field_placeholder: 'Some text',
+       *    selective: false
+     *    }
+     *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setTelegramReplyKeyboard(keyboard_markup, keyboard_params = {}) {
+        if (!(this.isAvatar() || this.isMessage())) {
+            console.error('The setTelegramReplyKeyboard method is only available for channels and Avatar response');
+            return false;
+        }
+        if (!Array.isArray(keyboard_markup)) {
+            console.error('The keyboard_markup argument must be an array');
+            return false;
+        }
+        const telegramReplyKeyboardSchema = {
+            text: { required: true, type: 'string' },
+            request_contact: { required: false, type: 'boolean' },
+            request_location: { required: false, type: 'boolean' }
+        };
+        const isValid = keyboard_markup.every((keyboard, idx) => {
+            if (!Array.isArray(keyboard)) {
+                console.error(`The keyboard at the ${idx} index must be an array`);
+                return false;
+            }
+            return keyboard.every(button => this.validateObject(button, telegramReplyKeyboardSchema));
+        });
+        const isValidParams = this.validateTelegramReplyKeyboardParams(keyboard_params);
+        if (!isValid || !isValidParams)
+            return false;
+        const payloadIndex = this.findPayloadIndex(undefined, 'telegram_reply_keyboard_markup');
+        const needClearPayload = keyboard_markup.length === 0;
+        if (needClearPayload) {
+            payloadIndex > -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+            return true;
+        }
+        const payload = {
+            type: "telegram_reply_keyboard_markup",
+            reply_keyboard_params: keyboard_params,
+            reply_keyboard_markup: keyboard_markup
+        };
+        this.setPayloadByIndex(payloadIndex, payload);
+        return true;
+    }
+    /**
+     * Adds reply keyboard for the telegram channel
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *    const remove_params = {
+     *      remove_keyboard: true, // required
+     *      selective: false
+     *    }
+     *    kit.setTelegramReplyKeyboardRemove(remove_params);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    setTelegramReplyKeyboardRemove(remove_params) {
+        const payloadIndex = this.findPayloadIndex(undefined, 'telegram_reply_keyboard_remove');
+        const needClearPayload = Object.keys(remove_params).length === 0;
+        if (!(this.isAvatar() || this.isMessage())) {
+            console.error('The setTelegramReplyKeyboardRemove method is only available for channels and Avatar response');
+            return false;
+        }
+        const telegramReplyKeyboardRemoveSchema = {
+            remove_keyboard: { required: true, type: 'boolean' },
+            selective: { required: false, type: 'boolean' },
+        };
+        if (!remove_params || !utils_1.default.isObject(remove_params)) {
+            console.error('The remove_params argument must be an object');
+            return false;
+        }
+        const isValid = this.validateObject(remove_params, telegramReplyKeyboardRemoveSchema);
+        if (!isValid && !needClearPayload)
+            return false;
+        if (needClearPayload) {
+            payloadIndex > -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+            return true;
+        }
+        const payload = {
+            type: "telegram_reply_keyboard_remove",
+            reply_keyboard_remove_params: remove_params
+        };
+        this.setPayloadByIndex(payloadIndex, payload);
+        return true;
+    }
+    setPayloadByIndex(index, payload) {
+        if (index !== -1) {
+            this.replyMessage.payload[index] = payload;
         }
         else {
             this.replyMessage.payload.push(payload);

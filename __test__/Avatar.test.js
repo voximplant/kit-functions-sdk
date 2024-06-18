@@ -87,9 +87,11 @@ describe('sendMessageToAvatar', () => {
     })
   });
 
+  // TODO Check test
   describe('Calling without mandatory config parameters', () => {
     test('Checking the error message', async () => {
       try {
+        mocRequest.mockResolvedValue({data: {jwt: null}});
         await avatar.sendMessageToAvatar({avatarId: 'dddd'});
       } catch (e) {
         expect(e.message).toMatch('Missing the required');
@@ -107,6 +109,7 @@ describe('sendMessageToConversation', () => {
 
   test('Check the bot api url', async () => {
     const url = `imApi/api/v3/botService/sendResponse?conversation_uuid=my_uuid`
+    axios.post.mockResolvedValue({data: {jwt: 'asdasdasddasd.asdasdas.asdasd'}});
     await avatar.sendMessageToConversation('my_uuid', {})
     expect(axios.post.mock.calls[0][0]).toBe(url);
     expect(axios.post.mock.calls[0][1]).toStrictEqual({});
