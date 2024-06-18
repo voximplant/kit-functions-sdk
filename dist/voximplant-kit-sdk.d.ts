@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -582,10 +582,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             static getEnvironmentVariable(name: string): string | null;
             /**
-                * @hidden
-                */
-            validateWebChatInlineButton(button: WebChatInlineButton): boolean;
-            /**
                 * Adds buttons for the web chat channel
                 * ```js
                 *  const kit = new VoximplantKit(context);
@@ -604,6 +600,81 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
+            /**
+                * Adds inline keyboard for the telegram channel
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    // Text is required for each keyboard.
+                *    const inline_keyboard_markup = [
+                *       // Row one
+                *      [
+                *         {text: 'text', url: 'url', callback_data: '1'},
+                *         {text: 'text 2', url: 'url'},
+                *       ],
+                *       // Row two
+                *       [
+                *         {text: 'text', url: 'url', callback_data: '1'},
+                *       ]
+                *    ]
+                *    kit.setTelegramInlineKeyboard(buttons);
+                *  }
+                *
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            setTelegramInlineKeyboard(keyboard_markup: TelegramInlineKeyboardButton[][]): boolean;
+            /**
+                * Adds reply keyboard for the telegram channel
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    // Text is required for each keyboard.
+                *    const reply_keyboard_markup = [
+                *       // Row one
+                *      [
+                *         {text: 'button 1', request_contact: true},
+                *         {text: 'button 2'},
+                *       ],
+                *       // Row two
+                *       [
+                *         {text: 'button 3', request_location: true},
+                *       ]
+                *    ]
+                *    // Optional params
+                *    const params = {
+                *      is_persistent : false,
+                    *    resize_keyboard: false,
+                    *    one_time_keyboard: false,
+                    *    input_field_placeholder: 'Some text',
+                    *    selective: false
+                *    }
+                *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
+                *  }
+                *
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            setTelegramReplyKeyboard(keyboard_markup: TelegramReplyKeyboardButton[][], keyboard_params?: TelegramReplyKeyboardParams): boolean;
+            /**
+                * Adds reply keyboard for the telegram channel
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  if (kit.isMessage() || kit.isAvatar()) {
+                *    const remove_params = {
+                *      remove_keyboard: true, // required
+                *      selective: false
+                *    }
+                *    kit.setTelegramReplyKeyboardRemove(remove_params);
+                *  }
+                *
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            setTelegramReplyKeyboardRemove(remove_params: TelegramReplyKeyboardRemove): boolean;
             /**
                 * Set Whatsapp Edna keyboard
                 */
@@ -1235,6 +1306,27 @@ declare module '@voximplant/kit-functions-sdk/types' {
             type: WebChatInlineButtonType;
             text: string;
             data: string;
+    };
+    export type TelegramInlineKeyboardButton = {
+            text: string;
+            url?: string;
+            callback_data?: string;
+    };
+    export type TelegramReplyKeyboardButton = {
+            text: string;
+            request_contact?: boolean;
+            request_location?: boolean;
+    };
+    export type TelegramReplyKeyboardParams = {
+            is_persistent?: boolean;
+            resize_keyboard?: boolean;
+            one_time_keyboard?: boolean;
+            input_field_placeholder?: string;
+            selective?: boolean;
+    };
+    export type TelegramReplyKeyboardRemove = {
+            remove_keyboard: boolean;
+            selective?: boolean;
     };
 }
 

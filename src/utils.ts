@@ -112,6 +112,8 @@ const getVersion = function getVersion(): string | void {
   }
 }
 
+const isObject = item => Object.getPrototypeOf(item) === Object.prototype;
+
 
 /**
  * @hidden
@@ -123,5 +125,6 @@ export default {
   getEnvVariable,
   getVersion,
   getDfKey,
-  getDfKeysList
+  getDfKeysList,
+  isObject
 }

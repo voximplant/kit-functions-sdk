@@ -7,6 +7,7 @@ declare const _default: {
     getVersion: () => string | void;
     getDfKey: (id: number) => ObjectType;
     getDfKeysList: () => string[];
+    isObject: (item: any) => boolean;
 };
 /**
  * @hidden
