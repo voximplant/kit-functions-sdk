@@ -517,3 +517,24 @@ export declare type WebChatInlineButton = {
     text: string;
     data: string;
 };
+export declare type TelegramInlineKeyboardButton = {
+    text: string;
+    url?: string;
+    callback_data?: string;
+};
+export declare type TelegramReplyKeyboardButton = {
+    text: string;
+    request_contact?: boolean;
+    request_location?: boolean;
+};
+export declare type TelegramReplyKeyboardParams = {
+    is_persistent?: boolean;
+    resize_keyboard?: boolean;
+    one_time_keyboard?: boolean;
+    input_field_placeholder?: string;
+    selective?: boolean;
+};
+export declare type TelegramReplyKeyboardRemove = {
+    remove_keyboard: boolean;
+    selective?: boolean;
+};

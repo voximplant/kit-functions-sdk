@@ -1155,9 +1155,517 @@ describe('setReplyWebChatInlineButtons', () => {
       const isSet = await kit.setReplyWebChatInlineButtons(buttons);
       expect(isSet).toEqual(false);
     });
-
   })
-})
+});
+
+describe('setTelegramInlineKeyboard', () => {
+  describe.each([messageContext, avatarContext])('With message or avatar context', (context) => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(context));
+
+    test('Setting valid keyboard will return true', () => {
+      const inline_keyboard_markup = [
+        [
+          {text: 'text', url: 'url', callback_data: '1'},
+          {text: 'text 2', url: 'url'},
+        ]
+      ]
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_inline_keyboard_markup',
+          inline_keyboard_markup
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting an empty array will return true', async () => {
+      const isSet = await kit.setTelegramInlineKeyboard([]);
+      const expected = [];
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting an array with empty object will return false', async () => {
+      const expected = [
+        {
+          type: 'telegram_inline_keyboard_markup',
+          inline_keyboard_markup: []
+        }
+      ]
+      const isSet = await kit.setTelegramInlineKeyboard([[{}]]);
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting a keyboard with an invalid text will return false', async () => {
+      const isSet = await kit.setReplyWebChatInlineButtons([{text: 1}]);
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining([]));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an array with objects, one of which is incorrect will return false', () => {
+      const inline_keyboard_markup = [
+        {text: 'text', url: 'url', callback_data: '1'},
+        {url: 'url'},
+      ]
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      const expected = [];
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing arguments after deletion should return true', () => {
+      const inline_keyboard_markup = [
+        [
+          {text: 'text', url: 'url', callback_data: '1'},
+        ]
+      ];
+      kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      kit.setTelegramInlineKeyboard([]);
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_inline_keyboard_markup',
+          inline_keyboard_markup
+        }
+      ]
+      const messageObject = kit.getMessageObject();
+
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload.length).toEqual(2);
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing markup with only text fiels, should return false', () => {
+      const inline_keyboard_markup = [[{text: 'text'}]];
+      kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_inline_keyboard_markup',
+          inline_keyboard_markup
+        }
+      ]
+      const messageObject = kit.getMessageObject();
+
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload.length).toEqual(1);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an array with duplicate objects should return true', () => {
+      const inline_keyboard_markup = [
+        [
+          {text: 'text', url: 'url', callback_data: '1'},
+          {text: 'text', url: 'url', callback_data: '1'},
+        ]
+      ];
+
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      const expected =[
+        {
+          message_type: "text",
+          type: "properties"
+        },
+        {
+          inline_keyboard_markup: [
+            [
+              {text: 'text', url: 'url', callback_data: '1'},
+              {text: 'text', url: 'url', callback_data: '1'}
+            ]
+          ],
+          type: "telegram_inline_keyboard_markup"
+        }
+      ]
+      const messageObject = kit.getMessageObject();
+
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+  });
+
+  describe('with call context', () => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('Setting the keyboards when calling a function from a call will return false', () => {
+      const inline_keyboard_markup = [
+        {text: 'text', url: 'url', callback_data: '1'},
+        {text: 'text', url: 'url', callback_data: '1'},
+      ];
+      const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
+      expect(isSet).toEqual(false);
+    });
+  })
+});
+
+describe('setTelegramReplyKeyboard', () => {
+  describe.each([messageContext, avatarContext])('With message or avatar context', (context) => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(context));
+
+    test('Positive Case: Passing Valid Data', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text', request_contact: true, request_location: true}],
+        [{text: 'text 2', request_contact: false, request_location: false}],
+      ];
+      const reply_keyboard_params = {
+        is_persistent: true,
+        resize_keyboard: true,
+        one_time_keyboard: false,
+        input_field_placeholder: 'phone',
+        selective: true
+      }
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup, reply_keyboard_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an Empty Array as Keyboard', () => {
+      const isSet = kit.setTelegramReplyKeyboard([]);
+
+      const messageObject = kit.getMessageObject();
+      expect(messageObject.payload.length).toEqual(1);
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with an empty keyboard_params object', () => {
+      const reply_keyboard_markup = [
+        [
+          {text: 'text', request_contact: true, request_location: true},
+          {text: 'text 2', request_contact: false, request_location: false}
+        ],
+      ];
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup, {});
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with an object containing only text', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text'}],
+      ];
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with an object containing request_contact', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text', request_contact: true}],
+      ];
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with an object containing request_location', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text', request_location: true}],
+      ];
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with mixed valid and invalid objects', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text', request_location: true}],
+        [{request_location: true}]
+      ];
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing Data after Deletion (After Passing an Empty Array)', () => {
+      const reply_keyboard_markup = [
+        [{text: 'text', request_location: true},]
+      ];
+
+      kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      kit.setTelegramReplyKeyboard([]);
+      const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_markup',
+          reply_keyboard_markup,
+          reply_keyboard_params: {}
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+
+    describe('with call context', () => {
+      let kit;
+      beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+      test('Setting the keyboards when calling a function from a call will return false', () => {
+        const reply_keyboard_markup = [
+          [{text: 'text', url: 'url', callback_data: '1'},
+            {text: 'text', url: 'url', callback_data: '1'},]
+        ];
+        const isSet = kit.setTelegramReplyKeyboard(reply_keyboard_markup);
+        expect(isSet).toEqual(false);
+      });
+    });
+
+  });
+});
+
+describe('setTelegramReplyKeyboardRemove', () => {
+  describe.each([messageContext, avatarContext])('With message or avatar context', (context) => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(context));
+
+    test('Positive Case: Passing Valid Data', () => {
+      const reply_keyboard_remove_params = {
+        remove_keyboard: true,
+        selective: true
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an Empty Object', () => {
+      const reply_keyboard_remove_params = {};
+      const isSet = kit.setTelegramReplyKeyboardRemove({});
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an Object Without remove_keyboard', () => {
+      const reply_keyboard_remove_params = {
+        selective: true
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an Object with Invalid remove_keyboard Type', () => {
+      const reply_keyboard_remove_params = {
+        remove_keyboard: 'remove',
+        selective: true
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an Object with Invalid selective Type', () => {
+      const reply_keyboard_remove_params = {
+        remove_keyboard: true,
+        selective: 'true'
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Multiple Method Calls', () => {
+      const reply_keyboard_remove_params = {
+        remove_keyboard: true,
+        selective: true
+      };
+
+      kit.setTelegramReplyKeyboardRemove({remove_keyboard: false});
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload.length).toEqual(2);
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an Object with Only selective', () => {
+      const reply_keyboard_remove_params = {
+        selective: true
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload.length).toEqual(1);
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an Object with Only selective', () => {
+      const reply_keyboard_remove_params = {
+        remove_keyboard: true,
+        selective: true,
+        custom: '',
+      };
+
+      const isSet = kit.setTelegramReplyKeyboardRemove(reply_keyboard_remove_params);
+      const expected = [
+        {
+          type: 'telegram_reply_keyboard_remove',
+          reply_keyboard_remove_params,
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+  });
+
+  describe('with call context', () => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('Setting the keyboards remove when calling a function from a call will return false', () => {
+      const isSet = kit.setTelegramReplyKeyboardRemove({});
+      expect(isSet).toEqual(false);
+    });
+  });
+});
+
 
 describe('addTags', () => {
   describe('with call context', () => {
@@ -1307,7 +1815,7 @@ describe('setWhatsappEdnaKeyboard', () => {
     });
 
     test('Setting a keyboard with an invalid text will return false', async () => {
-      const isSet = await kit.setWhatsappEdnaKeyboard([{text: 1,  type: 'QUICK_REPLY'}]);
+      const isSet = await kit.setWhatsappEdnaKeyboard([{text: 1, type: 'QUICK_REPLY'}]);
       const expected = [{type: 'whatsapp_edna_keyboard'}];
 
       expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
