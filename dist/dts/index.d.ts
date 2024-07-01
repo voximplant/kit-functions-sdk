@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -625,6 +625,7 @@ declare class VoximplantKit {
      * @hidden
      */
     validateWebChatInlineButton(button: WebChatInlineButton): boolean;
+    private validateWhatsappEdnaKeyboard;
     /**
      * Adds buttons for the web chat channel
      * ```js
@@ -644,6 +645,10 @@ declare class VoximplantKit {
      * ```
      */
     setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
+    /**
+     * Set Whatsapp Edna keyboard
+     */
+    setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardButton[]): boolean;
     private setTags;
     /**
      * Adds tags by id.
