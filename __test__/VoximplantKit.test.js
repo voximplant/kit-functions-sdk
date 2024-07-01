@@ -10,7 +10,7 @@ const {
   notNumber
 } = require('./constants');
 const OLD_ENV = process.env;
-console.log(utils);
+
 jest.mock('../dist/DB');
 
 
@@ -1265,6 +1265,128 @@ describe('replaceTags', () => {
     });
   });
 })
+
+describe('setWhatsappEdnaKeyboard', () => {
+  describe.each([messageContext, avatarContext])('With message or avatar context', (context) => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(context));
+
+    test('Setting valid keyboard will return true', () => {
+      const whatsapp_edna_keyboard_rows = [
+        {text: 'text', type: 'QUICK_REPLY'},
+        {text: 'text 2', type: 'QUICK_REPLY'},
+      ]
+      const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      const expected = [
+        {
+          type: 'whatsapp_edna_keyboard',
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+        }
+      ]
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting an empty array will return true', async () => {
+      const isSet = await kit.setWhatsappEdnaKeyboard([]);
+      const expected = [{type: 'whatsapp_edna_keyboard'}];
+
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+
+    test('Setting an array with empty object will return false', async () => {
+      const isSet = await kit.setWhatsappEdnaKeyboard([{}]);
+      const expected = [{type: 'whatsapp_edna_keyboard'}];
+
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Setting a keyboard with an invalid text will return false', async () => {
+      const isSet = await kit.setWhatsappEdnaKeyboard([{text: 1,  type: 'QUICK_REPLY'}]);
+      const expected = [{type: 'whatsapp_edna_keyboard'}];
+
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing an array with objects, one of which is incorrect will return false', () => {
+      const whatsapp_edna_keyboard_rows = [
+        {text: 'text', type: 'QUICK_REPLY'},
+        {text: true, type: 'QUICK_REPLY'},
+      ]
+      const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      const expected = [{type: 'whatsapp_edna_keyboard'}];
+
+      const messageObject = kit.getMessageObject()
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+
+    test('Passing arguments after deletion should return true', () => {
+      const whatsapp_edna_keyboard_rows = [{text: 'text', type: 'QUICK_REPLY'}];
+      kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      kit.setWhatsappEdnaKeyboard([]);
+      const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      const expected = [
+        {
+          type: 'whatsapp_edna_keyboard',
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+        }
+      ]
+      const messageObject = kit.getMessageObject();
+
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload.length).toEqual(2);
+      expect(isSet).toEqual(true);
+    });
+
+    test('Passing an array with duplicate objects should return true', () => {
+      const whatsapp_edna_keyboard_rows = [
+        {text: 'text', type: 'QUICK_REPLY'},
+        {text: 'text', type: 'QUICK_REPLY'},
+      ];
+
+      const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      const expected = [
+        {
+          type: 'whatsapp_edna_keyboard',
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+        }
+      ]
+      const messageObject = kit.getMessageObject();
+
+      expect(kit.replyMessage.payload).toEqual(expect.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.arrayContaining(expected));
+      expect(isSet).toEqual(true);
+    });
+  });
+
+  describe('with call context', () => {
+    let kit;
+    beforeEach(() => kit = new VoximplantKitTest(callContext));
+
+    test('Setting the keyboards when calling a function from a call will return false', () => {
+      const whatsapp_edna_keyboard_rows = [
+        {text: 'text', type: 'QUICK_REPLY'},
+        {text: 'text', type: 'QUICK_REPLY'},
+      ];
+      const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
+      const expected = [{type: 'whatsapp_edna_keyboard'}];
+      const messageObject = kit.getMessageObject()
+
+      expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(messageObject.payload).toEqual(expect.not.arrayContaining(expected));
+      expect(isSet).toEqual(false);
+    });
+  })
+});
 
 describe('getTags', () => {
   describe('with call context', () => {

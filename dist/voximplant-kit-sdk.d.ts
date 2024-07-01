@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -605,6 +605,10 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
             /**
+                * Set Whatsapp Edna keyboard
+                */
+            setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardButton[]): boolean;
+            /**
                 * Adds tags by id.
                 * ```js
                 *  const kit = new VoximplantKit(context);
@@ -1205,6 +1209,28 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export enum WebChatInlineButtonType {
             Text = "text"
     }
+    export type WhatsappEdnaKeyboardButton = {
+            text: string;
+            url?: string;
+            urlPostfix?: string;
+            phone?: string;
+            payload?: string;
+            type: 'URL' | 'PHONE' | 'QUICK_REPLY';
+    };
+    /**
+        * @hidden
+        */
+    export type ValidateSchemaRule = {
+            required: boolean;
+            type: string;
+            value?: any[];
+    };
+    /**
+        * @hidden
+        */
+    export type ValidateSchema = {
+            [key: string]: ValidateSchemaRule;
+    };
     export type WebChatInlineButton = {
             type: WebChatInlineButtonType;
             text: string;
