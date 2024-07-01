@@ -527,6 +527,31 @@ export enum WebChatInlineButtonType {
   Text= 'text'
 }
 
+export type WhatsappEdnaKeyboardButton = {
+  text: string
+  url?: string
+  urlPostfix?: string
+  phone?: string
+  payload?: string
+  type: 'URL' | 'PHONE' | 'QUICK_REPLY'
+}
+
+/**
+ * @hidden
+ */
+export type ValidateSchemaRule = {
+  required: boolean;
+  type: string;
+  value?: any[];
+}
+
+/**
+ * @hidden
+ */
+export type ValidateSchema = {
+  [key: string]: ValidateSchemaRule;
+}
+
 export type WebChatInlineButton = {
   type: WebChatInlineButtonType
   text: string
