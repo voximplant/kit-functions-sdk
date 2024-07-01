@@ -490,9 +490,6 @@ export interface UserInfo {
 export declare enum WebChatInlineButtonType {
     Text = "text"
 }
-export declare type WhatsappEdnaKeyboardButtons = {
-    buttons: WhatsappEdnaKeyboardButton;
-};
 export declare type WhatsappEdnaKeyboardButton = {
     text: string;
     url?: string;
@@ -501,7 +498,20 @@ export declare type WhatsappEdnaKeyboardButton = {
     payload?: string;
     type: 'URL' | 'PHONE' | 'QUICK_REPLY';
 };
-export declare type WhatsappEdnaKeyboardRows = WhatsappEdnaKeyboardButton[];
+/**
+ * @hidden
+ */
+export declare type ValidateSchemaRule = {
+    required: boolean;
+    type: string;
+    value?: any[];
+};
+/**
+ * @hidden
+ */
+export declare type ValidateSchema = {
+    [key: string]: ValidateSchemaRule;
+};
 export declare type WebChatInlineButton = {
     type: WebChatInlineButtonType;
     text: string;

@@ -1048,7 +1048,34 @@ class VoximplantKit {
         }
         return true;
     }
+    validateObject(object, schema) {
+        for (const key in schema) {
+            const rule = schema[key];
+            const value = object[key];
+            if (rule.required && value === undefined) {
+                console.error(`Field '${key}' is required but missing.`);
+                return false;
+            }
+            if (value !== undefined) {
+                if (typeof value !== rule.type) {
+                    console.error(`Field '${key}' should be of type '${rule.type}' but got '${typeof value}'.`);
+                    return false;
+                }
+                if (rule.value && !rule.value.includes(value)) {
+                    console.error(`Field '${key}' has an invalid value '${value}'. Expected one of ${JSON.stringify(rule.value)}.`);
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
     validateWhatsappEdnaKeyboard(button) {
+        /*Object.keys(button).forEach(item => {
+          if(WhatsappEdnaKeyboardSchema[item] ) {
+            const {required, type, value} = WhatsappEdnaKeyboardSchema[item];
+            if(required && button[item])
+          }
+        })*/
         if (!button.text || typeof button.text !== 'string') {
             console.error('Invalid field text:', button);
             return false;
@@ -1126,7 +1153,15 @@ class VoximplantKit {
             return false;
         }
         const payloadIndex = this.findPayloadIndex(undefined, 'whatsapp_edna_keyboard');
-        const isValid = keyboard_rows.every(button => this.validateWhatsappEdnaKeyboard(button));
+        const whatsappEdnaKeyboardSchema = {
+            text: { required: true, type: 'string', },
+            type: { required: true, type: 'string', value: ['URL', 'PHONE', 'QUICK_REPLY'] },
+            url: { required: false, type: 'string' },
+            urlPostfix: { required: false, type: 'string' },
+            payload: { required: false, type: 'string' },
+            phone: { required: false, type: 'string' },
+        };
+        const isValid = keyboard_rows.every(button => this.validateObject(button, whatsappEdnaKeyboardSchema));
         if (!isValid)
             return false;
         const needClearPayload = keyboard_rows.length === 0;
@@ -1136,9 +1171,11 @@ class VoximplantKit {
         }
         const payload = {
             type: "whatsapp_edna_keyboard",
-            whatsapp_edna_keyboard_rows: keyboard_rows.map(row => {
-                return { buttons: row };
-            })
+            whatsapp_edna_keyboard_rows: [
+                {
+                    buttons: keyboard_rows
+                }
+            ]
         };
         if (payloadIndex !== -1) {
             this.replyMessage.payload[payloadIndex] = payload;

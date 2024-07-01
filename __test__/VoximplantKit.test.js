@@ -1277,11 +1277,10 @@ describe('setWhatsappEdnaKeyboard', () => {
         {text: 'text 2', type: 'QUICK_REPLY'},
       ]
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
-      console.log('isSet', isSet)
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: whatsapp_edna_keyboard_rows.map(row => ({buttons: row}))
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
         }
       ]
 
@@ -1337,7 +1336,7 @@ describe('setWhatsappEdnaKeyboard', () => {
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: whatsapp_edna_keyboard_rows.map(row => ({buttons: row}))
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
         }
       ]
       const messageObject = kit.getMessageObject();
@@ -1358,7 +1357,7 @@ describe('setWhatsappEdnaKeyboard', () => {
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: whatsapp_edna_keyboard_rows.map(row => ({buttons: row}))
+          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
         }
       ]
       const messageObject = kit.getMessageObject();

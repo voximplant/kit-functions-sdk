@@ -1209,9 +1209,6 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export enum WebChatInlineButtonType {
             Text = "text"
     }
-    export type WhatsappEdnaKeyboardButtons = {
-            buttons: WhatsappEdnaKeyboardButton;
-    };
     export type WhatsappEdnaKeyboardButton = {
             text: string;
             url?: string;
@@ -1220,7 +1217,20 @@ declare module '@voximplant/kit-functions-sdk/types' {
             payload?: string;
             type: 'URL' | 'PHONE' | 'QUICK_REPLY';
     };
-    export type WhatsappEdnaKeyboardRows = WhatsappEdnaKeyboardButton[];
+    /**
+        * @hidden
+        */
+    export type ValidateSchemaRule = {
+            required: boolean;
+            type: string;
+            value?: any[];
+    };
+    /**
+        * @hidden
+        */
+    export type ValidateSchema = {
+            [key: string]: ValidateSchemaRule;
+    };
     export type WebChatInlineButton = {
             type: WebChatInlineButtonType;
             text: string;
