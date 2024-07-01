@@ -16,7 +16,12 @@ import {
   DateBasePutParams,
   GetTagsResult,
   AvatarMessageObject,
-  CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton,
+  CallDataObject,
+  ChannelDataObject,
+  UserInfo,
+  WebChatInlineButton,
+  WhatsappEdnaKeyboardButton,
+  WhatsappEdnaKeyboardButtons, WhatsappEdnaKeyboardRows,
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -1163,6 +1168,21 @@ class VoximplantKit {
     return true;
   }
 
+  private validateWhatsappEdnaKeyboard(button: WhatsappEdnaKeyboardButton): boolean {
+    if (!button.text || typeof button.text !== 'string') {
+      console.error('Invalid field text:', button)
+      return false
+    }
+
+    const supportTypes = ['URL', 'PHONE', 'QUICK_REPLY']
+    if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {
+      console.error('Invalid field type:', button)
+      return false
+    }
+
+    return true;
+  }
+
   /**
    * Adds buttons for the web chat channel
    * ```js
@@ -1217,6 +1237,48 @@ class VoximplantKit {
     } else {
       this.replyMessage.payload.push(payload)
     }
+
+    return true;
+  }
+
+  /**
+   * Set Whatsapp Edna keyboard
+   */
+  public setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardButton[]): boolean {
+    if (!(this.isAvatar() || this.isMessage())) {
+      console.error('The setWhatsappEdnaKeyboard method is only available for channels and Avatar response');
+      return false;
+    }
+
+    if (!Array.isArray(keyboard_rows)) {
+      console.error('The keyboard_rows argument must be an array');
+      return false;
+    }
+
+    const payloadIndex = this.findPayloadIndex(undefined, 'whatsapp_edna_keyboard');
+    const isValid = keyboard_rows.every(button => this.validateWhatsappEdnaKeyboard(button));
+
+    if (!isValid) return false;
+
+    const needClearPayload = keyboard_rows.length === 0;
+    if (needClearPayload) {
+      payloadIndex !== -1 ? this.replyMessage.payload.splice(payloadIndex, 1) : null;
+      return true;
+    }
+
+    const payload = {
+      type: "whatsapp_edna_keyboard",
+      whatsapp_edna_keyboard_rows: keyboard_rows.map(row => {
+        return {buttons: row}
+      })
+    }
+
+    if (payloadIndex !== -1) {
+      this.replyMessage.payload[payloadIndex] = payload
+    } else {
+      this.replyMessage.payload.push(payload)
+    }
+
 
     return true;
   }
