@@ -20,8 +20,7 @@ import {
   ChannelDataObject,
   UserInfo,
   WebChatInlineButton,
-  WhatsappEdnaKeyboardButton,
-  ValidateSchema,
+  WhatsappEdnaKeyboardButton, ValidateSchema,
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -1189,28 +1188,6 @@ class VoximplantKit {
           return false;
         }
       }
-    }
-
-    return true;
-  }
-
-
-  private validateWhatsappEdnaKeyboard(button: WhatsappEdnaKeyboardButton): boolean {
-    /*Object.keys(button).forEach(item => {
-      if(WhatsappEdnaKeyboardSchema[item] ) {
-        const {required, type, value} = WhatsappEdnaKeyboardSchema[item];
-        if(required && button[item])
-      }
-    })*/
-    if (!button.text || typeof button.text !== 'string') {
-      console.error('Invalid field text:', button)
-      return false
-    }
-
-    const supportTypes = ['URL', 'PHONE', 'QUICK_REPLY']
-    if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {
-      console.error('Invalid field type:', button)
-      return false
     }
 
     return true;

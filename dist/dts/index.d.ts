@@ -626,7 +626,6 @@ declare class VoximplantKit {
      */
     validateWebChatInlineButton(button: WebChatInlineButton): boolean;
     private validateObject;
-    private validateWhatsappEdnaKeyboard;
     /**
      * Adds buttons for the web chat channel
      * ```js

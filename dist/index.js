@@ -1069,24 +1069,6 @@ class VoximplantKit {
         }
         return true;
     }
-    validateWhatsappEdnaKeyboard(button) {
-        /*Object.keys(button).forEach(item => {
-          if(WhatsappEdnaKeyboardSchema[item] ) {
-            const {required, type, value} = WhatsappEdnaKeyboardSchema[item];
-            if(required && button[item])
-          }
-        })*/
-        if (!button.text || typeof button.text !== 'string') {
-            console.error('Invalid field text:', button);
-            return false;
-        }
-        const supportTypes = ['URL', 'PHONE', 'QUICK_REPLY'];
-        if (!button.type || typeof button.type !== 'string' || !supportTypes.includes(button.type)) {
-            console.error('Invalid field type:', button);
-            return false;
-        }
-        return true;
-    }
     /**
      * Adds buttons for the web chat channel
      * ```js
