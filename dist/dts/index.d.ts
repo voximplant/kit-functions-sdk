@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -692,10 +692,10 @@ declare class VoximplantKit {
      *    // Optional params
      *    const params = {
      *      is_persistent : false,
-       *    resize_keyboard: false,
-       *    one_time_keyboard: false,
-       *    input_field_placeholder: 'Some text',
-       *    selective: false
+     *    resize_keyboard: false,
+     *    one_time_keyboard: false,
+     *    input_field_placeholder: 'Some text',
+     *    selective: false
      *    }
      *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
      *  }
@@ -726,7 +726,7 @@ declare class VoximplantKit {
     /**
      * Set Whatsapp Edna keyboard
      */
-    setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardButton[]): boolean;
+    setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardRow[]): boolean;
     private setTags;
     /**
      * Adds tags by id.

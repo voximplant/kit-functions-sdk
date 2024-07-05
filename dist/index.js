@@ -1220,10 +1220,10 @@ class VoximplantKit {
      *    // Optional params
      *    const params = {
      *      is_persistent : false,
-       *    resize_keyboard: false,
-       *    one_time_keyboard: false,
-       *    input_field_placeholder: 'Some text',
-       *    selective: false
+     *    resize_keyboard: false,
+     *    one_time_keyboard: false,
+     *    input_field_placeholder: 'Some text',
+     *    selective: false
      *    }
      *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
      *  }
@@ -1337,15 +1337,22 @@ class VoximplantKit {
             return false;
         }
         const payloadIndex = this.findPayloadIndex(undefined, 'whatsapp_edna_keyboard');
-        const whatsappEdnaKeyboardSchema = {
+        const whatsappEdnaKeyboardButtonsSchema = {
             text: { required: true, type: 'string', },
-            type: { required: true, type: 'string', value: ['URL', 'PHONE', 'QUICK_REPLY'] },
+            type: { required: true, type: 'string', value: [/*'URL', 'PHONE', */ 'QUICK_REPLY'] },
             url: { required: false, type: 'string' },
             urlPostfix: { required: false, type: 'string' },
             payload: { required: false, type: 'string' },
             phone: { required: false, type: 'string' },
         };
-        const isValid = keyboard_rows.every(button => this.validateObject(button, whatsappEdnaKeyboardSchema));
+        const isValid = keyboard_rows.every(row => {
+            const isValidRow = Array.isArray(row.buttons);
+            if (!isValidRow) {
+                console.error('The buttons field from the keyboard_rows argument must be of the Array type');
+                return false;
+            }
+            return row.buttons.every(button => this.validateObject(button, whatsappEdnaKeyboardButtonsSchema));
+        });
         if (!isValid)
             return false;
         const needClearPayload = keyboard_rows.length === 0;
@@ -1355,11 +1362,7 @@ class VoximplantKit {
         }
         const payload = {
             type: "whatsapp_edna_keyboard",
-            whatsapp_edna_keyboard_rows: [
-                {
-                    buttons: keyboard_rows
-                }
-            ]
+            whatsapp_edna_keyboard_rows: keyboard_rows
         };
         if (payloadIndex !== -1) {
             this.replyMessage.payload[payloadIndex] = payload;
