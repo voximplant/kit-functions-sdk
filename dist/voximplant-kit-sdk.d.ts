@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardButton } from "@voximplant/kit-functions-sdk/types";
+    import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -645,10 +645,10 @@ declare module '@voximplant/kit-functions-sdk' {
                 *    // Optional params
                 *    const params = {
                 *      is_persistent : false,
-                    *    resize_keyboard: false,
-                    *    one_time_keyboard: false,
-                    *    input_field_placeholder: 'Some text',
-                    *    selective: false
+                *    resize_keyboard: false,
+                *    one_time_keyboard: false,
+                *    input_field_placeholder: 'Some text',
+                *    selective: false
                 *    }
                 *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
                 *  }
@@ -678,7 +678,7 @@ declare module '@voximplant/kit-functions-sdk' {
             /**
                 * Set Whatsapp Edna keyboard
                 */
-            setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardButton[]): boolean;
+            setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardRow[]): boolean;
             /**
                 * Adds tags by id.
                 * ```js
@@ -1280,6 +1280,9 @@ declare module '@voximplant/kit-functions-sdk/types' {
     export enum WebChatInlineButtonType {
             Text = "text"
     }
+    export type WhatsappEdnaKeyboardRow = {
+            buttons: WhatsappEdnaKeyboardButton[];
+    };
     export type WhatsappEdnaKeyboardButton = {
             text: string;
             url?: string;

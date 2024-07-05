@@ -527,13 +527,17 @@ export enum WebChatInlineButtonType {
   Text= 'text'
 }
 
+export type WhatsappEdnaKeyboardRow = {
+  buttons: WhatsappEdnaKeyboardButton[]
+}
+
 export type WhatsappEdnaKeyboardButton = {
   text: string
   url?: string
   urlPostfix?: string
   phone?: string
   payload?: string
-  type: 'URL' | 'PHONE' | 'QUICK_REPLY'
+  type: /*'URL' | 'PHONE' |*/ 'QUICK_REPLY'
 }
 
 /**

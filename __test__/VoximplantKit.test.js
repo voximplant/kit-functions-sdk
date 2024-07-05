@@ -1274,7 +1274,7 @@ describe('setTelegramInlineKeyboard', () => {
       ];
 
       const isSet = kit.setTelegramInlineKeyboard(inline_keyboard_markup);
-      const expected =[
+      const expected = [
         {
           message_type: "text",
           type: "properties"
@@ -1781,14 +1781,19 @@ describe('setWhatsappEdnaKeyboard', () => {
 
     test('Setting valid keyboard will return true', () => {
       const whatsapp_edna_keyboard_rows = [
-        {text: 'text', type: 'QUICK_REPLY'},
-        {text: 'text 2', type: 'QUICK_REPLY'},
+        {
+          buttons: [
+            {text: 'text', type: 'QUICK_REPLY'},
+            {text: 'text 2', type: 'QUICK_REPLY'},
+          ]
+        }
+
       ]
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+          whatsapp_edna_keyboard_rows
         }
       ]
 
@@ -1815,7 +1820,7 @@ describe('setWhatsappEdnaKeyboard', () => {
     });
 
     test('Setting a keyboard with an invalid text will return false', async () => {
-      const isSet = await kit.setWhatsappEdnaKeyboard([{text: 1, type: 'QUICK_REPLY'}]);
+      const isSet = await kit.setWhatsappEdnaKeyboard([{buttons: [{text: 1, type: 'QUICK_REPLY'}]}]);
       const expected = [{type: 'whatsapp_edna_keyboard'}];
 
       expect(kit.replyMessage.payload).toEqual(expect.not.arrayContaining(expected));
@@ -1824,8 +1829,11 @@ describe('setWhatsappEdnaKeyboard', () => {
 
     test('Passing an array with objects, one of which is incorrect will return false', () => {
       const whatsapp_edna_keyboard_rows = [
-        {text: 'text', type: 'QUICK_REPLY'},
-        {text: true, type: 'QUICK_REPLY'},
+        {
+          buttons: [
+            {text: 'text', type: 'QUICK_REPLY'},
+            {text: true, type: 'QUICK_REPLY'},]
+        }
       ]
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       const expected = [{type: 'whatsapp_edna_keyboard'}];
@@ -1837,14 +1845,20 @@ describe('setWhatsappEdnaKeyboard', () => {
     });
 
     test('Passing arguments after deletion should return true', () => {
-      const whatsapp_edna_keyboard_rows = [{text: 'text', type: 'QUICK_REPLY'}];
+      const whatsapp_edna_keyboard_rows = [
+        {
+          buttons: [
+            {text: 'text', type: 'QUICK_REPLY'}
+          ]
+        }
+      ];
       kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       kit.setWhatsappEdnaKeyboard([]);
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+          whatsapp_edna_keyboard_rows
         }
       ]
       const messageObject = kit.getMessageObject();
@@ -1857,15 +1871,19 @@ describe('setWhatsappEdnaKeyboard', () => {
 
     test('Passing an array with duplicate objects should return true', () => {
       const whatsapp_edna_keyboard_rows = [
-        {text: 'text', type: 'QUICK_REPLY'},
-        {text: 'text', type: 'QUICK_REPLY'},
+        {
+          buttons: [
+            {text: 'text', type: 'QUICK_REPLY'},
+            {text: 'text', type: 'QUICK_REPLY'},
+          ]
+        }
       ];
 
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       const expected = [
         {
           type: 'whatsapp_edna_keyboard',
-          whatsapp_edna_keyboard_rows: [{buttons: whatsapp_edna_keyboard_rows}]
+          whatsapp_edna_keyboard_rows
         }
       ]
       const messageObject = kit.getMessageObject();
@@ -1882,8 +1900,12 @@ describe('setWhatsappEdnaKeyboard', () => {
 
     test('Setting the keyboards when calling a function from a call will return false', () => {
       const whatsapp_edna_keyboard_rows = [
-        {text: 'text', type: 'QUICK_REPLY'},
-        {text: 'text', type: 'QUICK_REPLY'},
+        {
+          buttons: [
+            {text: 'text', type: 'QUICK_REPLY'},
+            {text: 'text', type: 'QUICK_REPLY'},
+          ]
+        }
       ];
       const isSet = kit.setWhatsappEdnaKeyboard(whatsapp_edna_keyboard_rows);
       const expected = [{type: 'whatsapp_edna_keyboard'}];
