@@ -499,7 +499,7 @@ export declare type WhatsappEdnaKeyboardButton = {
     urlPostfix?: string;
     phone?: string;
     payload?: string;
-    type: 'URL' | 'PHONE' | 'QUICK_REPLY';
+    type: 'QUICK_REPLY';
 };
 /**
  * @hidden
