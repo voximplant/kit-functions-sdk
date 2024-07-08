@@ -1136,7 +1136,12 @@ class VoximplantKit {
      * ```js
      *  const kit = new VoximplantKit(context);
      *  if (kit.isMessage() || kit.isAvatar()) {
-     *    // Text is required for each keyboard.
+     *    // Without a reply message, the keyboard will not be displayed
+     *    const message = kit.getIncomingMessage();
+     *    kit.setReplyMessageText(`You wrote: ${message.text}`);
+     *
+     *     // An array of arrays with keyboard buttons.
+     *     // Text is required for each keyboard.
      *    const inline_keyboard_markup = [
      *       // Row one
      *      [
@@ -1149,6 +1154,10 @@ class VoximplantKit {
      *       ]
      *    ]
      *    kit.setTelegramInlineKeyboard(buttons);
+     *
+     *    // Calling the kit.setTelegramInlineKeyboard method
+     *    // with an empty array will clear previously passed buttons
+     *    // kit.setTelegramInlineKeyboard([]);
      *  }
      *
      *  // End of function
@@ -1205,6 +1214,11 @@ class VoximplantKit {
      * ```js
      *  const kit = new VoximplantKit(context);
      *  if (kit.isMessage() || kit.isAvatar()) {
+     *    // Without a reply message, the keyboard will not be displayed
+     *    const message = kit.getIncomingMessage();
+     *    kit.setReplyMessageText(`You wrote: ${message.text}`);
+     *
+     *    // An array of arrays with keyboard buttons.
      *    // Text is required for each keyboard.
      *    const reply_keyboard_markup = [
      *       // Row one
@@ -1220,12 +1234,17 @@ class VoximplantKit {
      *    // Optional params
      *    const params = {
      *      is_persistent : false,
-     *    resize_keyboard: false,
-     *    one_time_keyboard: false,
-     *    input_field_placeholder: 'Some text',
-     *    selective: false
+     *      resize_keyboard: false,
+     *      one_time_keyboard: false,
+     *      input_field_placeholder: 'Some text',
+     *      selective: false
      *    }
      *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
+     *
+     *
+     *    // Calling the kit.settelgramreplykeyboard method
+     *    // with an empty array will clear previously passed buttons
+     *    // kit.setTelegramReplyKeyboard([]);
      *  }
      *
      *  // End of function
@@ -1271,7 +1290,7 @@ class VoximplantKit {
         return true;
     }
     /**
-     * Adds reply keyboard for the telegram channel
+     * Remove replyKeyboard for telegram channel
      * ```js
      *  const kit = new VoximplantKit(context);
      *  if (kit.isMessage() || kit.isAvatar()) {
@@ -1326,6 +1345,34 @@ class VoximplantKit {
     }
     /**
      * Set Whatsapp Edna keyboard
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  if (kit.isMessage() || kit.isAvatar()) {
+     *     const message = kit.getIncomingMessage();
+     *     kit.setReplyMessageText(`You wrote: ${message.text}`);
+     *     const keyboard = [
+     *         {
+     *             "buttons": [
+     *                 {
+     *                     "text": "test 1", // Required
+     *                     "payload": "test payload 1",
+     *                     "type": "QUICK_REPLY" // Required
+     *                 },
+     *                 {
+     *                     "text": "test 2", // Required
+     *                     "payload": "test payload 2",
+     *                     "type": "QUICK_REPLY" // Required
+     *                 },
+     *             ]
+     *         }
+     *     ];
+     *     const isSet = kit.setWhatsappEdnaKeyboard(keyboard);
+     *     console.log('Buttons for whatsapp have been added:', isSet);
+     *  }
+     *
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
      */
     setWhatsappEdnaKeyboard(keyboard_rows) {
         if (!(this.isAvatar() || this.isMessage())) {
