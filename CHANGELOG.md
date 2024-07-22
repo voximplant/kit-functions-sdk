@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.17](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.14...v0.2.17) (2024-07-22)
+
+
+### Features
+
+* Added setReplyWebChatInlineButtons method ([af57395](https://github.com/voximplant/kit-functions-sdk/commit/af5739584cabba44bdd5054a4ff22863c499d1de))
+* Added setReplyWebChatInlineButtons method ([a7f8ee4](https://github.com/voximplant/kit-functions-sdk/commit/a7f8ee4f317ca3a639afda34bb551a17074bc834))
+* Added setReplyWebChatInlineButtons method ([fe602a8](https://github.com/voximplant/kit-functions-sdk/commit/fe602a87d656aa4d263b13471e5979366d4912f6))
+* Added stopAvatarSession method ([d5040c5](https://github.com/voximplant/kit-functions-sdk/commit/d5040c5bf33d35994af3115284130c496c7afb96))
+* Added stopAvatarSession method ([d0cd95a](https://github.com/voximplant/kit-functions-sdk/commit/d0cd95a32cbe04357f4dfe9b60ff0f57b087e8b5))
+* Added support for the Avatar api custom domain ([bc15b8d](https://github.com/voximplant/kit-functions-sdk/commit/bc15b8dd8dded04b729818b5bd649d3e87968ffe))
+* Added the button_data property to the result of the getIncomingMessage method ([aa527bd](https://github.com/voximplant/kit-functions-sdk/commit/aa527bd6dc3cd572fd57f6a47f5c0eb4f93e7465))
+* Added the button_data property to the result of the getIncomingMessage method ([ec18b55](https://github.com/voximplant/kit-functions-sdk/commit/ec18b55da5945ecbedc3bd3ce61c2c83dad19de2))
+* Added the button_data property to the result of the getIncomingMessage method ([bd04abf](https://github.com/voximplant/kit-functions-sdk/commit/bd04abfe0cc176224d995650a0ed92dc17eb5425))
+* Added the button_data property to the result of the getIncomingMessage method ([1480e25](https://github.com/voximplant/kit-functions-sdk/commit/1480e25144801268b5c1433433f79ce83d718694))
+* Added the setTelegramInlineKeyboard method ([fa7bf21](https://github.com/voximplant/kit-functions-sdk/commit/fa7bf2114811db509a9020cbbb21891aa0631e5a))
+* Added the setWhatsappEdnaKeyboard method ([a219a01](https://github.com/voximplant/kit-functions-sdk/commit/a219a017d6b5de380ba6978e85b18c58f33ea0f8))
+* Added the transferToUser method ([c80d91d](https://github.com/voximplant/kit-functions-sdk/commit/c80d91d4c0c87555a08a9c2e6a09ea02a3072a17))
+* Updated setReplyWebChatInlineButtons method ([d1270d4](https://github.com/voximplant/kit-functions-sdk/commit/d1270d4ee73c2eb11d395854c2b1495457e09f7f))
+
 ### [0.2.16](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.14...v0.2.16) (2023-09-13)
 
 
