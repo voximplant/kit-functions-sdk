@@ -130,6 +130,51 @@ export interface MessageObject {
    * The data of the pressed inline button from the web chat channel
    */
   button_data: string | null;
+  /**
+   * @hidden
+   */
+  CountLocations?: number,
+  /**
+   * @hidden
+   */
+  CountContacts?: number,
+}
+
+export interface IncomingMessageObject extends MessageObject {
+  /**
+   * Message id
+   */
+  id: number,
+  /**
+   * Message text
+   */
+  text: string;
+  /**
+   * Sender of the message
+   */
+  sender: MessageSender;
+  /**
+   * Conversation that the message belongs to
+   */
+  conversation: MessageConversation;
+  /**
+   * Entity for combining different channels of one client
+   */
+  customer: MessageCustomer;
+  /**
+   * The data of the pressed inline button from the web chat channel
+   */
+  button_data: string | null;
+  /**
+  * The counter of the locations contained in the incoming message
+  */
+  CountLocations: number,
+  /**
+   * The counter of the contacts contained in the incoming message
+   */
+  CountContacts: number,
+  contacts?: PayloadContact[],
+  locations?: PayloadLocation[],
 }
 
 export interface CallDataObject {
@@ -448,6 +493,19 @@ export interface MessagePayloadItem {
   user?: UserInfo
   buttons?: WebChatInlineButton[]
   button_data?: string;
+  location?: PayloadLocation,
+  contract?: PayloadContact
+}
+
+export interface PayloadContact {
+  name: string,
+  avatar?: string,
+  number: number
+}
+
+export interface PayloadLocation {
+  latitude: number,
+  longitude: number
 }
 
 export interface DataBase {

@@ -1,4 +1,4 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, MessageObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "./types";
+import { CallObject, ContextObject, QueueInfo, SkillObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow, IncomingMessageObject } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
@@ -131,7 +131,7 @@ declare class VoximplantKit {
      *  callback(200, kit.getResponseBody());
      * ```
      */
-    getIncomingMessage(): MessageObject | null;
+    getIncomingMessage(): IncomingMessageObject | null;
     /**
      * Sets a reply message text.
      * ```js
