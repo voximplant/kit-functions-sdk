@@ -80,6 +80,8 @@ class VoximplantKit {
         if (this.isMessage()) {
             this.incomingMessage = utils_1.default.clone(this.requestData);
             this.incomingMessage.button_data = this.getIncomingMessageButtonData();
+            this.incomingMessage.contacts = this.incomingMessage.payload.filter(payload => payload.type === 'contact');
+            this.incomingMessage.locations = this.incomingMessage.payload.filter(payload => payload.type === 'location');
             this.replyMessage.type = this.requestData.type;
             this.replyMessage.sender.is_bot = true;
             this.replyMessage.conversation = utils_1.default.clone(this.requestData.conversation);
@@ -324,7 +326,7 @@ class VoximplantKit {
      * ```
      */
     getIncomingMessage() {
-        return this.isMessage() ? utils_1.default.clone(this.incomingMessage) : null;
+        return this.isMessage() ? utils_1.default.clone((this.incomingMessage)) : null;
     }
     /**
      * Sets a reply message text.

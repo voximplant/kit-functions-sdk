@@ -26,7 +26,7 @@ import {
   UserInfo,
   WebChatInlineButton,
   WhatsappEdnaKeyboardButton,
-  ValidateSchema, WhatsappEdnaKeyboardRow,
+  ValidateSchema, WhatsappEdnaKeyboardRow, IncomingMessageObject, PayloadContact, PayloadLocation,
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -62,7 +62,7 @@ class VoximplantKit {
   private skills: Array<SkillObject> = [];
   private eventType: EVENT_TYPES = EVENT_TYPES.webhook;
   private replyMessage: MessageObject;
-  private incomingMessage: MessageObject;
+  private incomingMessage: IncomingMessageObject;
   private tags: number[];
   private isTagsReplace: boolean;
   private messageCustomData: { type: 'custom_data', name: string, data: string }[];
@@ -85,7 +85,7 @@ class VoximplantKit {
    */
   constructor(context: ContextObject) {
     this.messageCustomData = [];
-    this.incomingMessage = new Message();
+    this.incomingMessage = new Message() as IncomingMessageObject;
     this.replyMessage = new Message(true);
     this.http = axios
 
@@ -136,8 +136,11 @@ class VoximplantKit {
 
 
     if (this.isMessage()) {
-      this.incomingMessage = utils.clone(this.requestData) as MessageObject;
+      this.incomingMessage = utils.clone(this.requestData) as IncomingMessageObject;
       this.incomingMessage.button_data = this.getIncomingMessageButtonData();
+      this.incomingMessage.contacts = this.incomingMessage.payload.filter(payload => payload.type === 'contact') as unknown as PayloadContact[];
+      this.incomingMessage.locations = this.incomingMessage.payload.filter(payload => payload.type === 'location') as unknown as PayloadLocation[];
+
       this.replyMessage.type = (this.requestData as MessageObject).type;
       this.replyMessage.sender.is_bot = true;
       this.replyMessage.conversation = utils.clone((this.requestData as MessageObject).conversation);
@@ -403,8 +406,8 @@ class VoximplantKit {
    *  callback(200, kit.getResponseBody());
    * ```
    */
-  public getIncomingMessage(): MessageObject | null {
-    return this.isMessage() ? utils.clone((this.incomingMessage as MessageObject)) : null;
+  public getIncomingMessage(): IncomingMessageObject | null {
+    return this.isMessage() ? utils.clone((this.incomingMessage)) : null;
   }
 
   /**
