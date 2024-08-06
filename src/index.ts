@@ -970,7 +970,7 @@ class VoximplantKit {
   }
 
   /**
-   * Deletes a value from the database scope, if the key already exists. Available only after laodDatabase(). execution.
+   * Deletes a value from the specified database scope, if the key already exists. Available only after loadDatabase() execution.
    * ```js
    *  // Initialize a VoximplantKit instance
    *  const kit = new VoximplantKit(context);
