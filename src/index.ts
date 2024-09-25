@@ -2,31 +2,33 @@ import axios, {AxiosInstance} from 'axios'
 import Api from "./Api"
 import DB from "./DB"
 import {
-  CallObject,
-  ContextObject,
-  QueueInfo,
-  SkillObject,
-  MessageObject,
   ApiInstance,
-  AvatarConfig,
+  AvatarMessageObject,
+  CallDataObject,
+  CallObject,
+  ChannelDataObject,
+  ContextObject,
   DataBaseType,
-  RequestData,
-  RequestObjectCallBody,
-  ObjectType,
   DateBasePutParams,
   GetTagsResult,
-  AvatarMessageObject,
-  TelegramInlineKeyboardButton,
+  IncomingMessageObject,
+  MessageObject,
   MessagePayloadItem,
+  ObjectType,
+  PayloadContact,
+  PayloadLocation,
+  QueueInfo,
+  RequestData,
+  RequestObjectCallBody,
+  SkillObject,
+  TelegramInlineKeyboardButton,
   TelegramReplyKeyboardButton,
   TelegramReplyKeyboardParams,
   TelegramReplyKeyboardRemove,
-  CallDataObject,
-  ChannelDataObject,
   UserInfo,
+  ValidateSchema,
   WebChatInlineButton,
-  WhatsappEdnaKeyboardButton,
-  ValidateSchema, WhatsappEdnaKeyboardRow, IncomingMessageObject, PayloadContact, PayloadLocation,
+  WhatsappEdnaKeyboardRow,
 } from "./types";
 import Message from "./Message";
 import utils from './utils';
@@ -48,7 +50,8 @@ const enum EVENT_TYPES {
 class VoximplantKit {
   private requestData: RequestData = {}
   private accessToken: string = ''
-  private sessionAccessUrl: string = ''
+  private sessionAccessUrl: string = '';
+  private xFissionFunctionName: string = '';
   private apiUrl: string = ''
   private domain: string = ''
   private functionId: number = 0;
@@ -109,6 +112,7 @@ class VoximplantKit {
     this.functionId = utils.getHeaderValue(context, 'x-kit-function-id', 0) as number;
     // Get session access url
     this.sessionAccessUrl = utils.getHeaderValue(context, 'x-kit-session-access-url', '') as string;
+    this.xFissionFunctionName = utils.getHeaderValue(context, 'x-fission-function-name', '') as string
     // Store call data
     this.call = this.getRequestDataProperty('CALL') as CallObject;
     // Store Call headers
@@ -223,6 +227,26 @@ class VoximplantKit {
         return urls[id] as string;
       }
       return null;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  /**
+   * Get the URL of the current function. Used for invoking the function as a callback.
+   * ```js
+   *  const kit = new VoximplantKit(context);
+   *  const uri = kit.getCurrentFunctionUri();
+   *  console.log('URL of the current function', uri);
+   *  // End of function
+   *  callback(200, kit.getResponseBody());
+   * ```
+   */
+  getCurrentFunctionUri(): string | null {
+    try {
+      const urls = JSON.parse(this.getEnvVariable('KIT_FUNC_URLS')) as Record<string, string>;
+      console.log(this.getEnvVariable('KIT_FUNC_URLS'));
+      return Object.values(urls || {}).find(urlValue => urlValue.includes(this.xFissionFunctionName)) ?? null;
     } catch (err) {
       return null;
     }

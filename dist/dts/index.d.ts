@@ -1,9 +1,10 @@
-import { CallObject, ContextObject, QueueInfo, SkillObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow, IncomingMessageObject } from "./types";
+import { AvatarMessageObject, CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "./types";
 import Avatar from "./Avatar";
 declare class VoximplantKit {
     private requestData;
     private accessToken;
     private sessionAccessUrl;
+    private xFissionFunctionName;
     private apiUrl;
     private domain;
     private functionId;
@@ -68,6 +69,17 @@ declare class VoximplantKit {
      * ```
      */
     getFunctionUriById(id: number): string | null;
+    /**
+     * Get the URL of the current function. Used for invoking the function as a callback.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  const uri = kit.getCurrentFunctionUri();
+     *  console.log('URL of the current function', uri);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getCurrentFunctionUri(): string | null;
     private getRequestDataProperty;
     private getRequestDataVariables;
     private getRequestDataTags;

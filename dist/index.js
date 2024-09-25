@@ -24,6 +24,7 @@ class VoximplantKit {
         this.requestData = {};
         this.accessToken = '';
         this.sessionAccessUrl = '';
+        this.xFissionFunctionName = '';
         this.apiUrl = '';
         this.domain = '';
         this.functionId = 0;
@@ -56,6 +57,7 @@ class VoximplantKit {
         this.functionId = utils_1.default.getHeaderValue(context, 'x-kit-function-id', 0);
         // Get session access url
         this.sessionAccessUrl = utils_1.default.getHeaderValue(context, 'x-kit-session-access-url', '');
+        this.xFissionFunctionName = utils_1.default.getHeaderValue(context, 'x-fission-function-name', '');
         // Store call data
         this.call = this.getRequestDataProperty('CALL');
         // Store Call headers
@@ -151,6 +153,27 @@ class VoximplantKit {
                 return urls[id];
             }
             return null;
+        }
+        catch (err) {
+            return null;
+        }
+    }
+    /**
+     * Get the URL of the current function. Used for invoking the function as a callback.
+     * ```js
+     *  const kit = new VoximplantKit(context);
+     *  const uri = kit.getCurrentFunctionUri();
+     *  console.log('URL of the current function', uri);
+     *  // End of function
+     *  callback(200, kit.getResponseBody());
+     * ```
+     */
+    getCurrentFunctionUri() {
+        var _a;
+        try {
+            const urls = JSON.parse(this.getEnvVariable('KIT_FUNC_URLS'));
+            console.log(this.getEnvVariable('KIT_FUNC_URLS'));
+            return (_a = Object.values(urls || {}).find(urlValue => urlValue.includes(this.xFissionFunctionName))) !== null && _a !== void 0 ? _a : null;
         }
         catch (err) {
             return null;
