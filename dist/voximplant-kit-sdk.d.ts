@@ -3,7 +3,7 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { CallObject, ContextObject, QueueInfo, SkillObject, DataBaseType, ObjectType, GetTagsResult, AvatarMessageObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, CallDataObject, ChannelDataObject, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow, IncomingMessageObject } from "@voximplant/kit-functions-sdk/types";
+    import { AvatarMessageObject, CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "@voximplant/kit-functions-sdk/types";
     import Avatar from "@voximplant/kit-functions-sdk/Avatar";
     class VoximplantKit {
             avatar: Avatar;
@@ -48,6 +48,17 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             getFunctionUriById(id: number): string | null;
+            /**
+                * Get the URL of the current function. Used for invoking the function as a callback.
+                * ```js
+                *  const kit = new VoximplantKit(context);
+                *  const uri = kit.getCurrentFunctionUri();
+                *  console.log('URL of the current function', uri);
+                *  // End of function
+                *  callback(200, kit.getResponseBody());
+                * ```
+                */
+            getCurrentFunctionUri(): string | null;
             /**
                 * Loads the databases available in the scope.
                 * ```js
