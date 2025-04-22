@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-const axios_1 = require("axios");
-const utils_1 = require("./utils");
+const axios_1 = __importDefault(require("axios"));
+const utils_1 = __importDefault(require("./utils"));
 /**
  * @hidden
  */
@@ -73,17 +76,7 @@ class Avatar {
     }
     /**
      * Gets response data from an avatar.
-     *```js
-     * const kit = new VoximplantKit(context);
-     * if (kit.isAvatar()) {
-     *   const avatarResponse = kit.avatar.getResponseData();
-     *   console.log(avatarResponse);
-     *   // ... do something
-     * }
-     *
-     * // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     *@exampleFile Avatar/getResponseData.md
      */
     getResponseData() {
         return this.responseData ? utils_1.default.clone(this.responseData) : null;
@@ -97,36 +90,7 @@ class Avatar {
     }
     /**
      * Send a message to a Voximplant avatar.
-     * ```js
-     * const kit = new VoximplantKit(context);
-     * if (kit.isMessage()) {
-     *   try {
-     *     const conversationId = kit.getConversationUuid();
-     *     const callbackUri = kit.getFunctionUriById(33);
-     *     const {text} = kit.getIncomingMessage();
-     *     // This variable must be added to the environment variables yourself.
-     *     const avatarId = kit.getEnvVariable('avatarId');
-     *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-     *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-     *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-     *     await kit.avatar.sendMessageToAvatar({
-     *       callbackUri,
-     *       voxAccountId,
-     *       avatarLogin,
-     *       avatarPass,
-     *       avatarId,
-     *       conversationId,
-     *       utterance: text,
-     *       customData: {}
-     *     })
-     *   } catch (err) {
-     *     console.error(err);
-     *   }
-     * }
-     *
-     * // End of function
-     * callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile Avatar/sendMessageToAvatar.md
      */
     async sendMessageToAvatar(config) {
         const { voxAccountId, avatarLogin, avatarPass, avatarId, callbackUri, utterance, conversationId, customData = {} } = config;
@@ -167,30 +131,7 @@ class Avatar {
     }
     /**
      * Terminates an avatar session.
-     *```js
-     * const kit = new VoximplantKit(context);
-     * // This variable must be added to the environment variables yourself.
-     * const avatarId = kit.getEnvVariable('avatarId');
-     * const conversationId = kit.getConversationUuid();
-     * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-     * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-     * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-     * if (kit.isAvatar()) {
-     *   try {
-     *     await kit.avatar.stopAvatarSession({
-     *       voxAccountId,
-     *       avatarLogin,
-     *       avatarPass,
-     *       avatarId,
-     *       conversationId,
-     *     })
-     *   } catch (err) {
-     *     console.error(err);
-     *   }
-     * }
-     * // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     *@exampleFile Avatar/stopAvatarSession.md
      */
     async stopAvatarSession(config) {
         const { voxAccountId, avatarLogin, avatarPass, avatarId, conversationId, } = config;
@@ -207,21 +148,7 @@ class Avatar {
     }
     /**
      * Send the avatar's reply to the conversation.
-     *```js
-     * const kit = new VoximplantKit(context);
-     * if (kit.isAvatar()) {
-     *  const conversationUuid = kit.getConversationUuid();
-     *  const message = kit.getMessageObject();
-     *  try {
-     *    await kit.avatar.sendMessageToConversation(conversationUuid, message);
-     *  } catch(err) {
-     *    console.error(err)
-     *  }
-     * }
-     *
-     * // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     *@exampleFile Avatar/sendMessageToConversation.md
      */
     async sendMessageToConversation(conversationUuid, message) {
         const botUrl = `${this.imApiUrl}/api/v3/botService/sendResponse?conversation_uuid=${conversationUuid}`;

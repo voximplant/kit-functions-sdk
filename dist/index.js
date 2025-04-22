@@ -1,24 +1,18 @@
 "use strict";
-const axios_1 = require("axios");
-const Api_1 = require("./Api");
-const DB_1 = require("./DB");
-const Message_1 = require("./Message");
-const utils_1 = require("./utils");
-const Avatar_1 = require("./Avatar");
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+const axios_1 = __importDefault(require("axios"));
+const Api_1 = __importDefault(require("./Api"));
+const DB_1 = __importDefault(require("./DB"));
+const Message_1 = __importDefault(require("./Message"));
+const utils_1 = __importDefault(require("./utils"));
+const Avatar_1 = __importDefault(require("./Avatar"));
 utils_1.default.getEnv();
 class VoximplantKit {
     /**
      * Voximplant Kit class, a middleware for working with functions.
-     * ```js
-     * module.exports = async function(context, callback) {
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Some code
-     *  console.log(Date.now());
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     *}
-     * ```
+     * @exampleFile index/constructor.md
      */
     constructor(context) {
         this.requestData = {};
@@ -33,7 +27,7 @@ class VoximplantKit {
         this.variables = {};
         this.call = null;
         this.skills = [];
-        this.eventType = "webhook" /* webhook */;
+        this.eventType = "webhook" /* EVENT_TYPES.webhook */;
         this.messageCustomData = [];
         this.incomingMessage = new Message_1.default();
         this.replyMessage = new Message_1.default(true);
@@ -46,7 +40,7 @@ class VoximplantKit {
         // Store request data
         this.requestData = context.request.body;
         // Get event type
-        this.eventType = utils_1.default.getHeaderValue(context, 'x-kit-event-type', "webhook" /* webhook */);
+        this.eventType = utils_1.default.getHeaderValue(context, 'x-kit-event-type', "webhook" /* EVENT_TYPES.webhook */);
         // Get access token
         this.accessToken = utils_1.default.getHeaderValue(context, 'x-kit-access-token', 'test');
         // Get api url
@@ -117,15 +111,7 @@ class VoximplantKit {
     }
     /**
      * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    const uuid = kit.getConversationUuid();
-     *    //... do something
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getConversationUuid.md
      */
     getConversationUuid() {
         if (this.isMessage()) {
@@ -139,12 +125,7 @@ class VoximplantKit {
     }
     /**
      * Get the function URI by its id.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  const uri = kit.getFunctionUriById(31);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getFunctionUriById.md
      */
     getFunctionUriById(id) {
         try {
@@ -160,13 +141,7 @@ class VoximplantKit {
     }
     /**
      * Get the URL of the current function. Used for invoking the function as a callback.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  const uri = kit.getCurrentFunctionUri();
-     *  console.log('URL of the current function', uri);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getCurrentFunctionUri.md
      */
     getCurrentFunctionUri() {
         var _a;
@@ -228,21 +203,7 @@ class VoximplantKit {
     }
     /**
      * Loads the databases available in the scope.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Read contents from the global scope
-     *    const global_scope = kit.dbGetAll('global');
-     *    console.log(global_scope)
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/loadDatabases.md
      */
     async loadDatabases() {
         const names = [
@@ -271,15 +232,7 @@ class VoximplantKit {
     }
     /**
      * Gets a message object.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    const messageObject = kit.getMessageObject();
-     *    // ...do something
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getMessageObject.md
      */
     getMessageObject() {
         if (this.isMessage() || this.isAvatar()) {
@@ -310,12 +263,7 @@ class VoximplantKit {
     }
     /**
      * Gets a function response. Needs to be called at the end of each function.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getResponseBody.md
      */
     getResponseBody() {
         const variables = this._getVariables();
@@ -335,38 +283,14 @@ class VoximplantKit {
     }
     /**
      * Gets an incoming message.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Check if the function is called from a channel
-     *  if (kit.isMessage()) {
-     *    // Get text from an incoming message
-     *    const message = kit.getIncomingMessage();
-     *    console.log(message.text);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getIncomingMessage.md
      */
     getIncomingMessage() {
         return this.isMessage() ? utils_1.default.clone((this.incomingMessage)) : null;
     }
     /**
      * Sets a reply message text.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Check if the function is called from a channel
-     *  if (kit.isMessage()) {
-     *    // Get text from an incoming message
-     *    const message = kit.getIncomingMessage();
-     *    console.log(message.text);
-     *    // Set text of the reply
-     *    kit.setReplyMessageText('you wrote ' + message.text);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setReplyMessageText.md
      * @param text {string} - Reply text
      */
     setReplyMessageText(text) {
@@ -378,63 +302,28 @@ class VoximplantKit {
     }
     /**
      * The function is called from a call.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isCall()) {
-     *    console.log('This function is called from the call')
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/isCall.md
      */
     isCall() {
-        return this.eventType === "in_call_function" /* in_call_function */;
+        return this.eventType === "in_call_function" /* EVENT_TYPES.in_call_function */;
     }
     /**
      * The function is called from a message.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage()) {
-     *    console.log('This function is called from the channel');
-     *    const message = kit.getIncomingMessage();
-     *    //...
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/isMessage.md
      */
     isMessage() {
-        return this.eventType === "incoming_message" /* incoming_message */;
+        return this.eventType === "incoming_message" /* EVENT_TYPES.incoming_message */;
     }
     /**
      * The function is called by the avatar.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isAvatar()) {
-     *    //...do something
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/isAvatar.md
      */
     isAvatar() {
-        return this.eventType === "avatar_function" /* avatar_function */;
+        return this.eventType === "avatar_function" /* EVENT_TYPES.avatar_function */;
     }
     /**
      * Gets a variable by name.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  const my_var = kit.getVariable('my_var');
-     *  if (my_var) {
-     *    console.log(my_var);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getVariable.md
      * @param name {string} - Variable name
      */
     getVariable(name) {
@@ -442,14 +331,7 @@ class VoximplantKit {
     }
     /**
      * Adds a variable or updates it if the variable name already exists.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  kit.setVariable('my_var', 'some_value');
-     *  console.log(kit.getVariable('my_var'));
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setVariable.md
      * @param name {string} - Variable name
      * @param value {any} - Variable value
      */
@@ -462,15 +344,7 @@ class VoximplantKit {
     }
     /**
      * Deletes a variable by name.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  kit.deleteVariable('my_var');
-     *  // Console will print null
-     *  console.log(kit.getVariable('my_var'));
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/deleteVariable.md
      * @param name {string} - Variable name
      */
     deleteVariable(name) {
@@ -482,81 +356,35 @@ class VoximplantKit {
     }
     /**
      * Gets call headers.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isCall()) {
-     *    const headers = kit.getCallHeaders();
-     *    console.log(headers);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getCallHeaders.md
      */
     getCallHeaders() {
         return this.isCall() ? utils_1.default.clone(this.callHeaders) : null;
     }
     /**
      * Gets all call data.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isCall()) {
-     *    const call = kit.getCallData();
-     *    // Get the phone number from which the call is made
-     *    console.log(call.phone_a);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getCallData.md
      */
     getCallData() {
         return this.isCall() ? utils_1.default.clone(this.call) : null;
     }
     /**
      * Gets all variables.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  const all_vars = kit.getVariables();
-     *  console.log(all_vars);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getVariables.md
      */
     getVariables() {
         return utils_1.default.clone(this.variables);
     }
     /**
      * Gets all skills.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (this.isCall()) {
-     *    const all_skills = kit.getSkills();
-     *    console.log('All skills:', all_skills);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getSkills.md
      */
     getSkills() {
         return utils_1.default.clone(this.skills);
     }
     /**
      * Adds a skill or updates it if the skill id already exists.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isCall()) {
-     *    kit.setSkill({skill_id: 234, level: 5});
-     *  } else if (kit.isMessage()) {
-     *    kit.setSkill({skill_id: 35, level: 3});
-     *    kit.transferToQueue({queue_id: 72});
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setSkill.md
      */
     setSkill(skill) {
         if (!('skill_id' in skill)) {
@@ -591,13 +419,7 @@ class VoximplantKit {
     }
     /**
      * Removes a skill by id.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  kit.removeSkill(234);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/removeSkill.md
      * @param id {Number} - Name of the skill to remove
      */
     removeSkill(id) {
@@ -612,16 +434,7 @@ class VoximplantKit {
     }
     /**
      * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Transfer a client to the queue
-     *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
-     *  // Set the highest priority
-     *  kit.setPriority(10);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setPriority.md
      * @param value {number} - Priority value, from 0 to 10
      */
     setPriority(value) {
@@ -636,36 +449,14 @@ class VoximplantKit {
     }
     /**
      * Gets call priorities.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Return a number from 0 to 10
-     *  const priority = kit.getPriority();
-     *  if (priority === 10) {
-     *    // Something to do
-     *  } else if (priority === 5) {
-     *    // Something to do
-     *  } else {
-     *    // Something to do
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getPriority.md
      */
     getPriority() {
         return this.priority;
     }
     /**
      * Closes the client's request.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (this.isMessage()) {
-     *    kit.finishRequest();
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/finishRequest.md
      */
     finishRequest() {
         if (!(this.isMessage() || this.isAvatar()))
@@ -681,21 +472,7 @@ class VoximplantKit {
     }
     /**
      * Reopens the client's request.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (this.isMessage()) {
-     *    kit.finishRequest();
-     *  }
-     *  // ...
-     *  // Сondition for reopening
-     *  const shouldCancel = true;
-     *  if (shouldCancel) {
-     *    kit.cancelFinishRequest();
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/cancelFinishRequest.md
      */
     cancelFinishRequest() {
         const payloadIndex = this.findPayloadIndex('finish_request');
@@ -706,14 +483,7 @@ class VoximplantKit {
     }
     /**
      * Transfers a client to the queue.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Transfer a client to the queue
-     *  kit.transferToQueue({queue_id: 82});
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/transferToQueue.md
      */
     transferToQueue(queue) {
         if (!(this.isMessage() || this.isAvatar()))
@@ -741,16 +511,7 @@ class VoximplantKit {
     }
     /**
      * Transfers a client to the user. Only for text channels and Avatar.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  if (this.isMessage() || this.isAvatar()) {
-     *    // Use user_id or user_email.
-     *    kit.transferToUser({user_id: 12});
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/transferToUser.md
      */
     transferToUser(user) {
         if (!(this.isMessage() || this.isAvatar()))
@@ -777,20 +538,7 @@ class VoximplantKit {
     }
     /**
      * Cancels transferring a client to the queue.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Transfer a client to the queue
-     *  kit.transferToQueue({queue_id: null, queue_name: 'some_queue_name'});
-     *  //...
-     *  // Condition for canceling the transfer to the queue
-     *  const shouldCancel = true;
-     *  if (shouldCancel) {
-     *    kit.cancelTransferToQueue();
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/cancelTransferToQueue.md
      */
     cancelTransferToQueue() {
         const payloadIndex = this.findPayloadIndex('transfer_to_queue');
@@ -801,20 +549,7 @@ class VoximplantKit {
     }
     /**
      * Cancels transferring a client to the user.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  // Transfer a client to the queue
-     *  kit.transferToUser({user_id: 12});
-     *  //...
-     *  // Condition for canceling the transfer to the queue
-     *  const shouldCancel = true;
-     *  if (shouldCancel) {
-     *    kit.cancelTransferToUser();
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/cancelTransferToUser.md
      */
     cancelTransferToUser() {
         const payloadIndex = this.findPayloadIndex('transfer_to_user');
@@ -825,21 +560,7 @@ class VoximplantKit {
     }
     /**
      * Gets a value from the database scope by key. Available only after loadDatabases() execution.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Get the value from the function scope by key
-     *    const _test = kit.dbGet('test_key', 'function')
-     *    console.log(_test);
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/dbGet.md
      * @param key {string} - Key
      * @param scope {DataBaseType} - Database scope
      */
@@ -848,26 +569,7 @@ class VoximplantKit {
     }
     /**
      * Adds a value to the database scope or updates it if the key already exists. Available only after loadDatabases() execution.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Get a value from the function scope by key
-     *    const _test = kit.dbGet('test_key', 'function')
-     *    // If there is no data
-     *    if (_test === null) {
-     *      kit.dbSet('test_key', 'Hello world!!!', 'function');
-     *    }
-     *    // Write changes to the database
-     *    await kit.dbCommit();
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/dbSet.md
      * @param key {string} - Key
      * @param value {any} - Value
      * @param scope {DataBaseType} - Database scope
@@ -877,22 +579,7 @@ class VoximplantKit {
     }
     /**
      * Deletes a value from the specified database scope, if the key already exists. Available only after loadDatabase() execution.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Delete a value from the function scope by key
-     *    kit.dbDelete('test_key', 'function')
-     *    // Write changes to the database
-     *   await kit.dbCommit();
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/dbDelete.md
      * @param key {string} - Key
      * @param scope {DataBaseType} - Database scope
      */
@@ -901,21 +588,7 @@ class VoximplantKit {
     }
     /**
      * Gets the whole database scope by name. Available only after loadDatabases() execution.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Read contents from the global scope
-     *    const global_scope = kit.dbGetAll('global');
-     *    console.log(global_scope)
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/dbGetAll.md
      * @param scope {DataBaseType} - Database scope
      */
     dbGetAll(scope = "global") {
@@ -923,26 +596,7 @@ class VoximplantKit {
     }
     /**
      * Adds changes to the database. Available only after loadDatabases() execution.
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *    // Connect available databases
-     *    await kit.loadDatabases();
-     *    // Get a value from the function scope by key
-     *    const _test = kit.dbGet('test_key', 'function')
-     *    // If there is no data
-     *    if (_test === null) {
-     *      kit.dbSet('test_key', 'Hello world!!!', 'function');
-     *    }
-     *    // Write changes to the database
-     *    await kit.dbCommit();
-     *  } catch(err) {
-     *    console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/dbCommit.md
      */
     async dbCommit() {
         var _a;
@@ -968,20 +622,7 @@ class VoximplantKit {
     }
     /**
      * Allows you to use the Voximplant Kit API.
-     * ```js
-     * // Example of getting an account name
-     *  const kit = new VoximplantKit(context);
-     *  try {
-     *     const { success, result } = await kit.apiProxy('/v2/account/getAccountInfo');
-     *     if (success) {
-     *        console.log('Account name', result.domain.name);
-     *     }
-     *  } catch (err) {
-     *     console.log(err);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/apiProxy.md
      * @param url {string} - URL address
      * @param data
      */
@@ -998,14 +639,7 @@ class VoximplantKit {
     }
     /**
      * Adds a photo.
-     * ```js
-     * module.exports = async function(context, callback) {
-     *  const kit = new VoximplantKit(context);
-     *  kit.addPhoto('https://your-srite.com/img/some-photo.png');
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     *}
-     * ```
+     * @exampleFile index/addPhoto.md
      * @param url {String} - URL address of the photo
      * @returns {Boolean}
      */
@@ -1021,16 +655,7 @@ class VoximplantKit {
     /**
      * Gets an environment variable by name.
      * [More details here.](https://voximplant.com/kit/docs/functions/envvariables)
-     * ```js
-     *  // Initialize a VoximplantKit instance
-     *  const kit = new VoximplantKit(context);
-     *  const my_var = kit.getEnvVariable('myEnv');
-     *  if (my_var) {
-     *    console.log(my_var);
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getEnvVariable.md
      * @param name {string} - Variable name
      */
     getEnvVariable(name) {
@@ -1038,13 +663,7 @@ class VoximplantKit {
     }
     /**
      * A static method used outside the function body that gets environment variables.
-     * ```js
-     *  const my_var = VoximplantKit.getEnvironmentVariable('myEnv');
-     *  if (my_var) {
-     *    console.log(my_var);
-     *  }
-     * ```
-     * @static
+     * @exampleFile index/getEnvironmentVariable.md
      */
     static getEnvironmentVariable(name) {
         if (typeof name === 'string') {
@@ -1111,21 +730,7 @@ class VoximplantKit {
     }
     /**
      * Adds buttons for the web chat channel
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    // Text is required for each button and must not be greater than 40 char.
-     *    // The max number of buttons is 13.
-     *    const buttons = [
-     *      {type: 'text', text: 'Some btn text', data: 'Some btn data'}
-     *      {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
-     *    ]
-     *    kit.setReplyWebChatInlineButtons(buttons);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setReplyWebChatInlineButtons.md
      */
     setReplyWebChatInlineButtons(buttons) {
         if (!(this.isAvatar() || this.isMessage())) {
@@ -1158,36 +763,7 @@ class VoximplantKit {
     }
     /**
      * Adds inline keyboard for the telegram channel
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    // Without a reply message, the keyboard will not be displayed
-     *    const message = kit.getIncomingMessage();
-     *    kit.setReplyMessageText(`You wrote: ${message.text}`);
-     *
-     *     // An array of arrays with keyboard buttons.
-     *     // Text is required for each keyboard.
-     *    const inline_keyboard_markup = [
-     *       // Row one
-     *      [
-     *         {text: 'text', url: 'url', callback_data: '1'},
-     *         {text: 'text 2', url: 'url'},
-     *       ],
-     *       // Row two
-     *       [
-     *         {text: 'text', url: 'url', callback_data: '1'},
-     *       ]
-     *    ]
-     *    kit.setTelegramInlineKeyboard(buttons);
-     *
-     *    // Calling the kit.setTelegramInlineKeyboard method
-     *    // with an empty array will clear previously passed buttons
-     *    // kit.setTelegramInlineKeyboard([]);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setTelegramInlineKeyboard.md
      */
     setTelegramInlineKeyboard(keyboard_markup) {
         if (!(this.isAvatar() || this.isMessage())) {
@@ -1236,45 +812,7 @@ class VoximplantKit {
     }
     /**
      * Adds reply keyboard for the telegram channel
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    // Without a reply message, the keyboard will not be displayed
-     *    const message = kit.getIncomingMessage();
-     *    kit.setReplyMessageText(`You wrote: ${message.text}`);
-     *
-     *    // An array of arrays with keyboard buttons.
-     *    // Text is required for each keyboard.
-     *    const reply_keyboard_markup = [
-     *       // Row one
-     *      [
-     *         {text: 'button 1', request_contact: true},
-     *         {text: 'button 2'},
-     *       ],
-     *       // Row two
-     *       [
-     *         {text: 'button 3', request_location: true},
-     *       ]
-     *    ]
-     *    // Optional params
-     *    const params = {
-     *      is_persistent : false,
-     *      resize_keyboard: false,
-     *      one_time_keyboard: false,
-     *      input_field_placeholder: 'Some text',
-     *      selective: false
-     *    }
-     *    kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
-     *
-     *
-     *    // Calling the kit.settelgramreplykeyboard method
-     *    // with an empty array will clear previously passed buttons
-     *    // kit.setTelegramReplyKeyboard([]);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setTelegramReplyKeyboard.md
      */
     setTelegramReplyKeyboard(keyboard_markup, keyboard_params = {}) {
         if (!(this.isAvatar() || this.isMessage())) {
@@ -1316,19 +854,7 @@ class VoximplantKit {
     }
     /**
      * Remove replyKeyboard for telegram channel
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *    const remove_params = {
-     *      remove_keyboard: true, // required
-     *      selective: false
-     *    }
-     *    kit.setTelegramReplyKeyboardRemove(remove_params);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setTelegramReplyKeyboardRemove.md
      */
     setTelegramReplyKeyboardRemove(remove_params) {
         const payloadIndex = this.findPayloadIndex(undefined, 'telegram_reply_keyboard_remove');
@@ -1370,34 +896,7 @@ class VoximplantKit {
     }
     /**
      * Set Whatsapp Edna keyboard
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isMessage() || kit.isAvatar()) {
-     *     const message = kit.getIncomingMessage();
-     *     kit.setReplyMessageText(`You wrote: ${message.text}`);
-     *     const keyboard = [
-     *         {
-     *             "buttons": [
-     *                 {
-     *                     "text": "test 1", // Required
-     *                     "payload": "test payload 1",
-     *                     "type": "QUICK_REPLY" // Required
-     *                 },
-     *                 {
-     *                     "text": "test 2", // Required
-     *                     "payload": "test payload 2",
-     *                     "type": "QUICK_REPLY" // Required
-     *                 },
-     *             ]
-     *         }
-     *     ];
-     *     const isSet = kit.setWhatsappEdnaKeyboard(keyboard);
-     *     console.log('Buttons for whatsapp have been added:', isSet);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setWhatsappEdnaKeyboard.md
      */
     setWhatsappEdnaKeyboard(keyboard_rows) {
         if (!(this.isAvatar() || this.isMessage())) {
@@ -1474,37 +973,23 @@ class VoximplantKit {
     }
     /**
      * Adds tags by id.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  kit.addTags([12, 34]);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * This method allows you to add tags to the current context.
+     *
+     * @exampleFile index/addTags.md
      */
     addTags(tags) {
         return this.setTags(tags);
     }
     /**
      * Replaces all tags.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  kit.replaceTags([12, 34]);
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/replaceTags.md
      */
     replaceTags(tags) {
         return this.setTags(tags, true);
     }
     /**
      * Gets tags.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  await kit.getTags(); // [12, 34]
-     *  await kit.getTags(true); // [{id: 12, tag_name: 'my_tag'}, {id: 34, tag_name: 'my_tag2'}]
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getTags.md
      * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
      */
     getTags(withName) {
@@ -1525,12 +1010,7 @@ class VoximplantKit {
     }
     /**
      * Set custom data.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/setCustomData.md
      */
     setCustomData(name, data) {
         if (typeof name !== 'string' || !(name === null || name === void 0 ? void 0 : name.length)) {
@@ -1559,12 +1039,7 @@ class VoximplantKit {
     }
     /**
      * Delete custom data.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  kit.deleteCustomData('my_data');
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/deleteCustomData.md
      */
     deleteCustomData(name) {
         if (typeof name !== 'string' || !(name === null || name === void 0 ? void 0 : name.length)) {
@@ -1580,60 +1055,28 @@ class VoximplantKit {
     }
     /**
      * Get DialogFlow key by id.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  const dfKey = kit.getDfKey(15);
-     *  if (dfKey) {
-     *    console.log('My DF key:', dfKey);
-     *    //... do something
-     *  }
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getDfKey.md
      */
     getDfKey(id) {
         return utils_1.default.getDfKey(id);
     }
     /**
      * Gets a list of available DialogFlow keys
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  const dfKeyList = kit.getDfKeysList();
-     *  console.log('My DF keys:', dfKeyList);
-     *  //... do something
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getDfKeysList.md
      */
     getDfKeysList() {
         return utils_1.default.getDfKeysList();
     }
     /**
      * Gets an avatar reply
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  if (kit.isCall()) {
-     *   const reply = kit.getAvatarReply();
-     *   console.log('Reply: ', reply);
-     *  }
-     *
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/getAvatarReply.md
      */
     getAvatarReply() {
         return utils_1.default.clone(this.avatarReply) || null;
     }
     /**
      * Gets a client’s SDK version.
-     * ```js
-     *  const kit = new VoximplantKit(context);
-     *  // Get a client’s SDK version
-     *  kit.version();
-     *  // End of function
-     *  callback(200, kit.getResponseBody());
-     * ```
+     * @exampleFile index/version.md
      */
     version() {
         return utils_1.default.getVersion();
