@@ -1,4 +1,4 @@
-import axios, {AxiosInstance, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios, {AxiosInstance, InternalAxiosRequestConfig, AxiosResponse} from 'axios';
 import * as qs from 'qs';
 import { ApiInstance } from "./types";
 
@@ -42,8 +42,13 @@ export default class Api implements ApiInstance{
             }
         });
 
-        this.client.interceptors.request.use((param: AxiosRequestConfig) => {
-            param.data = qs.stringify(param.data);
+        this.client.interceptors.request.use((param: InternalAxiosRequestConfig) => {
+            param.data = param.data || '';
+
+            if (param.data !== '') {
+                param.data = qs.stringify(param.data);
+            }
+
             if (typeof param.params === "undefined") param.params = {};
 
             param.params.domain = domain;
