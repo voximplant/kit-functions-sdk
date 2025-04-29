@@ -9,7 +9,17 @@ declare module '@voximplant/kit-functions-sdk' {
             avatar: Avatar;
             /**
                 * Voximplant Kit class, a middleware for working with functions.
-                * @exampleFile index/constructor.md
+                * 
+                * ```javascript
+                * module.exports = async function (context, callback) {
+                *   // Initialize a VoximplantKit instance
+                *   const kit = new VoximplantKit(context);
+                *   // Some code
+                *   console.log(Date.now());
+                *   // End of function
+                *   callback(200, kit.getResponseBody());
+                * };
+                * ```
                 */
             constructor(context: ContextObject);
             /**
@@ -18,161 +28,483 @@ declare module '@voximplant/kit-functions-sdk' {
             static default: typeof VoximplantKit;
             /**
                 * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
-                * @exampleFile index/getConversationUuid.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   const uuid = kit.getConversationUuid();
+                *   //... do something
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getConversationUuid(): string | null;
             /**
                 * Get the function URI by its id.
-                * @exampleFile index/getFunctionUriById.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * const uri = kit.getFunctionUriById(31);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getFunctionUriById(id: number): string | null;
             /**
                 * Get the URL of the current function. Used for invoking the function as a callback.
-                * @exampleFile index/getCurrentFunctionUri.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * const uri = kit.getCurrentFunctionUri();
+                * console.log('URL of the current function', uri);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getCurrentFunctionUri(): string | null;
             /**
                 * Loads the databases available in the scope.
-                * @exampleFile index/loadDatabases.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Read contents from the global scope
+                *   const global_scope = kit.dbGetAll('global');
+                *   console.log(global_scope);
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             loadDatabases(): Promise<void>;
             /**
                 * Gets a message object.
-                * @exampleFile index/getMessageObject.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   const messageObject = kit.getMessageObject();
+                *   // ...do something
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getMessageObject(): ChannelDataObject | ObjectType;
             /**
                 * Gets a function response. Needs to be called at the end of each function.
-                * @exampleFile index/getResponseBody.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getResponseBody(): CallDataObject | ChannelDataObject | undefined;
             /**
                 * Gets an incoming message.
-                * @exampleFile index/getIncomingMessage.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Check if the function is called from a channel
+                * if (kit.isMessage()) {
+                *   // Get text from an incoming message
+                *   const message = kit.getIncomingMessage();
+                *   console.log(message.text);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getIncomingMessage(): IncomingMessageObject | null;
             /**
                 * Sets a reply message text.
-                * @exampleFile index/setReplyMessageText.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Check if the function is called from a channel
+                * if (kit.isMessage()) {
+                *   // Get text from an incoming message
+                *   const message = kit.getIncomingMessage();
+                *   console.log(message.text);
+                *   // Set text of the reply
+                *   kit.setReplyMessageText('you wrote ' + message.text);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param text {string} - Reply text
                 */
             setReplyMessageText(text: string): boolean;
             /**
                 * The function is called from a call.
-                * @exampleFile index/isCall.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isCall()) {
+                *   console.log('This function is called from the call');
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             isCall(): boolean;
             /**
                 * The function is called from a message.
-                * @exampleFile index/isMessage.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage()) {
+                *   console.log('This function is called from the channel');
+                *   const message = kit.getIncomingMessage();
+                *   //...
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             isMessage(): boolean;
             /**
                 * The function is called by the avatar.
-                * @exampleFile index/isAvatar.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isAvatar()) {
+                *   //...do something
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             isAvatar(): boolean;
             /**
                 * Gets a variable by name.
-                * @exampleFile index/getVariable.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * const my_var = kit.getVariable('my_var');
+                * if (my_var) {
+                *   console.log(my_var);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param name {string} - Variable name
                 */
             getVariable(name: string): string | null;
             /**
                 * Adds a variable or updates it if the variable name already exists.
-                * @exampleFile index/setVariable.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * kit.setVariable('my_var', 'some_value');
+                * console.log(kit.getVariable('my_var'));
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param name {string} - Variable name
                 * @param value {any} - Variable value
                 */
             setVariable(name: string, value: any): boolean;
             /**
                 * Deletes a variable by name.
-                * @exampleFile index/deleteVariable.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * kit.deleteVariable('my_var');
+                * // Console will print null
+                * console.log(kit.getVariable('my_var'));
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param name {string} - Variable name
                 */
             deleteVariable(name: string): boolean;
             /**
                 * Gets call headers.
-                * @exampleFile index/getCallHeaders.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isCall()) {
+                *   const headers = kit.getCallHeaders();
+                *   console.log(headers);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getCallHeaders(): ObjectType | null;
             /**
                 * Gets all call data.
-                * @exampleFile index/getCallData.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isCall()) {
+                *   const call = kit.getCallData();
+                *   // Get the phone number from which the call is made
+                *   console.log(call.phone_a);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getCallData(): CallObject | null;
             /**
                 * Gets all variables.
-                * @exampleFile index/getVariables.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * const all_vars = kit.getVariables();
+                * console.log(all_vars);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getVariables(): ObjectType;
             /**
                 * Gets all skills.
-                * @exampleFile index/getSkills.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (this.isCall()) {
+                *   const all_skills = kit.getSkills();
+                *   console.log('All skills:', all_skills);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getSkills(): SkillObject[];
             /**
                 * Adds a skill or updates it if the skill id already exists.
-                * @exampleFile index/setSkill.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (kit.isCall()) {
+                *   kit.setSkill({ skill_id: 234, level: 5 });
+                * } else if (kit.isMessage()) {
+                *   kit.setSkill({ skill_id: 35, level: 3 });
+                *   kit.transferToQueue({ queue_id: 72 });
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setSkill(skill: SkillObject): boolean;
             /**
                 * Removes a skill by id.
-                * @exampleFile index/removeSkill.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * kit.removeSkill(234);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param id {Number} - Name of the skill to remove
                 */
             removeSkill(id: number): boolean;
             /**
                 * Sets the call priority. The higher the priority, the less time a client will wait for the operator's response.
-                * @exampleFile index/setPriority.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Transfer a client to the queue
+                * kit.transferToQueue({ queue_id: null, queue_name: 'some_queue_name' });
+                * // Set the highest priority
+                * kit.setPriority(10);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param value {number} - Priority value, from 0 to 10
                 */
             setPriority(value: number): boolean;
             /**
                 * Gets call priorities.
-                * @exampleFile index/getPriority.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Return a number from 0 to 10
+                * const priority = kit.getPriority();
+                * if (priority === 10) {
+                *   // Something to do
+                * } else if (priority === 5) {
+                *   // Something to do
+                * } else {
+                *   // Something to do
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getPriority(): number;
             /**
                 * Closes the client's request.
-                * @exampleFile index/finishRequest.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (this.isMessage()) {
+                *   kit.finishRequest();
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             finishRequest(): boolean;
             /**
                 * Reopens the client's request.
-                * @exampleFile index/cancelFinishRequest.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (this.isMessage()) {
+                *   kit.finishRequest();
+                * }
+                * // ...
+                * // Сondition for reopening
+                * const shouldCancel = true;
+                * if (shouldCancel) {
+                *   kit.cancelFinishRequest();
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             cancelFinishRequest(): boolean;
             /**
                 * Transfers a client to the queue.
-                * @exampleFile index/transferToQueue.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Transfer a client to the queue
+                * kit.transferToQueue({ queue_id: 82 });
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
                 * Transfers a client to the user. Only for text channels and Avatar.
-                * @exampleFile index/transferToUser.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * if (this.isMessage() || this.isAvatar()) {
+                *   // Use user_id or user_email.
+                *   kit.transferToUser({ user_id: 12 });
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             transferToUser(user: UserInfo): boolean;
             /**
                 * Cancels transferring a client to the queue.
-                * @exampleFile index/cancelTransferToQueue.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Transfer a client to the queue
+                * kit.transferToQueue({ queue_id: null, queue_name: 'some_queue_name' });
+                * //...
+                * // Condition for canceling the transfer to the queue
+                * const shouldCancel = true;
+                * if (shouldCancel) {
+                *   kit.cancelTransferToQueue();
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             cancelTransferToQueue(): boolean;
             /**
                 * Cancels transferring a client to the user.
-                * @exampleFile index/cancelTransferToUser.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * // Transfer a client to the queue
+                * kit.transferToUser({ user_id: 12 });
+                * //...
+                * // Condition for canceling the transfer to the queue
+                * const shouldCancel = true;
+                * if (shouldCancel) {
+                *   kit.cancelTransferToUser();
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             cancelTransferToUser(): boolean;
             /**
                 * Gets a value from the database scope by key. Available only after loadDatabases() execution.
-                * @exampleFile index/dbGet.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Get the value from the function scope by key
+                *   const _test = kit.dbGet('test_key', 'function');
+                *   console.log(_test);
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param key {string} - Key
                 * @param scope {DataBaseType} - Database scope
                 */
             dbGet(key: string, scope?: DataBaseType): string | null;
             /**
                 * Adds a value to the database scope or updates it if the key already exists. Available only after loadDatabases() execution.
-                * @exampleFile index/dbSet.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Get a value from the function scope by key
+                *   const _test = kit.dbGet('test_key', 'function');
+                *   // If there is no data
+                *   if (_test === null) {
+                *     kit.dbSet('test_key', 'Hello world!!!', 'function');
+                *   }
+                *   // Write changes to the database
+                *   await kit.dbCommit();
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param key {string} - Key
                 * @param value {any} - Value
                 * @param scope {DataBaseType} - Database scope
@@ -180,25 +512,90 @@ declare module '@voximplant/kit-functions-sdk' {
             dbSet(key: string, value: any, scope?: DataBaseType): boolean;
             /**
                 * Deletes a value from the specified database scope, if the key already exists. Available only after loadDatabase() execution.
-                * @exampleFile index/dbDelete.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Delete a value from the function scope by key
+                *   kit.dbDelete('test_key', 'function');
+                *   // Write changes to the database
+                *   await kit.dbCommit();
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param key {string} - Key
                 * @param scope {DataBaseType} - Database scope
                 */
             dbDelete(key: string, scope: DataBaseType): boolean;
             /**
                 * Gets the whole database scope by name. Available only after loadDatabases() execution.
-                * @exampleFile index/dbGetAll.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Read contents from the global scope
+                *   const global_scope = kit.dbGetAll('global');
+                *   console.log(global_scope);
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param scope {DataBaseType} - Database scope
                 */
             dbGetAll(scope?: DataBaseType): ObjectType | null;
             /**
                 * Adds changes to the database. Available only after loadDatabases() execution.
-                * @exampleFile index/dbCommit.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   // Connect available databases
+                *   await kit.loadDatabases();
+                *   // Get a value from the function scope by key
+                *   const _test = kit.dbGet('test_key', 'function');
+                *   // If there is no data
+                *   if (_test === null) {
+                *     kit.dbSet('test_key', 'Hello world!!!', 'function');
+                *   }
+                *   // Write changes to the database
+                *   await kit.dbCommit();
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             dbCommit(): Promise<boolean>;
             /**
                 * Allows you to use the Voximplant Kit API.
-                * @exampleFile index/apiProxy.md
+                * 
+                * ```javascript
+                * // Example of getting an account name
+                * const kit = new VoximplantKit(context);
+                * try {
+                *   const { success, result } = await kit.apiProxy('/v2/account/getAccountInfo');
+                *   if (success) {
+                *     console.log('Account name', result.domain.name);
+                *   }
+                * } catch (err) {
+                *   console.log(err);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param url {string} - URL address
                 * @param data
                 */
@@ -206,86 +603,286 @@ declare module '@voximplant/kit-functions-sdk' {
             /**
                 * Gets an environment variable by name.
                 * [More details here.](https://voximplant.com/kit/docs/functions/envvariables)
-                * @exampleFile index/getEnvVariable.md
+                * 
+                * ```javascript
+                * // Initialize a VoximplantKit instance
+                * const kit = new VoximplantKit(context);
+                * const my_var = kit.getEnvVariable('myEnv');
+                * if (my_var) {
+                *   console.log(my_var);
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param name {string} - Variable name
                 */
             getEnvVariable(name: string): string | null;
             /**
                 * A static method used outside the function body that gets environment variables.
-                * @exampleFile index/getEnvironmentVariable.md
+                * 
+                * ```javascript
+                * const my_var = VoximplantKit.getEnvironmentVariable('myEnv');
+                * if (my_var) {
+                *   console.log(my_var);
+                * }
+                * ```
                 */
             static getEnvironmentVariable(name: string): string | null;
             /**
                 * Adds buttons for the web chat channel
-                * @exampleFile index/setReplyWebChatInlineButtons.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                * // Text is required for each button and must not be greater than 40 char.
+                * // The max number of buttons is 13.
+                * const buttons = [
+                * {type: 'text', text: 'Some btn text', data: 'Some btn data'}
+                * {type: 'text', text: 'Another btn text', data: JSON.stringify({name: 'Jon Doe', age: 30})}
+                * ]
+                * kit.setReplyWebChatInlineButtons(buttons);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setReplyWebChatInlineButtons(buttons: WebChatInlineButton[]): boolean;
             /**
                 * Adds inline keyboard for the telegram channel
-                * @exampleFile index/setTelegramInlineKeyboard.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   // Without a reply message, the keyboard will not be displayed
+                *   const message = kit.getIncomingMessage();
+                *   kit.setReplyMessageText(`You wrote: ${message.text}`);
+                * 
+                *   // An array of arrays with keyboard buttons.
+                *   // Text is required for each keyboard.
+                *   const inline_keyboard_markup = [
+                *     // Row one
+                *     [
+                *       { text: 'text', url: 'url', callback_data: '1' },
+                *       { text: 'text 2', url: 'url' },
+                *     ],
+                *     // Row two
+                *     [{ text: 'text', url: 'url', callback_data: '1' }],
+                *   ];
+                *   kit.setTelegramInlineKeyboard(buttons);
+                * 
+                *   // Calling the kit.setTelegramInlineKeyboard method
+                *   // with an empty array will clear previously passed buttons
+                *   // kit.setTelegramInlineKeyboard([]);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setTelegramInlineKeyboard(keyboard_markup: TelegramInlineKeyboardButton[][]): boolean;
             /**
                 * Adds reply keyboard for the telegram channel
-                * @exampleFile index/setTelegramReplyKeyboard.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   // Without a reply message, the keyboard will not be displayed
+                *   const message = kit.getIncomingMessage();
+                *   kit.setReplyMessageText(`You wrote: ${message.text}`);
+                * 
+                *   // An array of arrays with keyboard buttons.
+                *   // Text is required for each keyboard.
+                *   const reply_keyboard_markup = [
+                *     // Row one
+                *     [{ text: 'button 1', request_contact: true }, { text: 'button 2' }],
+                *     // Row two
+                *     [{ text: 'button 3', request_location: true }],
+                *   ];
+                *   // Optional params
+                *   const params = {
+                *     is_persistent: false,
+                *     resize_keyboard: false,
+                *     one_time_keyboard: false,
+                *     input_field_placeholder: 'Some text',
+                *     selective: false,
+                *   };
+                *   kit.setTelegramReplyKeyboard(reply_keyboard_markup, params);
+                * 
+                *   // Calling the kit.settelgramreplykeyboard method
+                *   // with an empty array will clear previously passed buttons
+                *   // kit.setTelegramReplyKeyboard([]);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setTelegramReplyKeyboard(keyboard_markup: TelegramReplyKeyboardButton[][], keyboard_params?: TelegramReplyKeyboardParams): boolean;
             /**
                 * Remove replyKeyboard for telegram channel
-                * @exampleFile index/setTelegramReplyKeyboardRemove.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   const remove_params = {
+                *     remove_keyboard: true, // required
+                *     selective: false,
+                *   };
+                *   kit.setTelegramReplyKeyboardRemove(remove_params);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setTelegramReplyKeyboardRemove(remove_params: TelegramReplyKeyboardRemove): boolean;
             /**
                 * Set Whatsapp Edna keyboard
-                * @exampleFile index/setWhatsappEdnaKeyboard.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage() || kit.isAvatar()) {
+                *   const message = kit.getIncomingMessage();
+                *   kit.setReplyMessageText(`You wrote: ${message.text}`);
+                *   const keyboard = [
+                *     {
+                *       buttons: [
+                *         {
+                *           text: 'test 1', // Required
+                *           payload: 'test payload 1',
+                *           type: 'QUICK_REPLY', // Required
+                *         },
+                *         {
+                *           text: 'test 2', // Required
+                *           payload: 'test payload 2',
+                *           type: 'QUICK_REPLY', // Required
+                *         },
+                *       ],
+                *     },
+                *   ];
+                *   const isSet = kit.setWhatsappEdnaKeyboard(keyboard);
+                *   console.log('Buttons for whatsapp have been added:', isSet);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setWhatsappEdnaKeyboard(keyboard_rows: WhatsappEdnaKeyboardRow[]): boolean;
             /**
                 * Adds tags by id.
                 * This method allows you to add tags to the current context.
                 *
-                * @exampleFile index/addTags.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * kit.addTags([12, 34]);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             addTags(tags: number[]): boolean;
             /**
                 * Replaces all tags.
-                * @exampleFile index/replaceTags.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * kit.replaceTags([12, 34]);
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             replaceTags(tags: number[]): boolean;
             /**
                 * Gets tags.
-                * @exampleFile index/getTags.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * await kit.getTags(); // [12, 34]
+                * await kit.getTags(true); // [{id: 12, tag_name: 'my_tag'}, {id: 34, tag_name: 'my_tag2'}]
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 * @param withName {Boolean} - If the argument is true, it returns the array with the id and tag names. Otherwise, it will return the array with the id tags
                 */
             getTags(withName?: boolean): Promise<number[]> | Promise<GetTagsResult[]>;
             /**
                 * Set custom data.
-                * @exampleFile index/setCustomData.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * kit.setCustomData('my_data', {a: 1, b 'some text'}); // [12, 34]
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             setCustomData(name: string, data: unknown): boolean;
             /**
                 * Delete custom data.
-                * @exampleFile index/deleteCustomData.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * kit.deleteCustomData('my_data');
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             deleteCustomData(name: string): boolean;
             /**
                 * Get DialogFlow key by id.
-                * @exampleFile index/getDfKey.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * const dfKey = kit.getDfKey(15);
+                * if (dfKey) {
+                *   console.log('My DF key:', dfKey);
+                *   //... do something
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getDfKey(id: number): ObjectType | null;
             /**
                 * Gets a list of available DialogFlow keys
-                * @exampleFile index/getDfKeysList.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * const dfKeyList = kit.getDfKeysList();
+                * console.log('My DF keys:', dfKeyList);
+                * //... do something
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getDfKeysList(): string[];
             /**
                 * Gets an avatar reply
-                * @exampleFile index/getAvatarReply.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isCall()) {
+                *   const reply = kit.getAvatarReply();
+                *   console.log('Reply: ', reply);
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getAvatarReply(): AvatarMessageObject | null;
             /**
                 * Gets a client’s SDK version.
-                * @exampleFile index/version.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * // Get a client’s SDK version
+                * kit.version();
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             version(): string | void;
     }
@@ -906,23 +1503,103 @@ declare module '@voximplant/kit-functions-sdk/Avatar' {
             setResponseData(responseData: AvatarMessageObject): void;
             /**
                 * Gets response data from an avatar.
-                *@exampleFile Avatar/getResponseData.md
+                *
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isAvatar()) {
+                *   const avatarResponse = kit.avatar.getResponseData();
+                *   console.log(avatarResponse);
+                *   // ... do something
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             getResponseData(): AvatarMessageObject | null;
             setAvatarApiUrl(url: string): void;
             /**
                 * Send a message to a Voximplant avatar.
-                * @exampleFile Avatar/sendMessageToAvatar.md
+                * 
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isMessage()) {
+                *   try {
+                *     const conversationId = kit.getConversationUuid();
+                *     const callbackUri = kit.getFunctionUriById(33);
+                *     const { text } = kit.getIncomingMessage();
+                *     // This variable must be added to the environment variables yourself.
+                *     const avatarId = kit.getEnvVariable('avatarId');
+                *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+                *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+                *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
+                *     await kit.avatar.sendMessageToAvatar({
+                *       callbackUri,
+                *       voxAccountId,
+                *       avatarLogin,
+                *       avatarPass,
+                *       avatarId,
+                *       conversationId,
+                *       utterance: text,
+                *       customData: {},
+                *     });
+                *   } catch (err) {
+                *     console.error(err);
+                *   }
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             sendMessageToAvatar(config: AvatarConfig): Promise<unknown>;
             /**
                 * Terminates an avatar session.
-                *@exampleFile Avatar/stopAvatarSession.md
+                *
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * // This variable must be added to the environment variables yourself.
+                * const avatarId = kit.getEnvVariable('avatarId');
+                * const conversationId = kit.getConversationUuid();
+                * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
+                * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
+                * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
+                * if (kit.isAvatar()) {
+                *   try {
+                *     await kit.avatar.stopAvatarSession({
+                *       voxAccountId,
+                *       avatarLogin,
+                *       avatarPass,
+                *       avatarId,
+                *       conversationId,
+                *     });
+                *   } catch (err) {
+                *     console.error(err);
+                *   }
+                * }
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             stopAvatarSession(config: AvatarStopSessionConfig): Promise<void>;
             /**
                 * Send the avatar's reply to the conversation.
-                *@exampleFile Avatar/sendMessageToConversation.md
+                *
+                * ```javascript
+                * const kit = new VoximplantKit(context);
+                * if (kit.isAvatar()) {
+                *   const conversationUuid = kit.getConversationUuid();
+                *   const message = kit.getMessageObject();
+                *   try {
+                *     await kit.avatar.sendMessageToConversation(conversationUuid, message);
+                *   } catch (err) {
+                *     console.error(err);
+                *   }
+                * }
+                * 
+                * // End of function
+                * callback(200, kit.getResponseBody());
+                * ```
                 */
             sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<unknown>;
     }
