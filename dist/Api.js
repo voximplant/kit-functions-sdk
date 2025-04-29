@@ -75,13 +75,9 @@ class Api {
             }
         });
         this.client.interceptors.request.use((param) => {
-            console.log('param', param);
-            // Убедимся, что data всегда существует (для совместимости с тестами)
             param.data = param.data || '';
-            // Если data не пустая строка, преобразуем её
             if (param.data !== '') {
                 param.data = qs.stringify(param.data);
-                console.log('param.data', param.data);
             }
             if (typeof param.params === "undefined")
                 param.params = {};
