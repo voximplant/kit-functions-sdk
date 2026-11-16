@@ -12,15 +12,7 @@
     "noImplicitAny": false,
     "declaration": true,
     "declarationDir": "dist/dts/",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
-  "include": [
-    "src/**/*"
-  ]
+    "stripInternal": true,
+    "resolveJsonModule": true
+  }
 }

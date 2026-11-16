@@ -59,8 +59,13 @@ export interface RequestObject {
 /**
  * @hidden
  */
-export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
+export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The interface is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export interface AvatarMessageObject {
   is_final: boolean;
   response: string;
@@ -557,17 +562,32 @@ export type ObjectType = {
 
 export type GetTagsResult = { id: number, tag_name: string | null }
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The interface is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export interface AvatarLoginParams {
   voxAccountId: string;
   avatarLogin: string;
   avatarPass: string;
 }
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The interface is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export interface AvatarStopSessionConfig extends AvatarLoginParams {
   avatarId: string;
   conversationId: string;
 }
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The interface is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export interface AvatarConfig extends AvatarLoginParams {
   avatarId: string;
   callbackUri: string;

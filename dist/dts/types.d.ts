@@ -54,16 +54,7 @@ export interface RequestObject {
 /**
  * @hidden
  */
-export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
-export interface AvatarMessageObject {
-    is_final: boolean;
-    response: string;
-    custom_data: null | string;
-    conversation_id?: string;
-    chat_id?: string;
-    current_state?: string | null;
-    next_state?: string | null;
-}
+export declare type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 /**
  * @hidden
  */
@@ -500,44 +491,28 @@ export interface DataBase {
 /**
  * @hidden
  */
-export type DateBasePutParams = {
+export declare type DateBasePutParams = {
     name: string;
     scope: DataBaseType;
 };
-export type DataBaseType = 'function' | 'global' | 'conversation';
-export type ChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
+export declare type DataBaseType = 'function' | 'global' | 'conversation';
+export declare type ChannelType = 'telegram' | 'whatsapp-edna' | 'viber' | 'sms' | 'facebook' | 'vk' | 'odnoklassniki' | 'custom' | 'webchat';
 /**
  * @hidden
  */
 export interface ApiInstance {
     request<T, R = AxiosResponse<T>>(requestUrl: string, data: any): Promise<R>;
 }
-export type DbResponse = {
+export declare type DbResponse = {
     result: string;
 };
-export type ObjectType = {
+export declare type ObjectType = {
     [key: string]: string;
 };
-export type GetTagsResult = {
+export declare type GetTagsResult = {
     id: number;
     tag_name: string | null;
 };
-export interface AvatarLoginParams {
-    voxAccountId: string;
-    avatarLogin: string;
-    avatarPass: string;
-}
-export interface AvatarStopSessionConfig extends AvatarLoginParams {
-    avatarId: string;
-    conversationId: string;
-}
-export interface AvatarConfig extends AvatarLoginParams {
-    avatarId: string;
-    callbackUri: string;
-    utterance: string;
-    conversationId: string;
-    customData: unknown;
-}
 export interface UserInfo {
     user_id: number;
     user_email: string;
@@ -545,10 +520,10 @@ export interface UserInfo {
 export declare enum WebChatInlineButtonType {
     Text = "text"
 }
-export type WhatsappEdnaKeyboardRow = {
+export declare type WhatsappEdnaKeyboardRow = {
     buttons: WhatsappEdnaKeyboardButton[];
 };
-export type WhatsappEdnaKeyboardButton = {
+export declare type WhatsappEdnaKeyboardButton = {
     text: string;
     url?: string;
     urlPostfix?: string;
@@ -559,7 +534,7 @@ export type WhatsappEdnaKeyboardButton = {
 /**
  * @hidden
  */
-export type ValidateSchemaRule = {
+export declare type ValidateSchemaRule = {
     required: boolean;
     type: string;
     value?: any[];
@@ -567,32 +542,32 @@ export type ValidateSchemaRule = {
 /**
  * @hidden
  */
-export type ValidateSchema = {
+export declare type ValidateSchema = {
     [key: string]: ValidateSchemaRule;
 };
-export type WebChatInlineButton = {
+export declare type WebChatInlineButton = {
     type: WebChatInlineButtonType;
     text: string;
     data: string;
 };
-export type TelegramInlineKeyboardButton = {
+export declare type TelegramInlineKeyboardButton = {
     text: string;
     url?: string;
     callback_data?: string;
 };
-export type TelegramReplyKeyboardButton = {
+export declare type TelegramReplyKeyboardButton = {
     text: string;
     request_contact?: boolean;
     request_location?: boolean;
 };
-export type TelegramReplyKeyboardParams = {
+export declare type TelegramReplyKeyboardParams = {
     is_persistent?: boolean;
     resize_keyboard?: boolean;
     one_time_keyboard?: boolean;
     input_field_placeholder?: string;
     selective?: boolean;
 };
-export type TelegramReplyKeyboardRemove = {
+export declare type TelegramReplyKeyboardRemove = {
     remove_keyboard: boolean;
     selective?: boolean;
 };

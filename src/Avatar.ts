@@ -41,6 +41,11 @@ const stopSessionConfig = {
 type DefaultConfig = typeof sendMessageConfig | typeof stopSessionConfig;
 
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The helper is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 function checkParams(defaultConfig: DefaultConfig, config: AvatarConfig | AvatarStopSessionConfig) {
   for (let key in config) {
     if (key in defaultConfig && typeof key === 'string' && config[key]?.length) defaultConfig[key] = true;
@@ -51,6 +56,11 @@ function checkParams(defaultConfig: DefaultConfig, config: AvatarConfig | Avatar
   })
 }
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The class is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export default class Avatar {
   private avatarApi: AxiosInstance;
   private imApiUrl: string;
