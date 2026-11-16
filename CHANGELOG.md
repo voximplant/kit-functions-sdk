@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.2.18](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.17...v0.2.18) (2026-11-16)
+
+
+### Features
+
+* Added method getCurrentFunctionUri ([ed5ab1b](https://github.com/voximplant/kit-functions-sdk/commit/ed5ab1ba48841ead733f4d9a0912b5af4454827b))
+* Added the contacts and locations fields to the incoming Message object ([65cfb37](https://github.com/voximplant/kit-functions-sdk/commit/65cfb37cef77401271c56c269bcc0059736d47be))
+
 ### [0.2.17](https://github.com/voximplant/kit-functions-sdk/compare/v0.2.14...v0.2.17) (2024-07-22)
 
 ### Features
