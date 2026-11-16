@@ -71,6 +71,11 @@ class VoximplantKit {
   private isTagsReplace: boolean;
   private messageCustomData: { type: 'custom_data', name: string, data: string }[];
   private avatarReply!: AvatarMessageObject | null;
+  /**
+   * @deprecated The Avatar integration is not supported for new functions. The property is kept only for backward compatibility of existing functions.
+   * @internal
+   * @hidden
+   */
   public avatar: Avatar;
 
 
@@ -143,7 +148,7 @@ class VoximplantKit {
     }
 
     if (this.isAvatar()) {
-      const requestData = (this.requestData as AvatarMessageObject);
+      const requestData = (this.requestData as unknown as AvatarMessageObject);
       this.replyMessage.text = requestData.response;
       this.avatar.setResponseData(requestData)
     }
@@ -179,7 +184,7 @@ class VoximplantKit {
   }
 
   /**
-   * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
+   * Get the conversation uuid. Only applicable when called from a channel.
    * @exampleFile index/getConversationUuid.md
    */
   public getConversationUuid(): string | null {
@@ -402,7 +407,9 @@ class VoximplantKit {
 
   /**
    * The function is called by the avatar.
-   * @exampleFile index/isAvatar.md
+   * @deprecated The Avatar integration is not supported for new functions. The method is kept only for backward compatibility of existing functions.
+   * @internal
+   * @hidden
    */
   public isAvatar(): boolean {
     return this.eventType === EVENT_TYPES.avatar_function;
@@ -616,7 +623,7 @@ class VoximplantKit {
   }
 
   /**
-   * Transfers a client to the user. Only for text channels and Avatar.
+   * Transfers a client to the user. Only for text channels.
    * @exampleFile index/transferToUser.md
    */
   public transferToUser(user: UserInfo): boolean {
@@ -1257,8 +1264,10 @@ class VoximplantKit {
   }
 
   /**
-   * Gets an avatar reply
-   * @exampleFile index/getAvatarReply.md
+   * Gets an avatar reply.
+   * @deprecated The Avatar integration is not supported for new functions. The method is kept only for backward compatibility of existing functions.
+   * @internal
+   * @hidden
    */
   public getAvatarReply(): AvatarMessageObject | null {
     return utils.clone(this.avatarReply) || null;

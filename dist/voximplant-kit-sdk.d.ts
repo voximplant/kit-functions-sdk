@@ -3,10 +3,8 @@
 //   ../../axios
 
 declare module '@voximplant/kit-functions-sdk' {
-    import { AvatarMessageObject, CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "@voximplant/kit-functions-sdk/types";
-    import Avatar from "@voximplant/kit-functions-sdk/Avatar";
+    import { CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "@voximplant/kit-functions-sdk/types";
     class VoximplantKit {
-            avatar: Avatar;
             /**
                 * Voximplant Kit class, a middleware for working with functions.
                 * 
@@ -27,11 +25,11 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             static default: typeof VoximplantKit;
             /**
-                * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
+                * Get the conversation uuid. Only applicable when called from a channel.
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   const uuid = kit.getConversationUuid();
                 *   //... do something
                 * }
@@ -88,7 +86,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   const messageObject = kit.getMessageObject();
                 *   // ...do something
                 * }
@@ -175,20 +173,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 * ```
                 */
             isMessage(): boolean;
-            /**
-                * The function is called by the avatar.
-                * 
-                * ```javascript
-                * // Initialize a VoximplantKit instance
-                * const kit = new VoximplantKit(context);
-                * if (kit.isAvatar()) {
-                *   //...do something
-                * }
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            isAvatar(): boolean;
             /**
                 * Gets a variable by name.
                 * 
@@ -408,12 +392,12 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             transferToQueue(queue: QueueInfo): boolean;
             /**
-                * Transfers a client to the user. Only for text channels and Avatar.
+                * Transfers a client to the user. Only for text channels.
                 * 
                 * ```javascript
                 * // Initialize a VoximplantKit instance
                 * const kit = new VoximplantKit(context);
-                * if (this.isMessage() || this.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   // Use user_id or user_email.
                 *   kit.transferToUser({ user_id: 12 });
                 * }
@@ -633,7 +617,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 * // Text is required for each button and must not be greater than 40 char.
                 * // The max number of buttons is 13.
                 * const buttons = [
@@ -653,7 +637,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   // Without a reply message, the keyboard will not be displayed
                 *   const message = kit.getIncomingMessage();
                 *   kit.setReplyMessageText(`You wrote: ${message.text}`);
@@ -686,7 +670,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   // Without a reply message, the keyboard will not be displayed
                 *   const message = kit.getIncomingMessage();
                 *   kit.setReplyMessageText(`You wrote: ${message.text}`);
@@ -724,7 +708,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   const remove_params = {
                 *     remove_keyboard: true, // required
                 *     selective: false,
@@ -742,7 +726,7 @@ declare module '@voximplant/kit-functions-sdk' {
                 * 
                 * ```javascript
                 * const kit = new VoximplantKit(context);
-                * if (kit.isMessage() || kit.isAvatar()) {
+                * if (kit.isMessage()) {
                 *   const message = kit.getIncomingMessage();
                 *   kit.setReplyMessageText(`You wrote: ${message.text}`);
                 *   const keyboard = [
@@ -859,21 +843,6 @@ declare module '@voximplant/kit-functions-sdk' {
                 */
             getDfKeysList(): string[];
             /**
-                * Gets an avatar reply
-                * 
-                * ```javascript
-                * const kit = new VoximplantKit(context);
-                * if (kit.isCall()) {
-                *   const reply = kit.getAvatarReply();
-                *   console.log('Reply: ', reply);
-                * }
-                * 
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            getAvatarReply(): AvatarMessageObject | null;
-            /**
                 * Gets a client’s SDK version.
                 * 
                 * ```javascript
@@ -946,16 +915,7 @@ declare module '@voximplant/kit-functions-sdk/types' {
     /**
         * @hidden
         */
-    export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
-    export interface AvatarMessageObject {
-            is_final: boolean;
-            response: string;
-            custom_data: null | string;
-            conversation_id?: string;
-            chat_id?: string;
-            current_state?: string | null;
-            next_state?: string | null;
-    }
+    export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
     /**
         * @hidden
         */
@@ -1414,22 +1374,6 @@ declare module '@voximplant/kit-functions-sdk/types' {
             id: number;
             tag_name: string | null;
     };
-    export interface AvatarLoginParams {
-            voxAccountId: string;
-            avatarLogin: string;
-            avatarPass: string;
-    }
-    export interface AvatarStopSessionConfig extends AvatarLoginParams {
-            avatarId: string;
-            conversationId: string;
-    }
-    export interface AvatarConfig extends AvatarLoginParams {
-            avatarId: string;
-            callbackUri: string;
-            utterance: string;
-            conversationId: string;
-            customData: unknown;
-    }
     export interface UserInfo {
             user_id: number;
             user_email: string;
@@ -1488,120 +1432,5 @@ declare module '@voximplant/kit-functions-sdk/types' {
             remove_keyboard: boolean;
             selective?: boolean;
     };
-}
-
-declare module '@voximplant/kit-functions-sdk/Avatar' {
-    import { AvatarConfig, AvatarMessageObject, AvatarStopSessionConfig, ChannelDataObject } from "@voximplant/kit-functions-sdk/types";
-    export default class Avatar {
-            /**
-                * @hidden
-                */
-            constructor(avatarApiUrl: string, imApiUrl: string, headers?: Record<string, string>);
-            /**
-                * @hidden
-                */
-            setResponseData(responseData: AvatarMessageObject): void;
-            /**
-                * Gets response data from an avatar.
-                *
-                * ```javascript
-                * const kit = new VoximplantKit(context);
-                * if (kit.isAvatar()) {
-                *   const avatarResponse = kit.avatar.getResponseData();
-                *   console.log(avatarResponse);
-                *   // ... do something
-                * }
-                * 
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            getResponseData(): AvatarMessageObject | null;
-            setAvatarApiUrl(url: string): void;
-            /**
-                * Send a message to a Voximplant avatar.
-                * 
-                * ```javascript
-                * const kit = new VoximplantKit(context);
-                * if (kit.isMessage()) {
-                *   try {
-                *     const conversationId = kit.getConversationUuid();
-                *     const callbackUri = kit.getFunctionUriById(33);
-                *     const { text } = kit.getIncomingMessage();
-                *     // This variable must be added to the environment variables yourself.
-                *     const avatarId = kit.getEnvVariable('avatarId');
-                *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-                *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-                *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-                *     await kit.avatar.sendMessageToAvatar({
-                *       callbackUri,
-                *       voxAccountId,
-                *       avatarLogin,
-                *       avatarPass,
-                *       avatarId,
-                *       conversationId,
-                *       utterance: text,
-                *       customData: {},
-                *     });
-                *   } catch (err) {
-                *     console.error(err);
-                *   }
-                * }
-                * 
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            sendMessageToAvatar(config: AvatarConfig): Promise<unknown>;
-            /**
-                * Terminates an avatar session.
-                *
-                * ```javascript
-                * const kit = new VoximplantKit(context);
-                * // This variable must be added to the environment variables yourself.
-                * const avatarId = kit.getEnvVariable('avatarId');
-                * const conversationId = kit.getConversationUuid();
-                * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-                * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-                * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-                * if (kit.isAvatar()) {
-                *   try {
-                *     await kit.avatar.stopAvatarSession({
-                *       voxAccountId,
-                *       avatarLogin,
-                *       avatarPass,
-                *       avatarId,
-                *       conversationId,
-                *     });
-                *   } catch (err) {
-                *     console.error(err);
-                *   }
-                * }
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            stopAvatarSession(config: AvatarStopSessionConfig): Promise<void>;
-            /**
-                * Send the avatar's reply to the conversation.
-                *
-                * ```javascript
-                * const kit = new VoximplantKit(context);
-                * if (kit.isAvatar()) {
-                *   const conversationUuid = kit.getConversationUuid();
-                *   const message = kit.getMessageObject();
-                *   try {
-                *     await kit.avatar.sendMessageToConversation(conversationUuid, message);
-                *   } catch (err) {
-                *     console.error(err);
-                *   }
-                * }
-                * 
-                * // End of function
-                * callback(200, kit.getResponseBody());
-                * ```
-                */
-            sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<unknown>;
-    }
 }
 

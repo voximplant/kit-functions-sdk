@@ -1,6 +1,6 @@
 ```js
 const kit = new VoximplantKit(context);
-if (kit.isMessage() || kit.isAvatar()) {
+if (kit.isMessage()) {
 // Text is required for each button and must not be greater than 40 char.
 // The max number of buttons is 13.
 const buttons = [

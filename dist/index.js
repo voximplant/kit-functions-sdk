@@ -110,7 +110,7 @@ class VoximplantKit {
         return null;
     }
     /**
-     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
+     * Get the conversation uuid. Only applicable when called from a channel.
      * @exampleFile index/getConversationUuid.md
      */
     getConversationUuid() {
@@ -316,7 +316,9 @@ class VoximplantKit {
     }
     /**
      * The function is called by the avatar.
-     * @exampleFile index/isAvatar.md
+     * @deprecated The Avatar integration is not supported for new functions. The method is kept only for backward compatibility of existing functions.
+     * @internal
+     * @hidden
      */
     isAvatar() {
         return this.eventType === "avatar_function" /* EVENT_TYPES.avatar_function */;
@@ -510,7 +512,7 @@ class VoximplantKit {
         return true;
     }
     /**
-     * Transfers a client to the user. Only for text channels and Avatar.
+     * Transfers a client to the user. Only for text channels.
      * @exampleFile index/transferToUser.md
      */
     transferToUser(user) {
@@ -1068,8 +1070,10 @@ class VoximplantKit {
         return utils_1.default.getDfKeysList();
     }
     /**
-     * Gets an avatar reply
-     * @exampleFile index/getAvatarReply.md
+     * Gets an avatar reply.
+     * @deprecated The Avatar integration is not supported for new functions. The method is kept only for backward compatibility of existing functions.
+     * @internal
+     * @hidden
      */
     getAvatarReply() {
         return utils_1.default.clone(this.avatarReply) || null;

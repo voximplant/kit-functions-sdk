@@ -27,6 +27,11 @@ const stopSessionConfig = {
     avatarId: false,
     conversationId: false,
 };
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The helper is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 function checkParams(defaultConfig, config) {
     var _a;
     for (let key in config) {
@@ -38,6 +43,11 @@ function checkParams(defaultConfig, config) {
             throw new Error(`Missing the required parameter "${item[0]}"`);
     });
 }
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The class is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 class Avatar {
     /**
      * @hidden

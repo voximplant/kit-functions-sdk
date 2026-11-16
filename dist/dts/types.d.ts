@@ -54,16 +54,7 @@ export interface RequestObject {
 /**
  * @hidden
  */
-export type RequestData = RequestObjectCallBody | MessageObject | ObjectType | AvatarMessageObject;
-export interface AvatarMessageObject {
-    is_final: boolean;
-    response: string;
-    custom_data: null | string;
-    conversation_id?: string;
-    chat_id?: string;
-    current_state?: string | null;
-    next_state?: string | null;
-}
+export type RequestData = RequestObjectCallBody | MessageObject | ObjectType;
 /**
  * @hidden
  */
@@ -522,22 +513,6 @@ export type GetTagsResult = {
     id: number;
     tag_name: string | null;
 };
-export interface AvatarLoginParams {
-    voxAccountId: string;
-    avatarLogin: string;
-    avatarPass: string;
-}
-export interface AvatarStopSessionConfig extends AvatarLoginParams {
-    avatarId: string;
-    conversationId: string;
-}
-export interface AvatarConfig extends AvatarLoginParams {
-    avatarId: string;
-    callbackUri: string;
-    utterance: string;
-    conversationId: string;
-    customData: unknown;
-}
 export interface UserInfo {
     user_id: number;
     user_email: string;

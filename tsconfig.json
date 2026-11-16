@@ -14,7 +14,8 @@
     "declarationDir": "dist/dts/",
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "stripInternal": true
   },
   "exclude": [
     "node_modules",

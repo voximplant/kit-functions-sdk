@@ -1,6 +1,6 @@
 ```js
 const kit = new VoximplantKit(context);
-if (kit.isMessage() || kit.isAvatar()) {
+if (kit.isMessage()) {
   const remove_params = {
     remove_keyboard: true, // required
     selective: false,

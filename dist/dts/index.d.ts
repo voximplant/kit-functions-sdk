@@ -1,5 +1,4 @@
-import { AvatarMessageObject, CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "./types";
-import Avatar from "./Avatar";
+import { CallDataObject, CallObject, ChannelDataObject, ContextObject, DataBaseType, GetTagsResult, IncomingMessageObject, ObjectType, QueueInfo, SkillObject, TelegramInlineKeyboardButton, TelegramReplyKeyboardButton, TelegramReplyKeyboardParams, TelegramReplyKeyboardRemove, UserInfo, WebChatInlineButton, WhatsappEdnaKeyboardRow } from "./types";
 declare class VoximplantKit {
     private requestData;
     private accessToken;
@@ -23,7 +22,6 @@ declare class VoximplantKit {
     private isTagsReplace;
     private messageCustomData;
     private avatarReply;
-    avatar: Avatar;
     /**
      * Voximplant Kit class, a middleware for working with functions.
      * @exampleFile index/constructor.md
@@ -38,7 +36,7 @@ declare class VoximplantKit {
      */
     private getIncomingMessageButtonData;
     /**
-     * Get the conversation uuid. Only applicable when called from a channel or when calling the function as a callbackUri in the sendMessageToAvatar method.
+     * Get the conversation uuid. Only applicable when called from a channel.
      * @exampleFile index/getConversationUuid.md
      */
     getConversationUuid(): string | null;
@@ -94,11 +92,6 @@ declare class VoximplantKit {
      * @exampleFile index/isMessage.md
      */
     isMessage(): boolean;
-    /**
-     * The function is called by the avatar.
-     * @exampleFile index/isAvatar.md
-     */
-    isAvatar(): boolean;
     /**
      * Gets a variable by name.
      * @exampleFile index/getVariable.md
@@ -176,7 +169,7 @@ declare class VoximplantKit {
      */
     transferToQueue(queue: QueueInfo): boolean;
     /**
-     * Transfers a client to the user. Only for text channels and Avatar.
+     * Transfers a client to the user. Only for text channels.
      * @exampleFile index/transferToUser.md
      */
     transferToUser(user: UserInfo): boolean;
@@ -321,11 +314,6 @@ declare class VoximplantKit {
      * @exampleFile index/getDfKeysList.md
      */
     getDfKeysList(): string[];
-    /**
-     * Gets an avatar reply
-     * @exampleFile index/getAvatarReply.md
-     */
-    getAvatarReply(): AvatarMessageObject | null;
     /**
      * Gets a client’s SDK version.
      * @exampleFile index/version.md

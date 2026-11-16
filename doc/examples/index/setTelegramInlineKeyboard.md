@@ -1,6 +1,6 @@
 ```js
 const kit = new VoximplantKit(context);
-if (kit.isMessage() || kit.isAvatar()) {
+if (kit.isMessage()) {
   // Without a reply message, the keyboard will not be displayed
   const message = kit.getIncomingMessage();
   kit.setReplyMessageText(`You wrote: ${message.text}`);
