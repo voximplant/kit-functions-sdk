@@ -41,6 +41,11 @@ const stopSessionConfig = {
 type DefaultConfig = typeof sendMessageConfig | typeof stopSessionConfig;
 
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The helper is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 function checkParams(defaultConfig: DefaultConfig, config: AvatarConfig | AvatarStopSessionConfig) {
   for (let key in config) {
     if (key in defaultConfig && typeof key === 'string' && config[key]?.length) defaultConfig[key] = true;
@@ -51,6 +56,11 @@ function checkParams(defaultConfig: DefaultConfig, config: AvatarConfig | Avatar
   })
 }
 
+/**
+ * @deprecated The Avatar integration is not supported for new functions. The class is kept only for backward compatibility of existing functions.
+ * @internal
+ * @hidden
+ */
 export default class Avatar {
   private avatarApi: AxiosInstance;
   private imApiUrl: string;
@@ -96,17 +106,7 @@ export default class Avatar {
 
   /**
    * Gets response data from an avatar.
-   *```js
-   * const kit = new VoximplantKit(context);
-   * if (kit.isAvatar()) {
-   *   const avatarResponse = kit.avatar.getResponseData();
-   *   console.log(avatarResponse);
-   *   // ... do something
-   * }
-   *
-   * // End of function
-   *  callback(200, kit.getResponseBody());
-   * ```
+   *@exampleFile Avatar/getResponseData.md
    */
   getResponseData(): AvatarMessageObject | null {
     return this.responseData ? utils.clone(this.responseData) : null;
@@ -123,36 +123,7 @@ export default class Avatar {
 
   /**
    * Send a message to a Voximplant avatar.
-   * ```js
-   * const kit = new VoximplantKit(context);
-   * if (kit.isMessage()) {
-   *   try {
-   *     const conversationId = kit.getConversationUuid();
-   *     const callbackUri = kit.getFunctionUriById(33);
-   *     const {text} = kit.getIncomingMessage();
-   *     // This variable must be added to the environment variables yourself.
-   *     const avatarId = kit.getEnvVariable('avatarId');
-   *     const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-   *     const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-   *     const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-   *     await kit.avatar.sendMessageToAvatar({
-   *       callbackUri,
-   *       voxAccountId,
-   *       avatarLogin,
-   *       avatarPass,
-   *       avatarId,
-   *       conversationId,
-   *       utterance: text,
-   *       customData: {}
-   *     })
-   *   } catch (err) {
-   *     console.error(err);
-   *   }
-   * }
-   *
-   * // End of function
-   * callback(200, kit.getResponseBody());
-   * ```
+   * @exampleFile Avatar/sendMessageToAvatar.md
    */
   public async sendMessageToAvatar(config: AvatarConfig): Promise<unknown> {
     const {
@@ -212,30 +183,7 @@ export default class Avatar {
 
   /**
    * Terminates an avatar session.
-   *```js
-   * const kit = new VoximplantKit(context);
-   * // This variable must be added to the environment variables yourself.
-   * const avatarId = kit.getEnvVariable('avatarId');
-   * const conversationId = kit.getConversationUuid();
-   * const voxAccountId = kit.getEnvVariable('VOXIMPLANT_ACCOUNT_ID');
-   * const avatarLogin = kit.getEnvVariable('VOXIMPLANT_AVATAR_LOGIN');
-   * const avatarPass = kit.getEnvVariable('VOXIMPLANT_AVATAR_PASSWORD');
-   * if (kit.isAvatar()) {
-   *   try {
-   *     await kit.avatar.stopAvatarSession({
-   *       voxAccountId,
-   *       avatarLogin,
-   *       avatarPass,
-   *       avatarId,
-   *       conversationId,
-   *     })
-   *   } catch (err) {
-   *     console.error(err);
-   *   }
-   * }
-   * // End of function
-   *  callback(200, kit.getResponseBody());
-   * ```
+   *@exampleFile Avatar/stopAvatarSession.md
    */
   async stopAvatarSession(config: AvatarStopSessionConfig): Promise<void> {
     const {
@@ -263,21 +211,7 @@ export default class Avatar {
 
   /**
    * Send the avatar's reply to the conversation.
-   *```js
-   * const kit = new VoximplantKit(context);
-   * if (kit.isAvatar()) {
-   *  const conversationUuid = kit.getConversationUuid();
-   *  const message = kit.getMessageObject();
-   *  try {
-   *    await kit.avatar.sendMessageToConversation(conversationUuid, message);
-   *  } catch(err) {
-   *    console.error(err)
-   *  }
-   * }
-   *
-   * // End of function
-   *  callback(200, kit.getResponseBody());
-   * ```
+   *@exampleFile Avatar/sendMessageToConversation.md
    */
   public async sendMessageToConversation(conversationUuid: string, message: ChannelDataObject): Promise<unknown> {
     const botUrl = `${ this.imApiUrl }/api/v3/botService/sendResponse?conversation_uuid=${ conversationUuid }`;

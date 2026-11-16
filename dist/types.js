@@ -4,4 +4,4 @@ exports.WebChatInlineButtonType = void 0;
 var WebChatInlineButtonType;
 (function (WebChatInlineButtonType) {
     WebChatInlineButtonType["Text"] = "text";
-})(WebChatInlineButtonType = exports.WebChatInlineButtonType || (exports.WebChatInlineButtonType = {}));
+})(WebChatInlineButtonType || (exports.WebChatInlineButtonType = WebChatInlineButtonType = {}));

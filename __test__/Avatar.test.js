@@ -94,7 +94,7 @@ describe('sendMessageToAvatar', () => {
         mocRequest.mockResolvedValue({data: {jwt: null}});
         await avatar.sendMessageToAvatar({avatarId: 'dddd'});
       } catch (e) {
-        expect(e.message).toMatch('Missing the required');
+        expect(e.message).toMatch('Failed to log in to the avatar');
       }
     })
 

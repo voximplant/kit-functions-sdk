@@ -4,6 +4,7 @@ const callHeaders = {
   'x-kit-domain': 'test',
   'x-kit-event-type': 'in_call_function',
   'x-kit-function-id': '61',
+  'x-fission-function-name': 'functionNameMock',
 }
 
 const callBody = {
@@ -32,6 +33,7 @@ const messageHeaders = {
   'x-kit-domain': 'test',
   'x-kit-event-type': 'incoming_message',
   'x-kit-function-id': '56',
+  'x-fission-function-name': 'functionNameMock',
 }
 
 const messageBody = {
@@ -133,7 +135,8 @@ const messageBody = {
 }
 
 const avatarHeaders = {
-  'x-kit-event-type': 'avatar_function'
+  'x-kit-event-type': 'avatar_function',
+  'x-fission-function-name': 'functionNameMock',
 }
 
 const avatarBody = {

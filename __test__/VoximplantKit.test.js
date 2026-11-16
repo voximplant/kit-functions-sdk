@@ -2039,6 +2039,29 @@ describe('getConversationUuid', () => {
       expect(uuid).toBeNull();
     })
   })
+});
+
+describe('getCurrentFunctionUri', () => {
+  afterEach(() => {
+    process.env = {...OLD_ENV};
+  })
+
+  describe('have KIT_FUNC_URLS', () => {
+    const kit = new VoximplantKitTest(callContext);
+
+    test('should return url', () => {
+      process.env.KIT_FUNC_URLS = JSON.stringify({31: 'function_url_functionNameMock', 11: 'test_value'})
+      const url = kit.getCurrentFunctionUri();
+      expect(url).toEqual('function_url_functionNameMock');
+    })
+
+    test('should return null', () => {
+      process.env.KIT_FUNC_URLS = JSON.stringify({ 11: 'test_value'})
+      const url = kit.getCurrentFunctionUri();
+      expect(url).toBeNull();
+    })
+  })
+
 })
 
 describe('getFunctionUriById', () => {
