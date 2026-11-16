@@ -3,7 +3,7 @@
   "out": "doc_internal",
   "json": "doc_internal/json/doc.json",
   "entryPoints": ["src/**/*.ts"],
-  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**"],
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules/**", "src/Avatar.ts"],
   "tsconfig": "tsconfig.json",
   "excludePrivate": true,
   "excludeProtected": false,
